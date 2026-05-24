@@ -26,6 +26,17 @@
     "url": "https://cvbff.com/blog/cv-mistakes-costing-you-interviews"
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://cvbff.com" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://cvbff.com/blog" },
+      { "@type": "ListItem", "position": 3, "name": "5 CV Mistakes That Are Costing You Interviews", "item": "https://cvbff.com/blog/cv-mistakes-costing-you-interviews" }
+    ]
+  }
+  </script>
   <link rel="icon" type="image/svg+xml" href="/logo.svg">
   <link rel="icon" type="image/png" href="/favicon.png">
   <style>
@@ -93,6 +104,18 @@
       font-size: 11px; font-weight: 700; border-radius: 999px;
       padding: 2px 9px; margin-right: 8px; vertical-align: middle;
     }
+    .related { margin-top: 56px; padding-top: 40px; border-top: 1px solid var(--line); }
+    .related h3 { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 16px; letter-spacing: -0.01em; }
+    .related-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 520px) { .related-grid { grid-template-columns: 1fr; } }
+    .related-card {
+      display: block; padding: 16px 18px; border: 1px solid var(--line);
+      border-radius: var(--radius-sm); text-decoration: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .related-card:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(79,110,247,.1); text-decoration: none; }
+    .related-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent); }
+    .related-title { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.4; margin-top: 5px; }
     .cta-box {
       background: var(--accent-soft); border: 1px solid var(--accent);
       border-radius: var(--radius); padding: 28px 32px; margin-top: 52px; text-align: center;
@@ -223,6 +246,20 @@
     <p>All five of these mistakes share the same root cause: treating your CV as a record of your career rather than a targeted pitch for a specific job. Your CV isn't your autobiography — it's a sales document. Every word should be there because it helps you get this job.</p>
 
     <p>That mental shift — from "here's what I've done" to "here's why you should hire me for this role" — is what separates a CV that gets ignored from one that gets you in the room.</p>
+
+    <div class="related">
+      <h3>Related articles</h3>
+      <div class="related-grid">
+        <a href="/blog/tailor-your-cv-to-a-job-posting" class="related-card">
+          <span class="related-tag">CV Writing</span>
+          <p class="related-title">How to Tailor Your CV to a Job Posting (Step-by-Step)</p>
+        </a>
+        <a href="/blog/ai-cv-tailoring-guide" class="related-card">
+          <span class="related-tag">AI Tools</span>
+          <p class="related-title">AI CV Tailoring: The Smart Way to Apply for Jobs in 2026</p>
+        </a>
+      </div>
+    </div>
 
     <div class="cta-box">
       <h3>Fix all five mistakes in seconds</h3>
