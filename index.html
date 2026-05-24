@@ -635,20 +635,14 @@
 <!-- ── Hero ── -->
 <section class="hero">
   <div class="container">
-    <div class="tag">500+ job seekers on the waitlist</div>
+    <div class="tag">AI-powered CV tailoring</div>
     <h1>Get more interviews, <span>without applying</span> to more jobs</h1>
     <p>CvBFF reads any job posting and rewrites your CV to match it, so your application lands in the "yes" pile, not the reject folder. Fit score, cover letter, and interview prep included.</p>
-    <p class="hero-cta-label">The Chrome extension is pending approval. Leave your email and we'll notify you the day it goes live. You'll get <strong>2 free credits</strong> on us.</p>
-    <form class="waitlist-form" id="waitlist-form-hero" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-      <input class="waitlist-input" type="email" name="email" placeholder="your@email.com" required>
-      <button type="submit" class="btn btn-primary btn-lg" onclick="gtag('event','click',{event_category:'CTA',event_label:'hero-waitlist'})">Get early access →</button>
-    </form>
-    <div class="waitlist-success" id="waitlist-success-hero">🎉 You're on the list! We'll email you when CvBFF launches.</div>
-    <div class="trust-bar">
-      <span class="trust-item">2 free credits on launch</span>
-      <span class="trust-item">No subscription needed</span>
-      <span class="trust-item">Works on any job site</span>
+    <div class="hero-ctas">
+      <span class="btn btn-coming-soon btn-lg" onclick="gtag('event','click',{event_category:'CTA',event_label:'hero'})">⏳ Pending Chrome approval</span>
+      <a href="#how" class="btn btn-secondary btn-lg">See how it works</a>
     </div>
+    <p class="hero-note">2 free credits included. No subscription required.</p>
 
     <!-- Browser mockup -->
     <div class="mockup-wrap">
@@ -965,14 +959,10 @@
 <!-- ── CTA Banner ── -->
 <section class="cta-banner">
   <div class="container">
-    <h2>Be first in line when we launch</h2>
-    <p>Chrome approval is in progress. Drop your email, we'll ping you the instant CvBFF goes live, plus <strong style="color:#fff">2 free credits</strong> on us.</p>
-    <form class="cta-waitlist" id="waitlist-form-bottom" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-      <input class="waitlist-input" type="email" name="email" placeholder="your@email.com" required>
-      <button type="submit" class="btn btn-white btn-lg" onclick="gtag('event','click',{event_category:'CTA',event_label:'bottom-waitlist'})">Notify me →</button>
-    </form>
-    <div class="waitlist-success" id="waitlist-success-bottom">🎉 You're on the list! We'll email you when CvBFF launches.</div>
-    <p class="cta-note">No spam. One email when we launch, that's it.</p>
+    <h2>Start tailoring your CV today</h2>
+    <p>Add CvBFF to Chrome in 30 seconds and get 2 free credits. No card required.</p>
+    <span class="btn btn-coming-soon btn-lg" onclick="gtag('event','click',{event_category:'CTA',event_label:'bottom-cta'})">⏳ Pending Chrome approval</span>
+    <p class="cta-note">Works on LinkedIn, Indeed, and any job posting page.</p>
   </div>
 </section>
 
@@ -1007,28 +997,5 @@
   </div>
 </footer>
 
-<script>
-  // Async waitlist form handler (works with any Formspree form ID)
-  document.querySelectorAll('.waitlist-form, .cta-waitlist').forEach(function(form) {
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      var id = form.id.replace('waitlist-form-', '');
-      var successEl = document.getElementById('waitlist-success-' + id);
-      var btn = form.querySelector('button[type="submit"]');
-      if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
-      fetch(form.action, {
-        method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: new FormData(form)
-      }).then(function(r) {
-        form.style.display = 'none';
-        if (successEl) successEl.style.display = 'block';
-        gtag('event', 'waitlist_signup', { event_category: 'CTA', event_label: id });
-      }).catch(function() {
-        if (btn) { btn.disabled = false; btn.textContent = 'Notify me →'; }
-      });
-    });
-  });
-</script>
 </body>
 </html>
