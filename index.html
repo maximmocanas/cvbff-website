@@ -491,6 +491,11 @@
       .mockup-content { grid-template-columns: 1fr; }
       .mockup-popup { display: none; }
       .nav-links { display: none; }
+      .nav-cta-text { display: none; }
+      .nav-cta-btn { padding: 8px 10px; font-size: 16px; border-radius: 6px; }
+    }
+    @media (min-width: 769px) {
+      .nav-cta-short { display: none; }
     }
     @media (max-width: 480px) {
       .feature-grid { grid-template-columns: 1fr; }
@@ -534,7 +539,7 @@
         <li><a href="#faq">FAQ</a></li>
         <li><a href="/blog">Blog</a></li>
       </ul>
-      <span class="btn btn-coming-soon" onclick="gtag('event','click',{event_category:'CTA',event_label:'nav'})">⏳ Pending Chrome approval</span>
+      <span class="btn btn-coming-soon nav-cta-btn" onclick="gtag('event','click',{event_category:'CTA',event_label:'nav'})"><span class="nav-cta-text">⏳ Pending approval</span><span class="nav-cta-short">⏳</span></span>
     </div>
   </div>
 </nav>
