@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CvBFF — AI-tailored CVs in seconds</title>
+  <meta name="description" content="CvBFF reads any job posting and rewrites your CV to match it in seconds. Fit score, cover letters, interview prep — no subscription.">
+  <meta property="og:title" content="CvBFF — AI-tailored CVs in seconds">
+  <meta property="og:description" content="Stop sending the same CV to every job. CvBFF tailors your CV to any posting in seconds.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cvbff.com">
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #4F6EF7;
+      --accent-dark: #3B57D9;
+      --accent-soft: #EEF1FE;
+      --ink: #0f0f10;
+      --body: #3a3a3a;
+      --muted: #6b6b6b;
+      --faint: #9a9a9a;
+      --line: #e8e8e8;
+      --bg: #ffffff;
+      --bg-off: #f9f9fb;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 24px rgba(0,0,0,.10);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--body);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { display: block; max-width: 100%; }
+
+    /* ── Utility ── */
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+    .container-sm { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+    .tag {
+      display: inline-block;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); background: var(--accent-soft);
+      border-radius: 999px; padding: 4px 12px; margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 38px);
+      font-weight: 750; letter-spacing: -0.02em;
+      color: var(--ink); line-height: 1.2;
+      margin-bottom: 14px;
+    }
+    .section-sub {
+      font-size: 17px; color: var(--muted); max-width: 52ch;
+    }
+    .section-head { text-align: center; margin-bottom: 56px; }
+    .section-head .section-sub { margin: 0 auto; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      font: 600 15px/1 inherit; border-radius: var(--radius-sm);
+      padding: 13px 22px; cursor: pointer; border: none;
+      transition: all 0.15s ease; text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--accent); color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent-dark); text-decoration: none; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(79,110,247,.35); }
+    .btn-secondary {
+      background: transparent; color: var(--ink);
+      border: 1.5px solid var(--line);
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+    .btn-lg { padding: 16px 28px; font-size: 16px; border-radius: 10px; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 750; letter-spacing: -0.01em;
+      color: var(--ink); text-decoration: none;
+    }
+    .nav-logo:hover { text-decoration: none; }
+    .nav-logo svg { width: 32px; height: 32px; border-radius: 7px; }
+    .nav-links {
+      display: flex; align-items: center; gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 14px; font-weight: 500; color: var(--muted);
+      text-decoration: none; transition: color 0.12s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 88px 0 72px;
+      text-align: center;
+      background: linear-gradient(180deg, #f5f7ff 0%, #ffffff 100%);
+    }
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 62px);
+      font-weight: 800; letter-spacing: -0.03em;
+      color: var(--ink); line-height: 1.1;
+      margin-bottom: 22px; max-width: 16ch; margin-left: auto; margin-right: auto;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--muted); max-width: 54ch;
+      margin: 0 auto 36px;
+    }
+    .hero-ctas {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .hero-note {
+      margin-top: 16px; font-size: 13px; color: var(--faint);
+    }
+
+    /* ── Browser mockup ── */
+    .mockup-wrap {
+      margin: 56px auto 0;
+      max-width: 780px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 60px rgba(79,110,247,.14), 0 2px 8px rgba(0,0,0,.08);
+      border: 1px solid var(--line);
+    }
+    .mockup-bar {
+      background: #f0f0f0;
+      padding: 10px 16px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .mockup-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+    }
+    .mockup-url {
+      flex: 1; background: #fff; border-radius: 6px;
+      padding: 4px 12px; font-size: 12px; color: var(--muted);
+      border: 1px solid var(--line); text-align: center;
+      max-width: 340px; margin: 0 auto;
+    }
+    .mockup-content {
+      background: var(--bg-off);
+      padding: 32px 28px;
+      display: grid; grid-template-columns: 1fr 260px; gap: 20px;
+      min-height: 280px;
+    }
+    .mockup-job {
+      background: #fff; border-radius: 10px;
+      border: 1px solid var(--line); padding: 20px;
+    }
+    .mockup-job-title {
+      font-weight: 700; font-size: 15px; color: var(--ink); margin-bottom: 6px;
+    }
+    .mockup-job-co {
+      font-size: 13px; color: var(--muted); margin-bottom: 14px;
+    }
+    .mockup-line {
+      height: 9px; border-radius: 5px; background: var(--line); margin-bottom: 8px;
+    }
+    .mockup-popup {
+      background: #fff; border-radius: 10px;
+      border: 1px solid var(--line);
+      padding: 16px; box-shadow: var(--shadow-sm);
+    }
+    .mockup-popup-header {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+    }
+    .mockup-btn {
+      background: var(--accent); color: #fff;
+      border-radius: 7px; padding: 9px; font-size: 12px;
+      font-weight: 600; text-align: center; margin-bottom: 10px;
+    }
+    .mockup-score {
+      background: var(--accent-soft); border-radius: 7px;
+      padding: 10px; text-align: center;
+    }
+    .mockup-score-num {
+      font-size: 28px; font-weight: 800; color: var(--accent);
+    }
+    .mockup-score-label {
+      font-size: 10px; color: var(--muted); margin-top: 2px;
+    }
+
+    /* ── Logos / trust bar ── */
+    .trust {
+      padding: 28px 0;
+      border-bottom: 1px solid var(--line);
+      text-align: center;
+    }
+    .trust p {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--faint); margin-bottom: 18px;
+    }
+    .trust-logos {
+      display: flex; align-items: center; justify-content: center;
+      gap: 40px; flex-wrap: wrap;
+    }
+    .trust-logo {
+      font-size: 15px; font-weight: 700; color: var(--line);
+      letter-spacing: -0.01em;
+    }
+
+    /* ── How it works ── */
+    .how { padding: 96px 0; }
+    .steps {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+      margin-top: 0;
+    }
+    .step {
+      text-align: center; padding: 32px 24px;
+      background: var(--bg-off); border-radius: var(--radius);
+      border: 1px solid var(--line);
+    }
+    .step-num {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      font-size: 18px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 18px;
+    }
+    .step h3 {
+      font-size: 17px; font-weight: 700; color: var(--ink);
+      margin-bottom: 10px;
+    }
+    .step p { font-size: 14px; color: var(--muted); }
+
+    /* ── Features ── */
+    .features { padding: 0 0 96px; }
+    .feature-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    }
+    .feature-card {
+      background: var(--bg); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 28px 24px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.15s, transform 0.15s;
+    }
+    .feature-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--accent-soft);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; margin-bottom: 16px;
+    }
+    .feature-card h3 {
+      font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 8px;
+    }
+    .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* ── Pricing ── */
+    .pricing { padding: 96px 0; background: var(--bg-off); }
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    }
+    .price-card {
+      background: var(--bg); border: 1.5px solid var(--line);
+      border-radius: var(--radius); padding: 28px 22px;
+      position: relative; transition: box-shadow 0.15s, transform 0.15s;
+    }
+    .price-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .price-card.popular {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79,110,247,.12);
+    }
+    .popular-badge {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--accent); color: #fff;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+      border-radius: 999px; padding: 3px 12px; white-space: nowrap;
+    }
+    .price-name {
+      font-size: 13px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px;
+    }
+    .price-credits {
+      font-size: 32px; font-weight: 800; color: var(--ink);
+      letter-spacing: -0.02em; line-height: 1;
+    }
+    .price-credits span { font-size: 14px; font-weight: 500; color: var(--muted); }
+    .price-amount {
+      font-size: 22px; font-weight: 700; color: var(--accent);
+      margin: 12px 0 8px;
+    }
+    .price-per { font-size: 12px; color: var(--faint); margin-bottom: 20px; }
+    .price-apps {
+      font-size: 13px; color: var(--muted);
+      padding-top: 16px; border-top: 1px solid var(--line);
+    }
+    .pricing-note {
+      text-align: center; margin-top: 28px;
+      font-size: 14px; color: var(--muted);
+    }
+    .pricing-note strong { color: var(--ink); }
+
+    /* ── FAQ ── */
+    .faq { padding: 96px 0; }
+    .faq-list { margin-top: 0; }
+    .faq-item {
+      border-bottom: 1px solid var(--line);
+    }
+    .faq-q {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 0; cursor: pointer;
+      font-size: 16px; font-weight: 600; color: var(--ink);
+      list-style: none; gap: 16px;
+    }
+    .faq-q::-webkit-details-marker { display: none; }
+    .faq-icon {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--accent-soft); color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 300; flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    details[open] .faq-icon { transform: rotate(45deg); }
+    .faq-a {
+      padding: 0 0 22px; font-size: 15px; color: var(--muted); line-height: 1.7;
+      max-width: 68ch;
+    }
+
+    /* ── CTA Banner ── */
+    .cta-banner {
+      padding: 96px 0; text-align: center;
+      background: linear-gradient(135deg, #4F6EF7 0%, #3B57D9 100%);
+    }
+    .cta-banner h2 {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 800; letter-spacing: -0.02em;
+      color: #fff; margin-bottom: 16px;
+    }
+    .cta-banner p {
+      font-size: 18px; color: rgba(255,255,255,0.78);
+      margin-bottom: 36px; max-width: 48ch; margin-left: auto; margin-right: auto;
+    }
+    .btn-white {
+      background: #fff; color: var(--accent); font-weight: 700;
+    }
+    .btn-white:hover { background: #f0f3ff; text-decoration: none; transform: translateY(-1px); }
+    .cta-note { margin-top: 16px; font-size: 13px; color: rgba(255,255,255,0.6); }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--ink); color: rgba(255,255,255,0.5);
+      padding: 48px 0;
+    }
+    .footer-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 20px;
+    }
+    .footer-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 16px; font-weight: 700; color: #fff; text-decoration: none;
+    }
+    .footer-logo svg { width: 28px; height: 28px; border-radius: 6px; }
+    .footer-links {
+      display: flex; gap: 24px; list-style: none; flex-wrap: wrap;
+    }
+    .footer-links a {
+      font-size: 14px; color: rgba(255,255,255,0.5); text-decoration: none;
+    }
+    .footer-links a:hover { color: #fff; }
+    .footer-copy { font-size: 13px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .steps { grid-template-columns: 1fr; }
+      .feature-grid { grid-template-columns: 1fr 1fr; }
+      .pricing-grid { grid-template-columns: 1fr 1fr; }
+      .mockup-content { grid-template-columns: 1fr; }
+      .mockup-popup { display: none; }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 480px) {
+      .feature-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr 1fr; }
+      .hero { padding: 56px 0 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+          <rect width="128" height="128" rx="28" fill="#4F6EF7"/>
+          <rect x="38" y="34" width="46" height="58" rx="6" fill="rgba(255,255,255,0.30)"/>
+          <rect x="44" y="40" width="46" height="58" rx="6" fill="#fff"/>
+          <rect x="52" y="54" width="30" height="3.5" rx="1.75" fill="#4F6EF7" opacity="0.25"/>
+          <rect x="52" y="63" width="22" height="3.5" rx="1.75" fill="#4F6EF7" opacity="0.25"/>
+          <rect x="52" y="72" width="26" height="3.5" rx="1.75" fill="#4F6EF7" opacity="0.25"/>
+          <rect x="52" y="81" width="18" height="3.5" rx="1.75" fill="#4F6EF7" opacity="0.25"/>
+          <circle cx="90" cy="40" r="10" fill="#4F6EF7"/>
+          <path d="M90 34 L91.8 38.2 L96 40 L91.8 41.8 L90 46 L88.2 41.8 L84 40 L88.2 38.2 Z" fill="#fff"/>
+        </svg>
+        CvBFF
+      </a>
+      <ul class="nav-links">
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+      <a href="https://chromewebstore.google.com" class="btn btn-primary" target="_blank">Add to Chrome — it's free</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="container">
+    <div class="tag">AI-powered CV tailoring</div>
+    <h1>Your CV, tailored to <span>every job</span> in seconds</h1>
+    <p>CvBFF reads the job posting you're viewing and rewrites your CV to match — highlighting the right skills, mirroring the language, and surfacing experience you might have undersold.</p>
+    <div class="hero-ctas">
+      <a href="https://chromewebstore.google.com" class="btn btn-primary btn-lg" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="4" fill="white"/>
+          <path d="M12 8C13.57 8 14.98 8.7 15.95 9.8L20.5 9.8C19.17 6.42 15.87 4 12 4C8.13 4 4.83 6.42 3.5 9.8L8.05 9.8C9.02 8.7 10.43 8 12 8Z" fill="#EA4335"/>
+          <path d="M12 16C10.43 16 9.02 15.3 8.05 14.2L3.5 14.2C4.83 17.58 8.13 20 12 20C15.87 20 19.17 17.58 20.5 14.2L15.95 14.2C14.98 15.3 13.57 16 12 16Z" fill="#34A853"/>
+          <path d="M8.05 9.8L3.5 9.8C3.18 10.5 3 11.23 3 12C3 12.77 3.18 13.5 3.5 14.2L8.05 14.2C7.69 13.53 7.5 12.79 7.5 12C7.5 11.21 7.69 10.47 8.05 9.8Z" fill="#FBBC05"/>
+          <path d="M20.5 9.8L15.95 9.8C16.31 10.47 16.5 11.21 16.5 12C16.5 12.79 16.31 13.53 15.95 14.2L20.5 14.2C20.82 13.5 21 12.77 21 12C21 11.23 20.82 10.5 20.5 9.8Z" fill="#4285F4"/>
+        </svg>
+        Add to Chrome — it's free
+      </a>
+      <a href="#how" class="btn btn-secondary btn-lg">See how it works</a>
+    </div>
+    <p class="hero-note">2 free credits included. No subscription required.</p>
+
+    <!-- Browser mockup -->
+    <div class="mockup-wrap">
+      <div class="mockup-bar">
+        <div class="mockup-dot" style="background:#ff5f57"></div>
+        <div class="mockup-dot" style="background:#febc2e"></div>
+        <div class="mockup-dot" style="background:#28c840"></div>
+        <div class="mockup-url">linkedin.com/jobs/view/senior-product-manager...</div>
+      </div>
+      <div class="mockup-content">
+        <div class="mockup-job">
+          <div class="mockup-job-title">Senior Product Manager</div>
+          <div class="mockup-job-co">Acme Corp · London · £90k–£110k</div>
+          <div class="mockup-line" style="width:100%"></div>
+          <div class="mockup-line" style="width:85%"></div>
+          <div class="mockup-line" style="width:92%"></div>
+          <div class="mockup-line" style="width:70%"></div>
+          <div class="mockup-line" style="width:88%"></div>
+          <div class="mockup-line" style="width:60%"></div>
+        </div>
+        <div class="mockup-popup">
+          <div class="mockup-popup-header">CvBFF</div>
+          <div class="mockup-btn">✨ Generate tailored CV</div>
+          <div class="mockup-score">
+            <div class="mockup-score-num">87</div>
+            <div class="mockup-score-label">Fit score</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── How it works ── -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="section-head">
+      <div class="tag">Simple by design</div>
+      <h2 class="section-title">Three steps to a tailored CV</h2>
+      <p class="section-sub">No copying and pasting. No reformatting. Just open a job and click generate.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Save your profile once</h3>
+        <p>Add your roles, skills, and education in Settings. CvBFF remembers everything — you only do this once.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Open any job posting</h3>
+        <p>Browse to a job on LinkedIn, Indeed, or any company careers page. Click "Read this page" in the extension.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Generate &amp; download</h3>
+        <p>The AI rewrites your CV to match the posting. Preview instantly, unlock with 1 credit, download as PDF.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Features ── -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-head">
+      <div class="tag">Everything you need</div>
+      <h2 class="section-title">More than just a CV rewriter</h2>
+      <p class="section-sub">CvBFF gives you a full toolkit to prepare for every application — not just a document.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📄</div>
+        <h3>One page, always</h3>
+        <p>The AI budgets bullets per role based on relevance. Recent and relevant roles get more space — older ones are compressed, never dropped.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Fit score</h3>
+        <p>An honest 0–100 score showing how well your background matches the posting, with bullet-point reasons — before you spend a credit.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✉️</div>
+        <h3>Cover letters</h3>
+        <p>Generate a tailored cover letter for the same posting in one click. Same credit model — 1 credit per document.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3>Interview prep</h3>
+        <p>Topics to brush up on, tools to get familiar with, and likely interview questions — all tailored to that specific job posting.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📂</div>
+        <h3>My Applications</h3>
+        <p>Every CV and cover letter you generate is saved so you can come back, compare, and track your job search in one place.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💳</div>
+        <h3>No subscription</h3>
+        <p>Buy credits when you need them. One credit unlocks one document. No monthly fees, no commitment, no surprises.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Pricing ── -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-head">
+      <div class="tag">Simple pricing</div>
+      <h2 class="section-title">Pay only for what you use</h2>
+      <p class="section-sub">No subscriptions. Buy a credit pack, use it at your own pace. Credits never expire.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-name">Starter</div>
+        <div class="price-credits">10 <span>credits</span></div>
+        <div class="price-amount">$1.99</div>
+        <div class="price-per">$0.20 per credit</div>
+        <div class="price-apps">5 full applications<br><small style="color:var(--faint)">(CV + cover letter each)</small></div>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Standard</div>
+        <div class="price-credits">30 <span>credits</span></div>
+        <div class="price-amount">$4.99</div>
+        <div class="price-per">$0.17 per credit</div>
+        <div class="price-apps">15 full applications</div>
+      </div>
+      <div class="price-card popular">
+        <div class="popular-badge">Most popular</div>
+        <div class="price-name">Pro</div>
+        <div class="price-credits">65 <span>credits</span></div>
+        <div class="price-amount">$9.99</div>
+        <div class="price-per">$0.15 per credit</div>
+        <div class="price-apps">32 full applications</div>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Power</div>
+        <div class="price-credits">100 <span>credits</span></div>
+        <div class="price-amount">$14.99</div>
+        <div class="price-per">$0.15 per credit</div>
+        <div class="price-apps">50 full applications</div>
+      </div>
+    </div>
+    <p class="pricing-note">Every new account gets <strong>2 free credits</strong> — no payment needed to get started.</p>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section class="faq" id="faq">
+  <div class="container-sm">
+    <div class="section-head">
+      <div class="tag">FAQ</div>
+      <h2 class="section-title">Common questions</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary class="faq-q">
+          What does CvBFF actually change in my CV?
+          <div class="faq-icon">+</div>
+        </summary>
+        <div class="faq-a">CvBFF rewrites your bullet points to mirror the language and priorities in the job posting, reorders sections by relevance, and adjusts how much space each role gets based on how relevant it is. Your facts stay the same — it's the framing that changes.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          Does it make things up?
+          <div class="faq-icon">+</div>
+        </summary>
+        <div class="faq-a">No. CvBFF only works with what you've added to your profile. It reframes and reprioritises — it doesn't invent experience or skills you don't have. You're in control of what goes into your profile.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          What is a credit and when is it spent?
+          <div class="faq-icon">+</div>
+        </summary>
+        <div class="faq-a">One credit unlocks one document — either a full CV or a cover letter. You can generate and preview content for free. You only spend a credit when you click "Unlock" to reveal the full document and enable the PDF download.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          Is my data safe?
+          <div class="faq-icon">+</div>
+        </summary>
+        <div class="faq-a">Your profile and job posting text are sent to Anthropic's Claude API to generate the CV. Anthropic does not use API data for training. Your profile is stored securely in Supabase with Row Level Security. We don't sell data or run ads. Full details in our <a href="/privacy">Privacy Policy</a>.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          Does it work on any job site?
+          <div class="faq-icon">+</div>
+        </summary>
+        <div class="faq-a">Yes — CvBFF reads the text of whatever page you're on. It works on LinkedIn, Indeed, company careers pages, and anywhere else a job posting lives in plain text. You can also paste the job description directly into the extension if the page is behind a login.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          Do credits expire?
+          <div class="faq-icon">+</div>
+        </summary>
+        <div class="faq-a">No. Credits stay on your account until you use them. Buy when you need them and use them at your own pace.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA Banner ── -->
+<section class="cta-banner">
+  <div class="container">
+    <h2>Start tailoring your CV today</h2>
+    <p>Add CvBFF to Chrome in 30 seconds and get 2 free credits — no card required.</p>
+    <a href="https://chromewebstore.google.com" class="btn btn-white btn-lg" target="_blank">Add to Chrome — it's free</a>
+    <p class="cta-note">Works on LinkedIn, Indeed, and any job posting page.</p>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <a href="/" class="footer-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+          <rect width="128" height="128" rx="28" fill="#4F6EF7"/>
+          <rect x="38" y="34" width="46" height="58" rx="6" fill="rgba(255,255,255,0.30)"/>
+          <rect x="44" y="40" width="46" height="58" rx="6" fill="#fff"/>
+          <rect x="52" y="54" width="30" height="3.5" rx="1.75" fill="#4F6EF7" opacity="0.25"/>
+          <rect x="52" y="63" width="22" height="3.5" rx="1.75" fill="#4F6EF7" opacity="0.25"/>
+          <rect x="52" y="72" width="26" height="3.5" rx="1.75" fill="#4F6EF7" opacity="0.25"/>
+          <rect x="52" y="81" width="18" height="3.5" rx="1.75" fill="#4F6EF7" opacity="0.25"/>
+          <circle cx="90" cy="40" r="10" fill="#4F6EF7"/>
+          <path d="M90 34 L91.8 38.2 L96 40 L91.8 41.8 L90 46 L88.2 41.8 L84 40 L88.2 38.2 Z" fill="#fff"/>
+        </svg>
+        CvBFF
+      </a>
+      <ul class="footer-links">
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="/privacy">Privacy Policy</a></li>
+        <li><a href="mailto:support@cvbff.com">support@cvbff.com</a></li>
+      </ul>
+      <p class="footer-copy">© 2026 CvBFF</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
