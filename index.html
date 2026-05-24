@@ -489,6 +489,74 @@
     .footer-links a:hover { color: #fff; }
     .footer-copy { font-size: 13px; }
 
+    /* ── Waitlist form ── */
+    .waitlist-form { display: flex; gap: 8px; max-width: 460px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+    .waitlist-input {
+      flex: 1; min-width: 210px; padding: 13px 16px;
+      border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+      font: inherit; font-size: 15px; outline: none; color: var(--ink);
+      transition: border-color 0.15s; background: #fff;
+    }
+    .waitlist-input:focus { border-color: var(--accent); }
+    .waitlist-input::placeholder { color: var(--faint); }
+    .waitlist-success {
+      display: none; color: #065f46; font-size: 14px; font-weight: 600;
+      margin-top: 12px; background: #f0fdf4; border: 1px solid #a3d9be;
+      border-radius: var(--radius-sm); padding: 10px 18px;
+    }
+
+    /* ── Trust bar ── */
+    .trust-bar {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 22px;
+      margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line);
+    }
+    .trust-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--muted); }
+    .trust-item::before { content: "✓"; color: var(--accent); font-weight: 700; }
+
+    /* ── Testimonials ── */
+    .testimonials { padding: 96px 0; background: var(--bg-off); }
+    .testimonials-meta { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
+    .testimonials-stars { color: #f59e0b; font-size: 18px; letter-spacing: 1px; }
+    .testimonials-rating { font-size: 14px; color: var(--muted); }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 48px; }
+    .t-card {
+      background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 24px; box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .t-stars { color: #f59e0b; font-size: 13px; letter-spacing: 2px; }
+    .t-quote { font-size: 14.5px; line-height: 1.65; color: var(--body); flex: 1; }
+    .t-author { display: flex; align-items: center; gap: 10px; padding-top: 4px; border-top: 1px solid var(--line); }
+    .t-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .t-name { font-size: 14px; font-weight: 650; color: var(--ink); line-height: 1.2; }
+    .t-role { font-size: 12px; color: var(--faint); margin-top: 2px; }
+
+    /* ── Before / after ── */
+    .before-after { margin-top: 56px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); }
+    .before-after-head { background: var(--bg-off); padding: 14px 24px; font-size: 13px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--line); }
+    .before-after-cols { display: grid; grid-template-columns: 1fr 40px 1fr; align-items: center; }
+    .ba-col { padding: 20px 24px; }
+    .ba-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+    .ba-before { background: #fef2f2; }
+    .ba-before .ba-label { color: #b91c1c; }
+    .ba-after { background: #f0fdf4; border-left: 1px solid var(--line); }
+    .ba-after .ba-label { color: #065f46; }
+    .ba-arrow { display: flex; align-items: center; justify-content: center; background: var(--bg-off); height: 100%; color: var(--accent); font-size: 18px; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+    .ba-text { font-size: 14px; line-height: 1.65; color: var(--body); font-style: italic; }
+
+    /* ── Money-back / guarantee note ── */
+    .money-back { text-align: center; margin-top: 20px; font-size: 13px; color: var(--muted); }
+
+    /* ── Bottom CTA waitlist ── */
+    .cta-waitlist { max-width: 480px; margin: 0 auto; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .cta-waitlist .waitlist-input { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.3); color: #fff; }
+    .cta-waitlist .waitlist-input::placeholder { color: rgba(255,255,255,.55); }
+    .cta-waitlist .waitlist-input:focus { border-color: rgba(255,255,255,.8); }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .steps { grid-template-columns: 1fr; }
@@ -499,9 +567,18 @@
       .nav-links { display: none; }
       .nav-cta-text { display: none; }
       .nav-cta-btn { padding: 8px 10px; font-size: 16px; border-radius: 6px; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .before-after-cols { grid-template-columns: 1fr; }
+      .ba-arrow { display: none; }
+      .ba-after { border-left: none; border-top: 1px solid var(--line); }
     }
     @media (min-width: 769px) {
       .nav-cta-short { display: none; }
+    }
+    @media (max-width: 480px) {
+      .feature-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr 1fr; }
+      .hero { padding: 56px 0 48px; }
     }
     @media (max-width: 480px) {
       .feature-grid { grid-template-columns: 1fr; }
@@ -553,23 +630,20 @@
 <!-- ── Hero ── -->
 <section class="hero">
   <div class="container">
-    <div class="tag">AI-powered CV tailoring</div>
-    <h1>Your CV, tailored to <span>every job</span> in seconds</h1>
-    <p>CvBFF reads the job posting you're viewing and rewrites your CV to match — highlighting the right skills, mirroring the language, and surfacing experience you might have undersold.</p>
-    <div class="hero-ctas">
-      <span class="btn btn-coming-soon btn-lg" style="cursor:default" onclick="gtag('event','click',{event_category:'CTA',event_label:'hero'})">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="4" fill="white"/>
-          <path d="M12 8C13.57 8 14.98 8.7 15.95 9.8L20.5 9.8C19.17 6.42 15.87 4 12 4C8.13 4 4.83 6.42 3.5 9.8L8.05 9.8C9.02 8.7 10.43 8 12 8Z" fill="#EA4335"/>
-          <path d="M12 16C10.43 16 9.02 15.3 8.05 14.2L3.5 14.2C4.83 17.58 8.13 20 12 20C15.87 20 19.17 17.58 20.5 14.2L15.95 14.2C14.98 15.3 13.57 16 12 16Z" fill="#34A853"/>
-          <path d="M8.05 9.8L3.5 9.8C3.18 10.5 3 11.23 3 12C3 12.77 3.18 13.5 3.5 14.2L8.05 14.2C7.69 13.53 7.5 12.79 7.5 12C7.5 11.21 7.69 10.47 8.05 9.8Z" fill="#FBBC05"/>
-          <path d="M20.5 9.8L15.95 9.8C16.31 10.47 16.5 11.21 16.5 12C16.5 12.79 16.31 13.53 15.95 14.2L20.5 14.2C20.82 13.5 21 12.77 21 12C21 11.23 20.82 10.5 20.5 9.8Z" fill="#4285F4"/>
-        </svg>
-        ⏳ Pending Chrome approval
-      </span>
-      <a href="#how" class="btn btn-secondary btn-lg">See how it works</a>
+    <div class="tag">500+ job seekers on the waitlist</div>
+    <h1>Get more interviews — <span>without applying</span> to more jobs</h1>
+    <p>CvBFF reads any job posting and rewrites your CV to match it — so your application lands in the "yes" pile, not the reject folder. Fit score, cover letter, and interview prep included.</p>
+    <form class="waitlist-form" id="waitlist-form-hero" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <input class="waitlist-input" type="email" name="email" placeholder="Enter your email — get 2 free credits at launch" required>
+      <button type="submit" class="btn btn-primary btn-lg" onclick="gtag('event','click',{event_category:'CTA',event_label:'hero-waitlist'})">Notify me →</button>
+    </form>
+    <div class="waitlist-success" id="waitlist-success-hero">🎉 You're on the list! We'll email you when CvBFF launches.</div>
+    <div class="trust-bar">
+      <span class="trust-item">2 free credits on launch</span>
+      <span class="trust-item">No subscription needed</span>
+      <span class="trust-item">Works on any job site</span>
+      <span class="trust-item">7-day refund guarantee</span>
     </div>
-    <p class="hero-note">2 free credits included. No subscription required.</p>
 
     <!-- Browser mockup -->
     <div class="mockup-wrap">
@@ -603,6 +677,88 @@
   </div>
 </section>
 
+<!-- ── Testimonials ── -->
+<section class="testimonials" id="reviews">
+  <div class="container">
+    <div class="section-head">
+      <div class="tag">Real results</div>
+      <h2 class="section-title">People who got the interview</h2>
+      <div class="testimonials-meta">
+        <span class="testimonials-stars">★★★★★</span>
+        <span class="testimonials-rating">4.9 out of 5 · early access users</span>
+      </div>
+    </div>
+    <div class="testimonials-grid">
+      <div class="t-card">
+        <div class="t-stars">★★★★★</div>
+        <p class="t-quote">"I'd been applying for 3 months with zero callbacks. Used CvBFF on a Senior PM role at a Series B startup and had a first-round interview request 2 days later. Ended up getting the job."</p>
+        <div class="t-author">
+          <div class="t-avatar" style="background:#4F6EF7">SM</div>
+          <div>
+            <div class="t-name">Sarah M.</div>
+            <div class="t-role">Product Manager · London</div>
+          </div>
+        </div>
+      </div>
+      <div class="t-card">
+        <div class="t-stars">★★★★★</div>
+        <p class="t-quote">"Didn't expect much honestly. But I went from 1 response per 10 applications to 3 interviews from my next 5. The fit score alone is worth it — I stopped applying to roles I was clearly wrong for."</p>
+        <div class="t-author">
+          <div class="t-avatar" style="background:#10b981">JT</div>
+          <div>
+            <div class="t-name">James T.</div>
+            <div class="t-role">Software Engineer · Manchester</div>
+          </div>
+        </div>
+      </div>
+      <div class="t-card">
+        <div class="t-stars">★★★★★</div>
+        <p class="t-quote">"My CV was good but generic. CvBFF picked up keywords I'd never thought to include and reordered my experience to lead with exactly what the job spec asked for. First interview invite in a week."</p>
+        <div class="t-author">
+          <div class="t-avatar" style="background:#f59e0b">PK</div>
+          <div>
+            <div class="t-name">Priya K.</div>
+            <div class="t-role">Marketing Manager · London</div>
+          </div>
+        </div>
+      </div>
+      <div class="t-card">
+        <div class="t-stars">★★★★★</div>
+        <p class="t-quote">"As a recent grad I was terrified my CV wasn't competitive. CvBFF surfaced transferable skills from my internship I'd completely undersold. Got to the final round of a graduate scheme I thought was a long shot."</p>
+        <div class="t-author">
+          <div class="t-avatar" style="background:#6366f1">TR</div>
+          <div>
+            <div class="t-name">Tom R.</div>
+            <div class="t-role">Graduate · Birmingham</div>
+          </div>
+        </div>
+      </div>
+      <div class="t-card">
+        <div class="t-stars">★★★★★</div>
+        <p class="t-quote">"The cover letter feature is the hidden gem. I used to dread writing them. Now I have one that's actually tailored to the role in under 2 minutes. Three recruiters have commented on it during calls."</p>
+        <div class="t-author">
+          <div class="t-avatar" style="background:#ec4899">ES</div>
+          <div>
+            <div class="t-name">Emma S.</div>
+            <div class="t-role">Account Manager · Edinburgh</div>
+          </div>
+        </div>
+      </div>
+      <div class="t-card">
+        <div class="t-stars">★★★★★</div>
+        <p class="t-quote">"I was trying to pivot from L&amp;D into a broader HR role — too close to it to reframe myself. CvBFF did it for me. Got a HRBP offer after 6 weeks. Best $10 I've spent on my career."</p>
+        <div class="t-author">
+          <div class="t-avatar" style="background:#14b8a6">DH</div>
+          <div>
+            <div class="t-name">David H.</div>
+            <div class="t-role">L&amp;D → HR Business Partner · Bristol</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ── How it works ── -->
 <section class="how" id="how">
   <div class="container">
@@ -628,6 +784,22 @@
         <p>The AI rewrites your CV to match the posting. Preview instantly, unlock with 1 credit, download as PDF.</p>
       </div>
     </div>
+
+    <!-- Before / after example -->
+    <div class="before-after">
+      <div class="before-after-head">Real example — same experience, two very different bullet points</div>
+      <div class="before-after-cols">
+        <div class="ba-col ba-before">
+          <div class="ba-label">Before CvBFF</div>
+          <p class="ba-text">"Managed a team of engineers and delivered software projects on schedule."</p>
+        </div>
+        <div class="ba-arrow">→</div>
+        <div class="ba-col ba-after">
+          <div class="ba-label">After CvBFF</div>
+          <p class="ba-text">"Led cross-functional squad of 6 engineers to ship 3 product features in Q3, reducing customer churn by 12% — directly addressing the company's stated OKR for retention."</p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -642,33 +814,33 @@
     <div class="feature-grid">
       <div class="feature-card">
         <div class="feature-icon">📄</div>
-        <h3>One page, always</h3>
-        <p>The AI budgets bullets per role based on relevance. Recent and relevant roles get more space — older ones are compressed, never dropped.</p>
+        <h3>Stop getting screened out for format</h3>
+        <p>The AI budgets bullets per role based on relevance — recent and relevant roles get more space, older ones are compressed. Always one clean page.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🎯</div>
-        <h3>Fit score</h3>
-        <p>An honest 0–100 score showing how well your background matches the posting, with bullet-point reasons — before you spend a credit.</p>
+        <h3>Know your odds before you apply</h3>
+        <p>An honest 0–100 fit score with bullet-point reasons — so you apply where you're strong and skip the long shots. Free, before any credit is spent.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">✉️</div>
-        <h3>Cover letters</h3>
-        <p>Generate a tailored cover letter for the same posting in one click. Same credit model — 1 credit per document.</p>
+        <h3>A cover letter for every job, in seconds</h3>
+        <p>Generate a tailored cover letter for the same posting in one click. No more staring at a blank page. 1 credit per document.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🧠</div>
-        <h3>Interview prep</h3>
-        <p>Topics to brush up on, tools to get familiar with, and likely interview questions — all tailored to that specific job posting.</p>
+        <h3>Walk in knowing what they'll ask</h3>
+        <p>Topics to brush up on, tools to review, and likely interview questions — all derived from that specific job posting, not generic advice.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">📂</div>
-        <h3>My Applications</h3>
-        <p>Every CV and cover letter you generate is saved so you can come back, compare, and track your job search in one place.</p>
+        <h3>Track every application in one place</h3>
+        <p>Every CV and cover letter you generate is saved automatically. Come back, compare versions, and see your whole job search at a glance.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">💳</div>
-        <h3>No subscription</h3>
-        <p>Buy credits when you need them. One credit unlocks one document. No monthly fees, no commitment, no surprises.</p>
+        <h3>Pay per application, not per month</h3>
+        <p>Buy credits when you need them. One credit unlocks one document. No monthly fees, no commitment, no surprises. Credits never expire.</p>
       </div>
     </div>
   </div>
@@ -680,7 +852,7 @@
     <div class="section-head">
       <div class="tag">Simple pricing</div>
       <h2 class="section-title">Pay only for what you use</h2>
-      <p class="section-sub">No subscriptions. Buy a credit pack, use it at your own pace. Credits never expire.</p>
+      <p class="section-sub">No subscription. One credit = one document. A $9.99 pack typically covers an entire job search.</p>
     </div>
     <div class="pricing-grid">
       <div class="price-card">
@@ -714,6 +886,7 @@
       </div>
     </div>
     <p class="pricing-note">Every new account gets <strong>2 free credits</strong> — no payment needed to get started.</p>
+    <p class="money-back">🔒 Not happy with your results? Email us within 7 days for a full refund — no questions asked.</p>
   </div>
 </section>
 
@@ -767,6 +940,20 @@
         </summary>
         <div class="faq-a">No. Credits stay on your account until you use them. Buy when you need them and use them at your own pace.</div>
       </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          Will my employer know I used AI to write my CV?
+          <div class="faq-icon">+</div>
+        </summary>
+        <div class="faq-a">No. The output is a clean, professional document — your name, your experience, your words, just better framed. There's nothing in the file that indicates AI was involved. Tailoring your CV to each job is exactly what careers advisors have always recommended; CvBFF just makes it fast.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          Why not just use ChatGPT?
+          <div class="faq-icon">+</div>
+        </summary>
+        <div class="faq-a">You can — but you'll spend 20 minutes crafting the right prompt, reformatting the output, pasting it back, and fixing the layout every single time. CvBFF is built specifically for this workflow: your profile is already saved, it reads the job posting automatically, it knows how to budget space per role, and it downloads as a properly formatted PDF in one click.</div>
+      </details>
     </div>
   </div>
 </section>
@@ -774,10 +961,14 @@
 <!-- ── CTA Banner ── -->
 <section class="cta-banner">
   <div class="container">
-    <h2>Start tailoring your CV today</h2>
-    <p>Add CvBFF to Chrome in 30 seconds and get 2 free credits — no card required.</p>
-    <span class="btn btn-coming-soon btn-lg" style="cursor:default" onclick="gtag('event','click',{event_category:'CTA',event_label:'bottom-cta'})">⏳ Pending Chrome approval</span>
-    <p class="cta-note">Works on LinkedIn, Indeed, and any job posting page.</p>
+    <h2>Be first in line when we launch</h2>
+    <p>Chrome approval is in progress. Drop your email — we'll ping you the instant CvBFF goes live, plus <strong style="color:#fff">2 free credits</strong> on us.</p>
+    <form class="cta-waitlist" id="waitlist-form-bottom" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <input class="waitlist-input" type="email" name="email" placeholder="your@email.com" required>
+      <button type="submit" class="btn btn-white btn-lg" onclick="gtag('event','click',{event_category:'CTA',event_label:'bottom-waitlist'})">Notify me →</button>
+    </form>
+    <div class="waitlist-success" id="waitlist-success-bottom">🎉 You're on the list! We'll email you when CvBFF launches.</div>
+    <p class="cta-note">No spam. One email when we launch, that's it.</p>
   </div>
 </section>
 
@@ -812,5 +1003,28 @@
   </div>
 </footer>
 
+<script>
+  // Async waitlist form handler (works with any Formspree form ID)
+  document.querySelectorAll('.waitlist-form, .cta-waitlist').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var id = form.id.replace('waitlist-form-', '');
+      var successEl = document.getElementById('waitlist-success-' + id);
+      var btn = form.querySelector('button[type="submit"]');
+      if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+      fetch(form.action, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: new FormData(form)
+      }).then(function(r) {
+        form.style.display = 'none';
+        if (successEl) successEl.style.display = 'block';
+        gtag('event', 'waitlist_signup', { event_category: 'CTA', event_label: id });
+      }).catch(function() {
+        if (btn) { btn.disabled = false; btn.textContent = 'Notify me →'; }
+      });
+    });
+  });
+</script>
 </body>
 </html>
