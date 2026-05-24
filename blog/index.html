@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — CV Tips, Job Search Advice & AI Guides | CvBFF</title>
+  <meta name="description" content="Practical guides on tailoring your CV, avoiding application mistakes, and using AI to land more interviews. Written for job seekers.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://cvbff.com/blog">
+  <meta property="og:title" content="CvBFF Blog — CV Tips & Job Search Guides">
+  <meta property="og:description" content="Practical guides on tailoring your CV, avoiding application mistakes, and using AI to land more interviews.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cvbff.com/blog">
+  <link rel="icon" type="image/svg+xml" href="/logo.svg">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #4F6EF7; --accent-dark: #3B57D9; --accent-soft: #EEF1FE;
+      --ink: #0f0f10; --body: #3a3a3a; --muted: #6b6b6b; --faint: #9a9a9a;
+      --line: #e8e8e8; --bg: #ffffff; --bg-off: #f9f9fb;
+      --radius: 14px; --radius-sm: 8px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
+    }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px; line-height: 1.6; color: var(--body); background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Nav */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-inner {
+      max-width: 1080px; margin: 0 auto; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between; height: 60px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 750; letter-spacing: -0.01em;
+      color: var(--ink); text-decoration: none;
+    }
+    .nav-logo svg { width: 32px; height: 32px; border-radius: 7px; }
+    .nav-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: #fff;
+      font: 600 14px/1 inherit; border-radius: var(--radius-sm);
+      padding: 10px 18px; border: none; cursor: pointer; text-decoration: none;
+      transition: background 0.15s ease;
+    }
+    .nav-cta:hover { background: var(--accent-dark); text-decoration: none; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(180deg, #f5f7ff 0%, #ffffff 100%);
+      padding: 64px 24px 48px; text-align: center;
+    }
+    .hero h1 {
+      font-size: clamp(30px, 5vw, 46px); font-weight: 800; letter-spacing: -0.03em;
+      color: var(--ink); margin-bottom: 14px;
+    }
+    .hero p { font-size: 17px; color: var(--muted); max-width: 50ch; margin: 0 auto; }
+
+    /* Blog grid */
+    .posts { max-width: 1080px; margin: 0 auto; padding: 56px 24px 80px; }
+    .posts-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 28px;
+    }
+    .post-card {
+      background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius);
+      box-shadow: var(--shadow-sm); padding: 28px;
+      display: flex; flex-direction: column; gap: 10px;
+      transition: box-shadow 0.15s ease, transform 0.15s ease;
+    }
+    .post-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,.10); transform: translateY(-2px); }
+    .post-tag {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--accent); background: var(--accent-soft);
+      border-radius: 999px; padding: 3px 10px; width: fit-content;
+    }
+    .post-title {
+      font-size: 18px; font-weight: 700; letter-spacing: -0.01em;
+      color: var(--ink); line-height: 1.3;
+    }
+    .post-title a { color: inherit; }
+    .post-title a:hover { color: var(--accent); text-decoration: none; }
+    .post-excerpt { font-size: 14px; color: var(--muted); line-height: 1.55; flex: 1; }
+    .post-meta { font-size: 12px; color: var(--faint); }
+    .post-read {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 13px; font-weight: 600; color: var(--accent);
+      margin-top: 6px;
+    }
+    .post-read:hover { text-decoration: underline; }
+
+    /* Footer */
+    footer {
+      background: #111; color: rgba(255,255,255,.6);
+      padding: 40px 24px;
+    }
+    .footer-inner {
+      max-width: 1080px; margin: 0 auto;
+      display: flex; flex-wrap: wrap; align-items: center;
+      gap: 20px; justify-content: space-between;
+    }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 6px 20px; list-style: none; }
+    .footer-links a { font-size: 14px; color: rgba(255,255,255,.6); }
+    .footer-links a:hover { color: #fff; text-decoration: none; }
+    .footer-copy { font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+        <rect width="128" height="128" rx="28" fill="#4F6EF7"/>
+        <rect x="38" y="34" width="46" height="58" rx="6" fill="rgba(255,255,255,0.30)"/>
+        <rect x="44" y="40" width="46" height="58" rx="6" fill="#fff"/>
+        <rect x="52" y="54" width="30" height="3.5" rx="1.75" fill="#4F6EF7" opacity="0.25"/>
+        <rect x="52" y="63" width="22" height="3.5" rx="1.75" fill="#4F6EF7" opacity="0.25"/>
+        <rect x="52" y="72" width="26" height="3.5" rx="1.75" fill="#4F6EF7" opacity="0.25"/>
+        <rect x="52" y="81" width="18" height="3.5" rx="1.75" fill="#4F6EF7" opacity="0.25"/>
+        <circle cx="90" cy="40" r="10" fill="#4F6EF7"/>
+        <path d="M90 34 L91.8 38.2 L96 40 L91.8 41.8 L90 46 L88.2 41.8 L84 40 L88.2 38.2 Z" fill="#fff"/>
+      </svg>
+      CvBFF
+    </a>
+    <a href="https://chromewebstore.google.com" class="nav-cta" target="_blank">Add to Chrome — free</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>CV Tips &amp; Job Search Guides</h1>
+  <p>Practical advice for job seekers who want more interviews — written by people who have been there.</p>
+</div>
+
+<div class="posts">
+  <div class="posts-grid">
+
+    <article class="post-card">
+      <span class="post-tag">CV Writing</span>
+      <h2 class="post-title"><a href="/blog/tailor-your-cv-to-a-job-posting">How to Tailor Your CV to a Job Posting (Step-by-Step)</a></h2>
+      <p class="post-excerpt">Sending the same CV everywhere is one of the most common — and costly — job search mistakes. Here's exactly how to customise your CV for each role to dramatically improve your hit rate.</p>
+      <span class="post-meta">May 2026 · 7 min read</span>
+      <a href="/blog/tailor-your-cv-to-a-job-posting" class="post-read">Read article →</a>
+    </article>
+
+    <article class="post-card">
+      <span class="post-tag">Job Search</span>
+      <h2 class="post-title"><a href="/blog/cv-mistakes-costing-you-interviews">5 CV Mistakes That Are Costing You Interviews</a></h2>
+      <p class="post-excerpt">Most rejected CVs share the same handful of problems. If you're applying and not hearing back, there's a good chance one of these is the reason — and all of them are fixable.</p>
+      <span class="post-meta">May 2026 · 6 min read</span>
+      <a href="/blog/cv-mistakes-costing-you-interviews" class="post-read">Read article →</a>
+    </article>
+
+    <article class="post-card">
+      <span class="post-tag">AI Tools</span>
+      <h2 class="post-title"><a href="/blog/ai-cv-tailoring-guide">AI CV Tailoring: The Smart Way to Apply for Jobs in 2026</a></h2>
+      <p class="post-excerpt">AI tools can now read a job posting and rewrite your CV in seconds — but not all of them do it well. Here's what good AI tailoring looks like, what to avoid, and how to use it responsibly.</p>
+      <span class="post-meta">May 2026 · 6 min read</span>
+      <a href="/blog/ai-cv-tailoring-guide" class="post-read">Read article →</a>
+    </article>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <ul class="footer-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/blog">Blog</a></li>
+      <li><a href="/privacy">Privacy Policy</a></li>
+      <li><a href="/terms">Terms of Service</a></li>
+      <li><a href="mailto:support@cvbff.com">support@cvbff.com</a></li>
+    </ul>
+    <p class="footer-copy">© 2026 CvBFF</p>
+  </div>
+</footer>
+
+</body>
+</html>
