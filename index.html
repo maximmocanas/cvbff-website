@@ -250,6 +250,38 @@
     }
     .hero-cta-label strong { color: var(--ink); }
 
+    /* "Try free, no credit card" trust badge above hero CTA */
+    .hero-trust-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #ecfdf5; color: #047857;
+      padding: 7px 14px; border-radius: 999px;
+      font-size: 13px; font-weight: 600;
+      margin: 0 auto 18px;
+      border: 1px solid #a7f3d0;
+    }
+    .hero-trust-badge svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* "Works on" job site strip */
+    .works-on-strip {
+      padding: 32px 0 0;
+      text-align: center;
+    }
+    .works-on-label {
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--faint); margin-bottom: 16px;
+    }
+    .works-on-sites {
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 12px 28px;
+      font-size: 15px; font-weight: 600; color: var(--muted);
+    }
+    .works-on-sites span { display: inline-flex; align-items: center; gap: 6px; }
+    .works-on-sep { color: var(--faint); font-weight: 400; }
+    @media (max-width: 560px) {
+      .works-on-sep { display: none; }
+      .works-on-sites { gap: 8px 18px; font-size: 14px; }
+    }
+
     /* ── Browser mockup ── */
     .mockup-wrap {
       margin: 56px auto 0;
@@ -642,11 +674,32 @@
     <div class="tag">AI-powered CV tailoring</div>
     <h1>Get more interviews, <span>without applying</span> to more jobs</h1>
     <p>CvBFF reads any job posting and rewrites your CV to match it, so your application lands in the "yes" pile, not the reject folder. Fit score, cover letter, and interview prep included.</p>
+    <div class="hero-trust-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      Try free, no credit card, no signup
+    </div>
     <div class="hero-ctas">
       <a href="https://chromewebstore.google.com/detail/cvbff/hecpichmncohajdoblcbafikplambnkn" target="_blank" rel="noopener" class="btn btn-primary btn-lg" onclick="gtag('event','click',{event_category:'CTA',event_label:'hero'})">Add to Chrome, it's free</a>
       <a href="#how" class="btn btn-secondary btn-lg">See how it works</a>
     </div>
     <p class="hero-note">2 free credits included. No subscription required.</p>
+
+    <div class="works-on-strip">
+      <div class="works-on-label">Works on every job site you use</div>
+      <div class="works-on-sites">
+        <span>LinkedIn</span>
+        <span class="works-on-sep">·</span>
+        <span>Indeed</span>
+        <span class="works-on-sep">·</span>
+        <span>Glassdoor</span>
+        <span class="works-on-sep">·</span>
+        <span>Wellfound</span>
+        <span class="works-on-sep">·</span>
+        <span>Otta</span>
+        <span class="works-on-sep">·</span>
+        <span>any careers page</span>
+      </div>
+    </div>
 
     <!-- Browser mockup -->
     <div class="mockup-wrap">
