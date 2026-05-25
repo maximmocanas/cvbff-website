@@ -74,6 +74,14 @@
     .nav-logo svg { width: 32px; height: 32px; border-radius: 7px; }
     .nav-back { font-size: 14px; font-weight: 500; color: var(--muted); }
     .nav-back:hover { color: var(--ink); text-decoration: none; }
+    .nav-cta {
+      display: inline-flex; align-items: center;
+      background: var(--accent); color: #fff;
+      font: 600 13px/1 inherit; border-radius: 6px;
+      padding: 7px 14px; text-decoration: none;
+      transition: background 0.15s ease;
+    }
+    .nav-cta:hover { background: var(--accent-dark); text-decoration: none; }
     .article-wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 80px; }
     .article-tag {
       display: inline-block; font-size: 11px; font-weight: 700;
@@ -175,7 +183,10 @@
       </svg>
       CvBFF
     </a>
-    <a href="/blog" class="nav-back">← All articles</a>
+    <div style="display:flex;align-items:center;gap:16px">
+      <a href="/blog" class="nav-back">← All articles</a>
+      <a href="https://chromewebstore.google.com/detail/cvbff/hecpichmncohajdoblcbafikplambnkn" target="_blank" rel="noopener" class="nav-cta" onclick="gtag('event','click',{event_category:'CTA',event_label:'blog-article-nav'})">Add to Chrome</a>
+    </div>
   </div>
 </nav>
 
