@@ -23,8 +23,9 @@
     .icon {
       width: 64px; height: 64px; border-radius: 50%;
       background: #EEF1FE; display: flex; align-items: center;
-      justify-content: center; margin: 0 auto 24px; font-size: 30px;
+      justify-content: center; margin: 0 auto 24px;
     }
+    .icon svg { width: 30px; height: 30px; color: #4F6EF7; stroke-width: 1.75; }
     h1 { font-size: 22px; font-weight: 750; letter-spacing: -0.01em; margin-bottom: 10px; }
     p { font-size: 15px; color: #6b6b6b; line-height: 1.6; margin-bottom: 28px; }
     .btn {
@@ -47,11 +48,13 @@
 </head>
 <body>
   <div class="card">
-    <div class="icon">✅</div>
+    <div class="icon"><i data-lucide="check-circle"></i></div>
     <h1>Payment successful!</h1>
     <p>Your credits have been added to your account. Close this tab and return to the extension to start generating tailored CVs.</p>
     <a href="/" class="btn">Back to cvbff.com</a>
     <p class="note">Credits appear instantly, no need to sign out.</p>
   </div>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
 </body>
 </html>

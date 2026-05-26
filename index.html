@@ -406,8 +406,9 @@
       width: 44px; height: 44px; border-radius: 10px;
       background: var(--accent-soft);
       display: flex; align-items: center; justify-content: center;
-      font-size: 22px; margin-bottom: 16px;
+      margin-bottom: 16px;
     }
+    .feature-icon svg { width: 22px; height: 22px; color: var(--accent); stroke-width: 1.75; }
     .feature-card h3 {
       font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 8px;
     }
@@ -733,7 +734,7 @@
         </div>
         <div class="mockup-popup">
           <div class="mockup-popup-header">CvBFF</div>
-          <div class="mockup-btn">✨ Generate tailored CV</div>
+          <div class="mockup-btn"><i data-lucide="sparkles"></i> Generate tailored CV</div>
           <div class="mockup-score">
             <div class="mockup-score-num">87</div>
             <div class="mockup-score-label">Fit score</div>
@@ -880,32 +881,32 @@
     </div>
     <div class="feature-grid">
       <div class="feature-card">
-        <div class="feature-icon">📄</div>
+        <div class="feature-icon"><i data-lucide="file-text"></i></div>
         <h3>Stop getting screened out for format</h3>
         <p>The AI budgets bullets per role based on relevance, recent and relevant roles get more space, older ones are compressed. Always one clean page.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🎯</div>
+        <div class="feature-icon"><i data-lucide="target"></i></div>
         <h3>Know your odds before you apply</h3>
         <p>An honest 0–100 fit score with bullet-point reasons, so you apply where you're strong and skip the long shots. Free, before any credit is spent.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">✉️</div>
+        <div class="feature-icon"><i data-lucide="mail"></i></div>
         <h3>A cover letter for every job, in seconds</h3>
         <p>Generate a tailored cover letter for the same posting in one click. No more staring at a blank page. 1 credit per document.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🧠</div>
+        <div class="feature-icon"><i data-lucide="brain"></i></div>
         <h3>Walk in knowing what they'll ask</h3>
         <p>Topics to brush up on, tools to review, and likely interview questions, all derived from that specific job posting, not generic advice.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">📂</div>
+        <div class="feature-icon"><i data-lucide="folder-open"></i></div>
         <h3>Track every application in one place</h3>
         <p>Every CV and cover letter you generate is saved automatically. Come back, compare versions, and see your whole job search at a glance.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">💳</div>
+        <div class="feature-icon"><i data-lucide="credit-card"></i></div>
         <h3>Pay per application, not per month</h3>
         <p>Buy credits when you need them. One credit unlocks one document. No monthly fees, no commitment, no surprises. Credits never expire.</p>
       </div>
@@ -1065,5 +1066,7 @@
   </div>
 </footer>
 
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
 </body>
 </html>

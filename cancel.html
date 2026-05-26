@@ -23,8 +23,9 @@
     .icon {
       width: 64px; height: 64px; border-radius: 50%;
       background: #f4f3ef; display: flex; align-items: center;
-      justify-content: center; margin: 0 auto 24px; font-size: 30px;
+      justify-content: center; margin: 0 auto 24px;
     }
+    .icon svg { width: 30px; height: 30px; color: #6b6b6b; stroke-width: 1.75; }
     h1 { font-size: 22px; font-weight: 750; letter-spacing: -0.01em; margin-bottom: 10px; }
     p { font-size: 15px; color: #6b6b6b; line-height: 1.6; margin-bottom: 28px; }
     .btn {
@@ -47,11 +48,13 @@
 </head>
 <body>
   <div class="card">
-    <div class="icon">↩️</div>
+    <div class="icon"><i data-lucide="arrow-left"></i></div>
     <h1>Payment cancelled</h1>
     <p>No charge was made. Close this tab and return to the extension whenever you're ready to try again.</p>
     <a href="/#pricing" class="btn">View credit packs</a>
     <p class="note">Your existing credits are untouched.</p>
   </div>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
 </body>
 </html>
