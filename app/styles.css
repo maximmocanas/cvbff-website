@@ -811,7 +811,7 @@ button { font: inherit; cursor: pointer; }
   font-size: 12px; color: var(--accent); text-decoration: none;
 }
 .result-job-link:hover { text-decoration: underline; }
-.result-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.result-controls { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
 .style-bar {
   background: var(--card); border-bottom: 1px solid var(--line);
   padding: 8px 20px;

@@ -1044,7 +1044,7 @@ async function handleSave(btn) {
       b.classList.add("btn-saved");
     });
   } catch (err) {
-    btn.disabled = false; btn.textContent = "Save to my applications";
+    btn.disabled = false; btn.textContent = "Save";
     showToast("Couldn't save: " + err.message, true);
   }
 }
@@ -1059,7 +1059,7 @@ async function handleUnsave(btn) {
       const b = document.getElementById(id);
       if (!b) return;
       b.disabled = false;
-      b.textContent = "Save to my applications";
+      b.textContent = "Save";
       b.classList.remove("btn-saved");
     });
   } catch (err) {
@@ -1078,7 +1078,7 @@ function resetSaveButtons() {
     const b = document.getElementById(id);
     if (!b) return;
     b.disabled = true;
-    b.textContent = "Save to my applications";
+    b.textContent = "Save";
     b.classList.remove("btn-saved");
   });
 }
