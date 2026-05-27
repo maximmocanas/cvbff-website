@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CvBFF — Generate CV</title>
+  <link rel="stylesheet" href="/app/styles.css">
+  <link rel="stylesheet" href="/app/cv.css">
+</head>
+<body>
+  <div class="gen-page-wrap">
+    <div class="gen-header-row">
+      <header class="masthead" style="margin:0">
+        <h1 style="margin:0">Generate CV</h1>
+        <p style="margin:4px 0 0">Paste a job description or enter the URL and we'll tailor your CV to it.</p>
+      </header>
+      <div class="gen-credit-row">
+        <span id="creditCount" style="font-size:13px; font-weight:600; color:var(--accent-ink)">…</span>
+        <button class="btn-refresh-credits" id="refreshCredits" title="Refresh credit balance">↻</button>
+        <button class="btn-buy-credits" id="buyCreditsBtn">Buy credits</button>
+      </div>
+    </div>
+
+    <!-- Shop view (hidden by default) -->
+    <div id="shopView" style="display:none">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <span style="font-size:15px; font-weight:700;">Buy credits</span>
+        <button class="btn" id="shopClose">✕ Close</button>
+      </div>
+      <p class="shop-title">Choose a pack</p>
+      <div class="pack-list">
+        <button class="pack-card" data-package="pack_10">
+          <span class="pack-credits">10 credits</span>
+          <span class="pack-price">$5</span>
+          <span class="pack-note">$0.50 per CV — pay as you go</span>
+        </button>
+        <button class="pack-card pack-card-popular" data-package="pack_30">
+          <span class="pack-badge">Most popular</span>
+          <span class="pack-credits">30 credits</span>
+          <span class="pack-price">$12</span>
+          <span class="pack-note">$0.40 per CV — save 20%</span>
+        </button>
+        <button class="pack-card" data-package="pack_65">
+          <span class="pack-credits">65 credits</span>
+          <span class="pack-price">$22</span>
+          <span class="pack-note">$0.34 per CV — save 32%</span>
+        </button>
+        <button class="pack-card" data-package="pack_100">
+          <span class="pack-credits">100 credits</span>
+          <span class="pack-price">$30</span>
+          <span class="pack-note">$0.30 per CV — save 40%</span>
+        </button>
+      </div>
+      <p class="auth-error" id="shopError" style="display:none; margin-top:10px;"></p>
+    </div>
+
+    <!-- Main input area -->
+    <div id="mainInput">
+      <!-- Job text textarea -->
+      <div class="section job-input-section" style="padding:22px 24px; margin-bottom:0; border-bottom-left-radius:0; border-bottom-right-radius:0; border-bottom:none;">
+        <h2 style="margin:0 0 6px;">Job posting</h2>
+        <p class="hint" style="margin:0 0 14px;">Paste the job description below, or enter a URL and click Fetch.</p>
+        <textarea id="jobText" class="job-textarea" placeholder="Paste the job description here…" maxlength="50000"></textarea>
+        <p class="char-counter" id="charCounter">0 / 50,000 characters</p>
+      </div>
+
+      <!-- URL fetch row -->
+      <div class="section" style="padding:14px 24px; border-top-left-radius:0; border-top-right-radius:0; border-top:none; margin-bottom:0;">
+        <div class="job-url-row">
+          <input type="url" id="jobUrl" class="job-url-input" placeholder="Or paste a job posting URL to fetch the text automatically…">
+          <button class="btn" id="fetchUrl">Fetch text</button>
+          <button class="btn" id="clearJob" style="display:none">Clear</button>
+        </div>
+        <p id="fetchStatus" style="font-size:12px; color:var(--muted); margin:8px 0 0; display:none;"></p>
+      </div>
+
+      <!-- Pre-gen panel -->
+      <div class="pre-gen-panel" id="preGenPanel" style="display:none">
+        <div class="pre-gen-left">
+          <div class="pre-gen-field">
+            <span class="style-label">Template</span>
+            <div class="tpl-swatches" id="cvTplSwatches">
+              <button class="tpl-swatch tpl-swatch-active" data-tpl="classic">Classic</button>
+              <button class="tpl-swatch" data-tpl="executive">Executive</button>
+              <button class="tpl-swatch" data-tpl="minimal">Minimal</button>
+              <button class="tpl-swatch" data-tpl="thick-underline">Thick Underline</button>
+            </div>
+          </div>
+          <div class="pre-gen-field">
+            <span class="style-label">Colour</span>
+            <div id="themeSwatches" class="theme-swatches"></div>
+          </div>
+          <div class="pre-gen-field">
+            <span class="style-label">Mode</span>
+            <div class="tpl-swatches" id="modeSwatches">
+              <button class="tpl-swatch tpl-swatch-active" data-mode="tailoring">Tailoring</button>
+              <button class="tpl-swatch" data-mode="modeling">Modeling</button>
+            </div>
+          </div>
+          <button id="genBtn" class="btn btn-accent pre-gen-btn">Generate CV</button>
+        </div>
+        <div class="mini-preview-inner">
+          <div id="cvMiniPage" class="cv-page"></div>
+        </div>
+      </div>
+
+      <p id="noProfileWarn" style="display:none; color:#b45309; font-size:13px; margin-top:12px;">
+        ⚠️ Add your work experience in <a href="/app/settings.html">Settings</a> before generating.
+      </p>
+    </div>
+  </div>
+
+  <script src="/app/config.js"></script>
+  <script src="/app/app.js"></script>
+  <script src="/app/supabase-api.js"></script>
+  <script src="/app/cv-render.js"></script>
+  <script>
+    const THEMES = [
+      { name: "blue",    accent: "#4F6EF7" },
+      { name: "slate",   accent: "#475569" },
+      { name: "emerald", accent: "#059669" },
+      { name: "rose",    accent: "#e11d48" },
+      { name: "amber",   accent: "#b45309" },
+      { name: "violet",  accent: "#7c3aed" },
+    ];
+
+    let selectedTpl   = "classic";
+    let selectedTheme = THEMES[0];
+    let selectedMode  = "tailoring";
+
+    // ---------- Theme swatches ----------
+    function initThemeSwatches() {
+      const container = document.getElementById("themeSwatches");
+      THEMES.forEach((t, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "theme-swatch" + (i === 0 ? " theme-swatch-active" : "");
+        btn.style.background = t.accent;
+        btn.title = t.name;
+        btn.addEventListener("click", () => {
+          selectedTheme = t;
+          container.querySelectorAll(".theme-swatch").forEach(b => b.classList.remove("theme-swatch-active"));
+          btn.classList.add("theme-swatch-active");
+          updateMiniPreview();
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    // ---------- Template swatches ----------
+    document.getElementById("cvTplSwatches").addEventListener("click", (e) => {
+      const btn = e.target.closest(".tpl-swatch");
+      if (!btn) return;
+      selectedTpl = btn.dataset.tpl;
+      document.querySelectorAll("#cvTplSwatches .tpl-swatch").forEach(b => b.classList.remove("tpl-swatch-active"));
+      btn.classList.add("tpl-swatch-active");
+      updateMiniPreview();
+    });
+
+    // ---------- Mode swatches ----------
+    document.getElementById("modeSwatches").addEventListener("click", (e) => {
+      const btn = e.target.closest(".tpl-swatch");
+      if (!btn) return;
+      selectedMode = btn.dataset.mode;
+      document.querySelectorAll("#modeSwatches .tpl-swatch").forEach(b => b.classList.remove("tpl-swatch-active"));
+      btn.classList.add("tpl-swatch-active");
+    });
+
+    // ---------- Mini preview ----------
+    function updateMiniPreview() {
+      const page = document.getElementById("cvMiniPage");
+      if (!page) return;
+      try {
+        renderCvPage(page, _dummyPreviewData(), selectedTpl, selectedTheme.accent);
+        const scale = 180 / 794;
+        page.style.transform = `scale(${scale})`;
+        page.style.transformOrigin = "top left";
+        page.style.width = "794px";
+        page.parentElement.style.height = Math.round(1123 * scale) + "px";
+        page.parentElement.style.overflow = "hidden";
+      } catch { /* cv-render not fully loaded */ }
+    }
+
+    function _dummyPreviewData() {
+      return {
+        firstName: "Jane", lastName: "Doe",
+        location: "London, UK", email: "jane@example.com",
+        phone: "+44 7700 000000", linkedin: "linkedin.com/in/janedoe",
+        photo: { include: false },
+        summary: "Experienced marketing professional with a proven track record of driving growth through data-driven campaigns and cross-functional collaboration.",
+        skills: ["Marketing Strategy", "Data Analysis", "SEO", "Project Management", "Stakeholder Management"],
+        roles: [{ title: "Senior Marketing Manager", company: "Acme Corp", start: "2020", end: "Present", bullets: ["Led a team of 6 to deliver a 40% increase in organic traffic through targeted content strategy.", "Managed £500K campaign budget across digital and offline channels."] }],
+        education: [{ degree: "BSc Marketing", institution: "University of London", start: "2014", end: "2018" }],
+        languages: [], certifications: [], awards: [], portfolio: [],
+      };
+    }
+
+    // ---------- Char counter ----------
+    const jobTextEl = document.getElementById("jobText");
+    const charCounter = document.getElementById("charCounter");
+    jobTextEl.addEventListener("input", () => {
+      const len = jobTextEl.value.length;
+      charCounter.textContent = `${len.toLocaleString()} / 50,000 characters`;
+      charCounter.style.color = len >= 48000 ? "var(--danger)" : len >= 40000 ? "#b45309" : "var(--muted)";
+      if (len > 0) showPreGenPanel();
+      else hidePreGenPanel();
+    });
+
+    function showPreGenPanel() {
+      document.getElementById("preGenPanel").style.display = "";
+      document.getElementById("clearJob").style.display = "";
+    }
+    function hidePreGenPanel() {
+      document.getElementById("preGenPanel").style.display = "none";
+      document.getElementById("clearJob").style.display = "none";
+    }
+
+    // ---------- Clear ----------
+    document.getElementById("clearJob").addEventListener("click", () => {
+      jobTextEl.value = "";
+      document.getElementById("jobUrl").value = "";
+      charCounter.textContent = "0 / 50,000 characters";
+      charCounter.style.color = "";
+      document.getElementById("fetchStatus").style.display = "none";
+      hidePreGenPanel();
+    });
+
+    // ---------- URL fetch ----------
+    document.getElementById("fetchUrl").addEventListener("click", async () => {
+      const url = document.getElementById("jobUrl").value.trim();
+      const statusEl = document.getElementById("fetchStatus");
+      const btn = document.getElementById("fetchUrl");
+      if (!url) return;
+      if (!/^https?:\/\//i.test(url)) {
+        statusEl.textContent = "Please enter a full URL starting with http:// or https://";
+        statusEl.style.color = "var(--danger)";
+        statusEl.style.display = "";
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = "Fetching…";
+      statusEl.style.display = "none";
+      try {
+        const session = await ensureSession();
+        const res = await fetch(`${API_URL}/scrape`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ url }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error?.message || "Could not fetch that URL.");
+        const text = (data.text || "").trim();
+        if (!text) throw new Error("No readable text found at that URL.");
+        jobTextEl.value = text;
+        jobTextEl.dispatchEvent(new Event("input"));
+        statusEl.textContent = `Fetched ${text.length.toLocaleString()} characters.`;
+        statusEl.style.color = "var(--muted)";
+        statusEl.style.display = "";
+      } catch (err) {
+        statusEl.textContent = err.message;
+        statusEl.style.color = "var(--danger)";
+        statusEl.style.display = "";
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Fetch text";
+      }
+    });
+
+    // ---------- Generate ----------
+    document.getElementById("genBtn").addEventListener("click", async () => {
+      const text = jobTextEl.value.trim();
+      if (!text) return;
+      const url = document.getElementById("jobUrl").value.trim();
+      await store.set({
+        pendingJob: {
+          text,
+          url: url || "",
+          at: Date.now(),
+          template: selectedTpl,
+          theme:    selectedTheme.accent,
+          mode:     selectedMode,
+        }
+      });
+      location.href = "/app/result.html";
+    });
+
+    // ---------- Credits ----------
+    async function loadCredits() {
+      try {
+        const credits = await getCredits();
+        const el = document.getElementById("creditCount");
+        if (el) {
+          el.textContent = `${credits} credit${credits !== 1 ? "s" : ""}`;
+          el.style.color = credits === 0 ? "var(--danger)" : credits <= 2 ? "#b45309" : "var(--accent-ink)";
+        }
+      } catch { /* non-critical */ }
+    }
+
+    document.getElementById("refreshCredits").addEventListener("click", async () => {
+      const btn = document.getElementById("refreshCredits");
+      btn.disabled = true;
+      await loadCredits();
+      btn.disabled = false;
+    });
+
+    // ---------- Shop ----------
+    function _shopSetVisible(v) {
+      document.getElementById("shopView").style.display   = v ? "" : "none";
+      document.getElementById("mainInput").style.display  = v ? "none" : "";
+    }
+    document.getElementById("buyCreditsBtn").addEventListener("click", () => {
+      document.getElementById("shopError").style.display = "none";
+      _shopSetVisible(true);
+    });
+    document.getElementById("shopClose").addEventListener("click", () => _shopSetVisible(false));
+
+    document.querySelectorAll(".pack-card").forEach(card => {
+      card.addEventListener("click", async () => {
+        const packageId = card.dataset.package;
+        const shopError = document.getElementById("shopError");
+        const priceEl   = card.querySelector(".pack-price");
+        shopError.style.display = "none";
+        document.querySelectorAll(".pack-card").forEach(c => { c.disabled = true; });
+        const origPrice = priceEl.textContent;
+        priceEl.textContent = "Opening…";
+        try {
+          const url = await createCheckoutSession(packageId);
+          window.open(url, "_blank");
+        } catch (err) {
+          shopError.textContent = err.message || "Could not start checkout — try again.";
+          shopError.style.display = "";
+          priceEl.textContent = origPrice;
+        } finally {
+          document.querySelectorAll(".pack-card").forEach(c => { c.disabled = false; });
+        }
+      });
+    });
+
+    // ---------- Init ----------
+    (async () => {
+      const user = await authGuard();
+      if (!user) return;
+      renderNav("generate");
+      initThemeSwatches();
+      updateMiniPreview();
+      await loadCredits();
+
+      // Profile health check.
+      try {
+        const { profile } = await store.get("profile");
+        const hasRoles = (profile?.roles || []).some(r => r.title || r.background);
+        if (!hasRoles) document.getElementById("noProfileWarn").style.display = "";
+      } catch { /* non-critical */ }
+
+      // Load default mode from profile.
+      try {
+        const { profile } = await store.get("profile");
+        if (profile?.mode) {
+          selectedMode = profile.mode;
+          document.querySelectorAll("#modeSwatches .tpl-swatch").forEach(btn => {
+            btn.classList.toggle("tpl-swatch-active", btn.dataset.mode === selectedMode);
+          });
+        }
+      } catch { /* non-critical */ }
+
+      // Restore any pending job text (e.g. if user navigated back).
+      try {
+        const { pendingJob } = await store.get("pendingJob");
+        if (pendingJob?.text && Date.now() - pendingJob.at < 5 * 60 * 1000) {
+          // Only restore if recent (< 5 min) and user hasn't typed anything yet.
+          if (!jobTextEl.value) {
+            jobTextEl.value = pendingJob.text;
+            jobTextEl.dispatchEvent(new Event("input"));
+            if (pendingJob.url) document.getElementById("jobUrl").value = pendingJob.url;
+          }
+        }
+      } catch { /* non-critical */ }
+    })();
+  </script>
+</body>
+</html>

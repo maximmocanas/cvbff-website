@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CvBFF — My Applications</title>
+  <link rel="stylesheet" href="/app/styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="masthead">
+      <h1>My Applications</h1>
+      <p>Your saved CVs and cover letters. Click any card to open the full result instantly.</p>
+    </header>
+
+    <div id="appsStatus" class="apps-status">
+      <div class="spinner"></div>
+      <p id="appsStatusText">Loading your applications…</p>
+    </div>
+
+    <div id="appsEmpty" class="apps-empty" style="display:none">
+      <p>No saved applications yet.<br>Generate a CV and click <strong>Save to my applications</strong>.</p>
+    </div>
+
+    <div id="appsToolbar" class="apps-toolbar" style="display:none">
+      <div class="apps-filters">
+        <button class="filter-pill filter-active" data-filter="all">All</button>
+        <button class="filter-pill" data-filter="applied">Applied</button>
+        <button class="filter-pill" data-filter="interview">Interview</button>
+        <button class="filter-pill" data-filter="offer">Offer</button>
+        <button class="filter-pill" data-filter="rejected">Rejected</button>
+      </div>
+      <select id="appsSortSelect" class="apps-sort-select">
+        <option value="newest">Newest first</option>
+        <option value="score">Best score</option>
+      </select>
+    </div>
+
+    <div id="appsGrid" class="apps-grid" style="display:none"></div>
+  </div>
+
+  <script src="/app/config.js"></script>
+  <script src="/app/app.js"></script>
+  <script src="/app/supabase-api.js"></script>
+  <script src="/app/applications.js"></script>
+</body>
+</html>

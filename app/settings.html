@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CvBFF — Settings</title>
+  <link rel="stylesheet" href="/app/styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="masthead">
+      <h1>Your details</h1>
+      <p>Fill this in once. Everything is stored in your account and used to generate a tailored one-page CV for each job posting you apply for.</p>
+    </header>
+
+    <!-- Profile completion bar -->
+    <div id="completionBar" class="completion-bar">
+      <div class="completion-labels">
+        <span class="completion-title">Profile completeness</span>
+        <span id="completionPct" class="completion-pct">0%</span>
+      </div>
+      <div class="completion-track">
+        <div id="completionFill" class="completion-fill" style="width:0%"></div>
+      </div>
+      <p id="completionHint" class="completion-hint"></p>
+    </div>
+
+    <!-- Getting-started guide -->
+    <div id="gettingStarted" class="getting-started" style="display:none">
+      <p class="gs-title">Welcome to CvBFF — let's get you set up</p>
+      <p class="gs-intro">Fill in your details once and CvBFF uses them to generate a tailored one-page CV for every job you apply for. It takes about 5 minutes.</p>
+      <ol class="gs-steps">
+        <li><strong>Work experience</strong> — add every role and write a detailed description of what you did, the tools you used, and your wins. The more detail, the better the output.</li>
+        <li><strong>Skills bank</strong> — list every real skill and tool you have. Be broad: hard skills (Excel, SQL) and soft skills (stakeholder management).</li>
+        <li><strong>Personal details</strong> — name, email, and location for the CV header.</li>
+        <li>Click <strong>Save details</strong> below when you're done.</li>
+      </ol>
+    </div>
+
+    <!-- Personal -->
+    <section class="section">
+      <h2>Personal</h2>
+      <p class="hint">Appears in the CV header. Not altered by the AI.</p>
+      <div class="grid">
+        <div class="field"><label for="firstName">First name</label><input type="text" id="firstName" placeholder="e.g. Jane"></div>
+        <div class="field"><label for="lastName">Last name</label><input type="text" id="lastName" placeholder="e.g. Doe"></div>
+        <div class="field"><label for="location">Location</label><input type="text" id="location" placeholder="e.g. City, Country"></div>
+        <div class="field"><label for="phone">Phone</label><input type="tel" id="phone" placeholder="e.g. +00 000 000 000"></div>
+        <div class="field"><label for="email">Email</label><input type="email" id="email" placeholder="you@email.com"></div>
+        <div class="field"><label for="linkedin">LinkedIn</label><input type="text" id="linkedin" placeholder="linkedin.com/in/yourname"></div>
+      </div>
+    </section>
+
+    <!-- Photo -->
+    <section class="section">
+      <h2>Photo</h2>
+      <p class="hint">Optional — common in many countries. Turn it off for the leanest ATS upload.</p>
+      <div class="photo-row">
+        <div id="photoPreview" class="photo-preview">＋</div>
+        <div class="photo-actions">
+          <input type="file" id="photoInput" accept="image/*" style="display:none">
+          <button type="button" class="btn" id="photoPick">Upload photo</button>
+          <button type="button" class="btn-del" id="photoRemove" style="display:none">Remove</button>
+          <label class="checkrow"><input type="checkbox" id="photoInclude" checked> Include photo on CV</label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills bank -->
+    <section class="section">
+      <h2>Skills bank</h2>
+      <p class="hint">Click skills to add them, or search and type your own. The AI selects and reorders from this list to match each posting — it never invents skills.</p>
+      <div class="skills-chips" id="skillsChips"></div>
+      <div class="skills-input-row">
+        <input type="text" id="skillsSearch" class="skills-search" placeholder="Search skills or type your own…" autocomplete="off">
+        <button type="button" class="btn" id="addCustomSkillBtn">+ Add</button>
+      </div>
+      <div class="skills-cats" id="skillsCats"></div>
+      <div class="skills-grid" id="skillsGrid"></div>
+      <p class="field-counter" id="skillsCounter">0 / 50 skills</p>
+    </section>
+
+    <!-- Languages -->
+    <section class="section">
+      <h2>Languages</h2>
+      <p class="hint">Add as many as you need.</p>
+      <div id="languages"></div>
+      <button type="button" class="btn-add" id="addLanguage">＋ Add language</button>
+    </section>
+
+    <!-- Education -->
+    <section class="section">
+      <h2>Education</h2>
+      <p class="hint">Add as many as you need.</p>
+      <div id="education"></div>
+      <button type="button" class="btn-add" id="addEducation">＋ Add education</button>
+    </section>
+
+    <!-- Certifications -->
+    <section class="section">
+      <h2>Certifications</h2>
+      <p class="hint">Licences, certifications, and accreditations.</p>
+      <div id="certifications"></div>
+      <button type="button" class="btn-add" id="addCert">＋ Add certification</button>
+    </section>
+
+    <!-- Awards -->
+    <section class="section">
+      <h2>Awards &amp; Achievements</h2>
+      <p class="hint">Notable awards, prizes, or recognitions.</p>
+      <div id="awards"></div>
+      <button type="button" class="btn-add" id="addAward">＋ Add award</button>
+    </section>
+
+    <!-- Portfolio -->
+    <section class="section">
+      <h2>Portfolio &amp; links</h2>
+      <p class="hint">GitHub, personal site, Dribbble, etc.</p>
+      <div id="portfolio"></div>
+      <button type="button" class="btn-add" id="addPortfolio">＋ Add link</button>
+    </section>
+
+    <!-- Work experience -->
+    <section class="section">
+      <h2>Work experience</h2>
+      <p class="hint">For each role, describe what you actually did, the tools you used, and your wins. The AI turns this into tailored bullets matched to each posting.</p>
+      <div id="roles"></div>
+      <button type="button" class="btn-add" id="addRole">＋ Add role</button>
+    </section>
+
+    <!-- Generation mode -->
+    <section class="section">
+      <h2>Generation mode</h2>
+      <p class="hint">How aggressively the AI works your experience against the posting. You can switch per generation on the result page too.</p>
+      <div class="field full">
+        <label for="mode">Default mode</label>
+        <select id="mode">
+          <option value="tailoring">Tailoring — faithful: re-emphasises and reorders your experience, matched to the posting</option>
+          <option value="modeling">Modeling — aggressive: hunts your background for evidence of every job requirement and flags gaps</option>
+        </select>
+      </div>
+    </section>
+
+    <div class="savebar">
+      <button type="button" class="btn-accent" id="save">Save details</button>
+      <span class="savestatus" id="status">Saved ✓</span>
+    </div>
+
+    <!-- Danger zone -->
+    <section class="section" style="margin-top:32px; border-color:#f0d9d6;">
+      <h2 style="color:#a8392b;">Danger zone</h2>
+      <p class="hint">Permanently deletes your account, profile, and all saved applications. This cannot be undone.</p>
+      <button type="button" class="btn-del" id="deleteAccount" style="margin-top:12px;">Delete my account</button>
+      <p id="deleteStatus" style="display:none; margin-top:10px; font-size:13px; color:#a8392b;"></p>
+    </section>
+  </div>
+
+  <script src="/app/config.js"></script>
+  <script src="/app/app.js"></script>
+  <script src="/app/supabase-api.js"></script>
+  <script src="/app/skills-data.js"></script>
+  <script src="/app/settings.js"></script>
+</body>
+</html>

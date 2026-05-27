@@ -1,0 +1,454 @@
+/* ---------- Result page chrome (screen only) ---------- */
+.result-shell { min-height: 100vh; }
+.result-bar {
+  position: sticky; top: 0; z-index: 5;
+  background: rgba(250,249,246,0.92); backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+.result-bar-inner {
+  max-width: 920px; margin: 0 auto; padding: 14px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.result-bar-left { display: flex; align-items: center; gap: 14px; }
+.result-job-link {
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  text-decoration: none; white-space: nowrap;
+}
+.result-job-link:hover { text-decoration: underline; }
+.result-controls { display: flex; align-items: center; gap: 12px; }
+.result-controls .btn { white-space: nowrap; }
+.credit-pill {
+  font-size: 11px; font-weight: 700; white-space: nowrap;
+  color: var(--accent-ink); background: var(--accent-soft);
+  border-radius: 999px; padding: 3px 9px;
+}
+.credit-pill.credit-pill-low   { color: #a16207; background: #fef9c3; }
+.credit-pill.credit-pill-empty { color: #991b1b; background: #fee2e2; }
+.mode-select {
+  font: inherit; font-size: 13px; font-weight: 600; color: var(--ink);
+  background: #fff; border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+.gaps-box {
+  max-width: 920px; margin: 0 auto 4px; padding: 12px 18px;
+  background: #fdf6e3; border: 1px solid #e8dcc0; border-radius: var(--radius-sm);
+  font-size: 12.5px; color: #6b5a2e; line-height: 1.5;
+}
+.gaps-box .gaps-head { margin-bottom: 8px; }
+.gaps-box .gaps-tip { color: #8a7a4e; }
+.gaps-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.gap-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff; border: 1px solid #e3d6b4; border-radius: 999px;
+  padding: 3px 4px 3px 12px;
+}
+.gap-label { color: #5b4d28; font-weight: 600; }
+.gap-add {
+  border: none; background: #efe4c4; color: #6b5a2e; font-weight: 700; font-size: 11.5px;
+  border-radius: 999px; padding: 4px 11px; cursor: pointer;
+}
+.gap-add:hover { background: #e6d6a8; }
+.gap-add:disabled { opacity: 0.7; cursor: default; }
+.fit-note { font-size: 12px; color: var(--muted); }
+.fit-note.warn { color: var(--danger); font-weight: 600; }
+
+/* ---------- Style bar (template + color picker) ---------- */
+.style-bar {
+  position: sticky; top: 57px; z-index: 4;
+  background: rgba(250,249,246,0.95); backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+.style-bar-inner {
+  max-width: 920px; margin: 0 auto; padding: 7px 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.style-label {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .07em; white-space: nowrap;
+}
+.style-select {
+  font: inherit; font-size: 12px; font-weight: 600; color: var(--ink);
+  background: #fff; border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm); padding: 5px 8px; cursor: pointer;
+}
+.style-sep { width: 1px; height: 16px; background: var(--line-strong); margin: 0 4px; }
+
+/* Template pill swatches */
+.tpl-swatches { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.tpl-swatch {
+  font: inherit; font-size: 11px; font-weight: 600;
+  color: var(--ink); background: #fff;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 999px; padding: 4px 11px;
+  cursor: pointer; white-space: nowrap; line-height: 1;
+  transition: border-color .12s, background .12s, color .12s;
+}
+.tpl-swatch:hover { border-color: var(--accent); color: var(--accent); }
+.tpl-swatch.tpl-swatch-active {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+}
+
+.theme-swatches { display: flex; gap: 6px; align-items: center; }
+.theme-swatch {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid transparent; cursor: pointer;
+  transition: transform .1s ease, border-color .12s ease;
+  flex-shrink: 0;
+}
+.theme-swatch:hover { transform: scale(1.2); }
+.theme-swatch.swatch-active { border-color: var(--ink); }
+
+/* Stage layout: interview panel | CV | fit score panel */
+.cv-stage-inner {
+  display: flex; gap: 28px; align-items: flex-start;
+}
+
+/* Interview prep panel (left of CV) */
+.interview-panel {
+  width: 160px; flex: none;
+  align-self: flex-start;
+  position: sticky; top: 76px;
+  display: flex; flex-direction: column; gap: 16px;
+  padding-top: 28px;
+}
+.ip-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--muted);
+}
+.ip-section { display: flex; flex-direction: column; gap: 5px; }
+.ip-section-head {
+  font-size: 10.5px; font-weight: 700; color: var(--accent-ink);
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
+.ip-bullets {
+  margin: 0; padding: 0 0 0 13px;
+  font-size: 12px; color: var(--ink); line-height: 1.5; list-style: disc;
+}
+.ip-bullets li { margin-bottom: 5px; }
+.fit-panel {
+  width: 160px; flex: none;
+  align-self: flex-start;
+  position: sticky; top: 76px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding-top: 28px;
+}
+.fit-ring-wrap {
+  position: relative; width: 90px; height: 90px; flex: none;
+}
+.fit-ring-svg {
+  width: 90px; height: 90px;
+  transform: rotate(-90deg);
+}
+.fit-ring-track {
+  fill: none; stroke: var(--line-strong); stroke-width: 6;
+}
+.fit-ring-arc {
+  fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round;
+  stroke-dasharray: 207.3; /* 2π×33 */
+  stroke-dashoffset: 207.3;
+  transition: stroke-dashoffset 0.9s cubic-bezier(.4,0,.2,1), stroke 0.4s ease;
+}
+.fit-ring-label {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 19px; font-weight: 800; color: var(--ink);
+}
+.fit-panel-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--muted);
+}
+.fit-panel-bullets {
+  margin: 0; padding: 0 0 0 14px;
+  font-size: 12px; color: var(--ink); line-height: 1.5;
+  list-style: disc;
+}
+.fit-panel-bullets li { margin-bottom: 6px; }
+
+.status { max-width: 920px; margin: 0 auto; padding: 80px 24px; text-align: center; color: var(--muted); }
+.status p { margin-top: 16px; font-size: 14px; }
+.status.error p { color: var(--danger); }
+.spinner {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 3px solid var(--line-strong); border-top-color: var(--accent);
+  margin: 0 auto; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.stage { padding: 28px 24px 60px; display: flex; justify-content: center; }
+
+/* ---------- The CV page: A4 ---------- */
+.cv-page {
+  --cv-accent: var(--accent);
+  width: 210mm;
+  min-height: 297mm;
+  background: #fff;
+  box-shadow: 0 2px 24px rgba(26,26,26,0.12);
+  padding: 16mm 17mm;
+  box-sizing: border-box;
+  color: #1a1a1a;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 10.2pt;
+  line-height: 1.4;
+}
+
+/* Header */
+.cv-head { display: flex; gap: 16px; align-items: flex-start; }
+.cv-head .cv-photo { width: 78px; height: 78px; border-radius: 50%; object-fit: cover; flex: none; border: 1px solid #ccc; }
+.cv-head .cv-id { flex: 1; }
+.cv-name { font-size: 21pt; font-weight: 700; letter-spacing: -0.01em; line-height: 1.05; }
+.cv-title { font-size: 12pt; color: #2c2c2c; margin-top: 2px; font-style: italic; }
+.cv-contact { font-size: 9pt; color: #444; margin-top: 8px; }
+.cv-contact span { white-space: nowrap; }
+.sep { color: #bbb; }
+.cv-contact .sep { color: #aaa; }
+
+.cv-rule { border: none; border-top: 1.2px solid #222; margin: 12px 0 0; }
+
+/* Sections */
+.cv-section { margin-top: 13px; }
+.cv-section > h3 {
+  font-size: 9.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: #111; margin: 0 0 6px; padding-bottom: 3px; border-bottom: 0.6px solid #bbb;
+}
+.cv-summary { margin: 0; text-align: justify; }
+.cv-skills { margin: 0; line-height: 1.5; }
+
+.cv-role { margin-bottom: 9px; }
+.cv-role:last-child { margin-bottom: 0; }
+.cv-role-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.cv-role-title { font-weight: 700; font-size: 10.5pt; }
+.cv-role-company { font-style: italic; }
+.cv-role-dates { font-size: 9pt; color: #555; white-space: nowrap; flex: none; }
+.cv-role ul { margin: 3px 0 0; padding-left: 15px; }
+.cv-role li { margin-bottom: 2px; }
+
+.cv-meta-line { color: #555; font-size: 9pt; }
+.cv-edu { margin-bottom: 5px; }
+.cv-edu .d { font-weight: 700; }
+
+/* ═══════════════════════════════════════════
+   CV TEMPLATE: EXECUTIVE
+   Serif · double rule · centred · formal
+═══════════════════════════════════════════ */
+.cv-tpl-executive .cv-head { flex-direction: column; align-items: center; gap: 4px; }
+.cv-tpl-executive .cv-head .cv-photo { margin-bottom: 6px; }
+.cv-tpl-executive .cv-id { text-align: center; }
+.cv-tpl-executive .cv-name { font-size: 20pt; font-weight: 400; letter-spacing: .04em; }
+.cv-tpl-executive .cv-title { font-size: 10pt; color: #555; font-style: italic; margin-top: 4px; }
+.cv-tpl-executive .cv-contact { text-align: center; }
+.cv-tpl-executive .cv-rule {
+  border-top: 3px double #1a1a1a;
+  border-bottom: 1px solid #1a1a1a;
+  height: 6px; margin: 14px 0 0;
+}
+.cv-tpl-executive .cv-section > h3 {
+  font-size: 8pt; text-transform: uppercase; letter-spacing: .2em;
+  text-align: center; color: #333; font-weight: 400;
+  border-bottom: none; padding-bottom: 0; margin-bottom: 3px;
+}
+.cv-tpl-executive .cv-section-rule {
+  height: 1px; background: #ccc; margin-bottom: 8px;
+}
+.cv-tpl-executive .cv-summary { text-align: center; }
+.cv-tpl-executive .cv-skills { text-align: center; }
+
+/* ═══════════════════════════════════════════
+   CV TEMPLATE: MINIMAL
+   28pt ultra-light name · hairline rule · comma skills
+═══════════════════════════════════════════ */
+.cv-tpl-minimal { font-family: Arial, Helvetica, sans-serif; }
+.cv-tpl-minimal .cv-name { font-size: 28pt; font-weight: 300; letter-spacing: -.025em; color: #111; }
+.cv-tpl-minimal .cv-title { font-size: 10pt; color: #999; margin-top: 2px; font-style: normal; font-weight: 400; }
+.cv-tpl-minimal .cv-contact { color: #bbb; }
+.cv-tpl-minimal .cv-rule { border-top-width: 0.5px; border-top-color: #e0e0e0; margin-top: 14px; }
+.cv-tpl-minimal .cv-section { margin-top: 14px; }
+.cv-tpl-minimal .cv-section > h3 {
+  font-size: 7pt; font-weight: 700; letter-spacing: .18em; color: #bbb;
+  border-bottom: none; padding-bottom: 0; margin-bottom: 5px;
+}
+.cv-tpl-minimal .cv-role-title { font-size: 9.5pt; font-weight: 600; }
+.cv-tpl-minimal .cv-role-company { color: #aaa; font-style: normal; }
+.cv-tpl-minimal .cv-edu .d { font-weight: 500; }
+.cv-tpl-minimal .cv-meta-line { color: #bbb; }
+
+/* ═══════════════════════════════════════════
+   CV TEMPLATE: THICK UNDERLINE
+   3px accent underline on section heading text
+═══════════════════════════════════════════ */
+.cv-tpl-thick-underline { font-family: Arial, Helvetica, sans-serif; }
+.cv-tpl-thick-underline .cv-name { font-size: 21pt; font-weight: 700; }
+.cv-tpl-thick-underline .cv-title { color: #555; font-style: normal; }
+.cv-tpl-thick-underline .cv-rule { display: none; }
+.cv-tpl-thick-underline .cv-section { margin-top: 14px; }
+.cv-tpl-thick-underline .cv-section > h3 {
+  font-size: 9pt; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+  color: #111; display: inline-block;
+  border-bottom: 3px solid var(--cv-accent);
+  padding-bottom: 2px; margin-bottom: 6px;
+}
+.cv-tpl-thick-underline .cv-tu-pill {
+  display: inline-block; font-size: 8pt;
+  background: #f8f9ff; color: #444; padding: 2px 10px;
+  border-radius: 2px; border: 1px solid #e0e4f8; margin: 1px 2px;
+}
+
+/* ---------- Pre-generation panel (template + colour + mini preview) ---------- */
+.pre-gen-panel {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 28px;
+  text-align: left;
+}
+.pre-gen-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 8px;
+}
+.pre-gen-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pre-gen-field .style-label {
+  display: block;
+}
+.pre-gen-field .style-select {
+  width: 160px;
+}
+.pre-gen-field .tpl-swatches {
+  max-width: 160px;
+}
+.pre-gen-swatches {
+  flex-wrap: wrap;
+  max-width: 160px;
+}
+.pre-gen-swatches .theme-swatch {
+  width: 22px;
+  height: 22px;
+}
+.pre-gen-btn {
+  width: 160px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ---------- Mini template preview ---------- */
+.mini-preview-inner {
+  /* A4 at 0.6 scale: 793.7px × 0.6 ≈ 476px, 1122.5px × 0.6 ≈ 674px */
+  width: 476px;
+  height: 674px;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  flex: none;
+  background: #fff;
+}
+.mini-preview-inner .cv-page {
+  zoom: 0.6;
+  box-shadow: none !important;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ---------- Print: only the CV, real text, A4, no chrome ---------- */
+@media print {
+  @page { size: A4; margin: 0; }
+  .no-print { display: none !important; }
+  body { background: #fff; }
+  .stage { padding: 0; }
+  .cv-page { box-shadow: none; width: 210mm; min-height: 297mm; }
+  /* Print only the document the user asked for. */
+  body.print-cv #coverStage { display: none !important; }
+  body.print-cover #stage { display: none !important; }
+  body.print-cover #coverStage { display: block !important; }
+}
+
+/* ---------- Cover letter — Classic ---------- */
+.cover-page {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.55;
+  color: #1f1f1f;
+}
+.cover-page .cl-card {
+  display: flex; align-items: center; gap: 22px;
+  border: 1.5px solid var(--cv-accent); border-radius: 14px;
+  padding: 18px 22px; margin-bottom: 26px;
+}
+.cover-page .cl-photo {
+  width: 96px; height: 96px; border-radius: 50%; object-fit: cover; flex: none;
+}
+.cover-page .cl-id { flex: 1; min-width: 0; }
+.cover-page .cl-name { font-size: 23pt; font-weight: 800; color: var(--cv-accent); line-height: 1.05; }
+.cover-page .cl-role { font-size: 13pt; font-weight: 600; color: var(--cv-accent); margin-top: 2px; }
+.cover-page .cl-contact { font-size: 9.5pt; color: #555; margin-top: 8px; line-height: 1.4; }
+
+.cover-page .cl-salutation { font-size: 13pt; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; }
+.cover-page .cl-body p { margin: 0 0 14px; }
+.cover-page .cl-sign { margin-top: 18px; }
+.cover-page .cl-sign .n { font-weight: 700; color: var(--cv-accent); }
+
+/* ═══════════════════════════════════════════
+   COVER LETTER: MINIMAL LETTERHEAD
+   Ultra-light 24pt name · hairline rule
+═══════════════════════════════════════════ */
+.cv-tpl-cover-minimal-letterhead .cl-card { display: none; }
+.cv-tpl-cover-minimal-letterhead .cl-ml-name {
+  font-size: 24pt; font-weight: 300; letter-spacing: -.02em; color: #111; margin-bottom: 4px;
+}
+.cv-tpl-cover-minimal-letterhead .cl-ml-contact {
+  font-size: 8pt; color: #bbb; line-height: 1.7; margin-bottom: 4px;
+}
+.cv-tpl-cover-minimal-letterhead .cl-ml-rule {
+  border: none; border-top: 0.5px solid #e0e0e0; margin: 10px 0 26px;
+}
+
+/* ═══════════════════════════════════════════
+   COVER LETTER: SPLIT HEADER
+   Name left · contact right · thick accent divider
+═══════════════════════════════════════════ */
+.cv-tpl-cover-split-header .cl-card { display: none; }
+.cv-tpl-cover-split-header .cl-sph-header {
+  display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; gap: 20px;
+}
+.cv-tpl-cover-split-header .cl-sph-name { font-size: 20pt; font-weight: 700; line-height: 1.1; }
+.cv-tpl-cover-split-header .cl-sph-title { font-size: 9.5pt; color: var(--cv-accent); margin-top: 3px; }
+.cv-tpl-cover-split-header .cl-sph-contact { text-align: right; font-size: 8pt; color: #777; line-height: 1.7; }
+.cv-tpl-cover-split-header .cl-sph-divider {
+  border: none; border-bottom: 4px solid var(--cv-accent);
+  border-radius: 2px; margin-bottom: 22px;
+}
+
+/* ═══════════════════════════════════════════
+   COVER LETTER: EXECUTIVE FORMAL
+   Serif · double rule · date block
+═══════════════════════════════════════════ */
+.cv-tpl-cover-executive-formal {
+  font-family: Georgia, "Times New Roman", serif;
+}
+.cv-tpl-cover-executive-formal .cl-card { display: none; }
+.cv-tpl-cover-executive-formal .cl-ef-name {
+  font-size: 13pt; font-weight: 400; letter-spacing: .05em; margin-bottom: 3px;
+}
+.cv-tpl-cover-executive-formal .cl-ef-contact {
+  font-size: 8pt; color: #666; line-height: 1.6; margin-bottom: 14px;
+}
+.cv-tpl-cover-executive-formal .cl-ef-dbl {
+  border-top: 2px solid #333; border-bottom: 1px solid #888; height: 5px; margin-bottom: 16px;
+}
+.cv-tpl-cover-executive-formal .cl-ef-date {
+  font-size: 8.5pt; color: #444; margin-bottom: 14px;
+}
+.cv-tpl-cover-executive-formal .cl-salutation { font-size: 9.5pt; font-weight: 400; }
+.cv-tpl-cover-executive-formal .cl-sign .n { font-weight: 700; font-style: italic; }
+
+/* Editable state for both pages */
+.cv-page[contenteditable="true"],
+.cover-page[contenteditable="true"] { outline: none; cursor: text; }
+.cv-page[contenteditable="true"] { box-shadow: 0 0 0 2px var(--accent-soft), 0 2px 24px rgba(26,26,26,0.12); }
+.cv-page[contenteditable="true"] :hover { background: rgba(29,111,92,0.04); }

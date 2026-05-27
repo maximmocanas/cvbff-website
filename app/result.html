@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CvBFF — Your CV</title>
+  <link rel="stylesheet" href="/app/styles.css">
+  <link rel="stylesheet" href="/app/cv.css">
+</head>
+<body>
+  <div class="result-shell">
+    <div class="result-bar no-print">
+      <div class="result-bar-inner">
+        <div class="result-bar-left">
+          <a class="result-wordmark" href="/app/generate.html">CvBFF</a>
+          <span id="modePill" class="mode-pill" style="display:none"></span>
+          <a id="jobLink" href="#" class="result-job-link" target="_blank" rel="noopener noreferrer" style="display:none">View posting ↗</a>
+        </div>
+        <div class="result-controls">
+          <!-- CV view controls -->
+          <span id="cvControls" style="display:contents">
+            <button class="btn" id="cvEdit" disabled>Edit text</button>
+            <button class="btn" id="cvCopyText" disabled>Copy as text</button>
+            <button class="btn" id="regen" disabled>Regenerate</button>
+            <button class="btn" id="saveApp" disabled>Save to my applications</button>
+            <button class="btn btn-accent" id="download" disabled>Download PDF</button>
+          </span>
+          <!-- Cover-letter view controls -->
+          <span id="coverControls" style="display:none">
+            <button class="btn" id="coverEdit" disabled>Edit text</button>
+            <button class="btn" id="coverCopy" disabled>Copy text</button>
+            <button class="btn" id="coverRegen" disabled>Rewrite</button>
+            <button class="btn" id="saveAppCover" disabled>Save to my applications</button>
+            <button class="btn btn-accent" id="coverDownload" disabled>Download PDF</button>
+          </span>
+          <span id="creditPill" class="credit-pill" style="display:none">
+            <span id="creditPillCount">…</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div id="styleBar" class="style-bar no-print" style="display:none">
+      <div class="style-bar-inner">
+        <span class="style-label">Template</span>
+        <div class="tpl-swatches" id="cvTplSwatches">
+          <button class="tpl-swatch tpl-swatch-active" data-tpl="classic">Classic</button>
+          <button class="tpl-swatch" data-tpl="executive">Executive</button>
+          <button class="tpl-swatch" data-tpl="minimal">Minimal</button>
+          <button class="tpl-swatch" data-tpl="thick-underline">Thick Underline</button>
+        </div>
+        <div class="tpl-swatches" id="coverTplSwatches" style="display:none">
+          <button class="tpl-swatch tpl-swatch-active" data-tpl="classic">Classic</button>
+          <button class="tpl-swatch" data-tpl="minimal-letterhead">Minimal</button>
+          <button class="tpl-swatch" data-tpl="split-header">Split Header</button>
+          <button class="tpl-swatch" data-tpl="executive-formal">Executive</button>
+        </div>
+        <div class="style-sep"></div>
+        <div id="themeSwatches" class="theme-swatches"></div>
+      </div>
+    </div>
+
+    <div id="tabBar" class="tab-bar no-print" style="display:none">
+      <button class="tab-btn tab-active" id="tabCv">
+        <span class="tab-icon tab-check" id="tabCvIcon">✓</span>CV
+      </button>
+      <button class="tab-btn" id="tabCover">
+        <span class="tab-icon tab-cross" id="tabCoverIcon">✗</span>Cover letter
+      </button>
+    </div>
+
+    <div id="status" class="status no-print">
+      <div id="cvGenHeader" class="gen-header" style="display:none">
+        <div class="spinner"></div>
+        <p class="gen-notice">Generating your CV — this can take up to a minute.<br>Please don't close or reload this tab.</p>
+      </div>
+      <div id="cvMilestones" style="display:none"></div>
+      <p id="statusText"></p>
+
+      <!-- Pre-generation panel: template picker + colour + generate button + mini-preview -->
+      <div id="cvPreGenPanel" class="pre-gen-panel" style="display:none">
+        <div class="pre-gen-left">
+          <div class="pre-gen-field">
+            <span class="style-label">Template</span>
+            <div class="tpl-swatches" id="cvTplSwatchesInline">
+              <button class="tpl-swatch tpl-swatch-active" data-tpl="classic">Classic</button>
+              <button class="tpl-swatch" data-tpl="executive">Executive</button>
+              <button class="tpl-swatch" data-tpl="minimal">Minimal</button>
+              <button class="tpl-swatch" data-tpl="thick-underline">Thick Underline</button>
+            </div>
+          </div>
+          <div class="pre-gen-field">
+            <span class="style-label">Colour</span>
+            <div id="cvThemeSwatchesInline" class="theme-swatches pre-gen-swatches"></div>
+          </div>
+          <div class="pre-gen-field">
+            <span class="style-label">Mode</span>
+            <div class="tpl-swatches" id="modeSwatches">
+              <button class="tpl-swatch tpl-swatch-active" data-mode="tailoring">Tailoring</button>
+              <button class="tpl-swatch" data-mode="modeling">Modeling</button>
+            </div>
+          </div>
+          <button id="genTrigger" class="btn btn-accent pre-gen-btn" style="display:none">Generate CV</button>
+        </div>
+        <div class="mini-preview-inner">
+          <div id="cvMiniPage" class="cv-page"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="gapsBox" class="gaps-box no-print" style="display:none"></div>
+
+    <div id="stage" class="stage" style="display:none">
+      <div class="cv-stage-inner">
+
+        <!-- Interview prep panel — left of CV -->
+        <div id="interviewPanel" class="interview-panel no-print" style="display:none">
+          <div class="ip-title">Interview prep</div>
+
+          <div class="ip-section" id="ipBrushSection">
+            <div class="ip-section-head">Brush up on</div>
+            <ul id="ipBrushUp" class="ip-bullets"></ul>
+          </div>
+
+          <div class="ip-section" id="ipToolsSection">
+            <div class="ip-section-head">Tools to get familiar with</div>
+            <ul id="ipTools" class="ip-bullets"></ul>
+          </div>
+
+          <div class="ip-section" id="ipQSection">
+            <div class="ip-section-head">Likely questions</div>
+            <ul id="ipQuestions" class="ip-bullets"></ul>
+          </div>
+        </div>
+
+        <div id="page" class="cv-page"><!-- CV rendered here --></div>
+        <div id="fitPanel" class="fit-panel no-print" style="display:none">
+          <div class="fit-ring-wrap">
+            <svg class="fit-ring-svg" viewBox="0 0 80 80">
+              <circle class="fit-ring-track" cx="40" cy="40" r="33"/>
+              <circle class="fit-ring-arc"   cx="40" cy="40" r="33" id="fitRingArc"/>
+            </svg>
+            <span class="fit-ring-label" id="fitRingLabel">0%</span>
+          </div>
+          <div class="fit-panel-title">Fit score</div>
+          <ul id="fitPanelBullets" class="fit-panel-bullets"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="coverStatus" class="status no-print" style="display:none">
+      <div id="coverGenHeader" class="gen-header" style="display:none">
+        <div class="spinner"></div>
+        <p class="gen-notice">Generating your cover letter — this can take up to a minute.<br>Please don't close or reload this tab.</p>
+      </div>
+      <div id="coverMilestones" style="display:none"></div>
+      <p id="coverStatusText"></p>
+      <!-- Pre-generation panel: cover template picker + colour + generate button + mini-preview -->
+      <div id="coverPreGenPanel" class="pre-gen-panel" style="display:none">
+        <div class="pre-gen-left">
+          <div class="pre-gen-field">
+            <span class="style-label">Template</span>
+            <div class="tpl-swatches" id="coverTplSwatchesInline">
+              <button class="tpl-swatch tpl-swatch-active" data-tpl="classic">Classic</button>
+              <button class="tpl-swatch" data-tpl="minimal-letterhead">Minimal</button>
+              <button class="tpl-swatch" data-tpl="split-header">Split Header</button>
+              <button class="tpl-swatch" data-tpl="executive-formal">Executive</button>
+            </div>
+          </div>
+          <div class="pre-gen-field">
+            <span class="style-label">Colour</span>
+            <div id="coverThemeSwatchesInline" class="theme-swatches pre-gen-swatches"></div>
+          </div>
+          <button id="coverGenTrigger" class="btn btn-accent pre-gen-btn" style="display:none">Generate cover letter</button>
+        </div>
+        <div class="mini-preview-inner">
+          <div id="coverMiniPage" class="cv-page cover-page"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="coverStage" class="stage" style="display:none; flex-direction:column; align-items:center;">
+      <div id="coverPage" class="cv-page cover-page"><!-- cover letter rendered here --></div>
+    </div>
+  </div>
+
+  <!-- Regenerate confirmation modal -->
+  <div id="regenModal" class="modal-backdrop" style="display:none" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <p class="modal-title">Regenerate your CV?</p>
+      <p class="modal-msg" id="regenModalMsg"></p>
+      <div class="modal-actions" id="regenModalActions"></div>
+    </div>
+  </div>
+
+  <script src="/app/config.js"></script>
+  <script src="/app/app.js"></script>
+  <script src="/app/supabase-api.js"></script>
+  <script src="/app/cv-render.js"></script>
+  <script src="/app/result.js"></script>
+</body>
+</html>
