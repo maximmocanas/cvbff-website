@@ -173,6 +173,11 @@
     .footer-links a { font-size: 14px; color: rgba(255,255,255,.6); }
     .footer-links a:hover { color: #fff; text-decoration: none; }
     .footer-copy { font-size: 13px; }
+    .nav-auth { display: flex; align-items: center; gap: 8px; }
+    .nav-signin { font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; padding: 7px 10px; border-radius: 6px; transition: color 0.12s; }
+    .nav-signin:hover { color: var(--ink); text-decoration: none; }
+    .nav-signup { font-size: 13px; font-weight: 600; color: #fff; background: var(--accent); text-decoration: none; padding: 7px 14px; border-radius: 6px; transition: background 0.12s; }
+    .nav-signup:hover { background: var(--accent-dark); text-decoration: none; }
   </style>
 </head>
 <body>
@@ -195,7 +200,11 @@
     </a>
     <div style="display:flex;align-items:center;gap:16px">
       <a href="/blog" class="nav-back">← All articles</a>
-      <a href="https://chromewebstore.google.com/detail/cvbff/hecpichmncohajdoblcbafikplambnkn" target="_blank" rel="noopener" class="nav-cta">Add to Chrome</a>
+      <div class="nav-auth">
+        <a href="/app/auth" class="nav-signin">Sign in</a>
+        <a href="/app/auth?signup=1" class="nav-signup">Sign up</a>
+        <a href="https://chromewebstore.google.com/detail/cvbff/hecpichmncohajdoblcbafikplambnkn" target="_blank" rel="noopener" class="nav-cta">Add to Chrome</a>
+      </div>
     </div>
   </div>
 </nav>

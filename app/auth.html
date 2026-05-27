@@ -196,6 +196,11 @@
       }
     });
 
+    // Auto-switch to sign up if ?signup=1 in URL.
+    if (new URLSearchParams(location.search).get("signup") === "1") {
+      setAuthMode("signup");
+    }
+
     // Redirect if already signed in.
     (async () => {
       const user = await getUser();
