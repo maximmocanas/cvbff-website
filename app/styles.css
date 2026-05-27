@@ -785,14 +785,14 @@ button { font: inherit; cursor: pointer; }
 .theme-swatch-active { border-color: var(--ink) !important; transform: scale(1.1); }
 .pre-gen-btn { margin-top: 4px; align-self: flex-start; }
 .mini-preview-inner {
-  width: 180px; flex-shrink: 0;
+  width: 300px; min-width: 300px; max-width: 300px; flex-shrink: 0;
+  position: relative; overflow: hidden;
   border: 1px solid var(--line); border-radius: var(--radius-sm);
-  overflow: hidden; background: #fff; box-shadow: var(--shadow);
-  transform-origin: top left;
+  background: #fff; box-shadow: var(--shadow);
 }
-@media (max-width: 640px) {
+@media (max-width: 820px) {
   .pre-gen-panel { flex-direction: column; }
-  .mini-preview-inner { width: 100%; }
+  .mini-preview-inner { width: 100%; min-width: unset; max-width: unset; }
 }
 
 /* ---------- Result page shell ---------- */

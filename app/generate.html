@@ -174,7 +174,8 @@
         const { profile, tailored } = _dummyPreviewData();
         renderCV(profile, tailored, selectedTpl, page);
         page.style.setProperty("--cv-accent", selectedTheme.accent);
-        const scale = 180 / 794;
+        const PREVIEW_W = 300;
+        const scale = PREVIEW_W / 794;
         const previewH = Math.round(1123 * scale);
         // position:absolute removes cv-page from flex/block layout flow
         // so the 794px-wide element doesn't stretch the parent container
@@ -184,10 +185,10 @@
         page.style.width         = "794px";
         page.style.transform     = `scale(${scale})`;
         page.style.transformOrigin = "top left";
-        // size the wrapper to exactly the scaled height
+        // size the wrapper to exactly the scaled dimensions
         const wrap = page.parentElement;
         wrap.style.position = "relative";
-        wrap.style.width    = "180px";
+        wrap.style.width    = PREVIEW_W + "px";
         wrap.style.height   = previewH + "px";
         wrap.style.overflow = "hidden";
       } catch(e) { console.warn("Mini preview error:", e); }
