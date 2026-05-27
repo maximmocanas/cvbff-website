@@ -1,5 +1,23 @@
 // CvBFF — result page orchestration (web version).
 
+function scaleCvMobile() {
+  const page = document.getElementById("page");
+  if (!page) return;
+  if (window.innerWidth >= 860) {
+    page.style.transform = "";
+    page.style.marginBottom = "";
+    page.style.marginRight = "";
+    return;
+  }
+  const avail = window.innerWidth - 16;
+  const scale = avail / 794;
+  const h = page.offsetHeight || 1123;
+  page.style.transform = `scale(${scale})`;
+  page.style.marginBottom = `${Math.round(h * (scale - 1))}px`;
+  page.style.marginRight  = `${Math.round(794 * (scale - 1))}px`;
+}
+window.addEventListener("resize", scaleCvMobile);
+
 function showToast(msg, isError = false) {
   let el = document.getElementById("_toast");
   if (!el) { el = document.createElement("div"); el.id = "_toast"; el.className = "toast"; document.body.appendChild(el); }
@@ -354,6 +372,7 @@ function renderLockedCV(profile, preview) {
     gaps:           [],
   };
   renderCV(profile, mockTailored, currentCvTemplate);
+  scaleCvMobile();
   addCVLockOverlay();
 }
 
@@ -485,6 +504,7 @@ async function handleUnlock() {
     document.getElementById("lockOverlay")?.remove();
     renderCV(profile, tailored, currentCvTemplate);
     fitToOnePage(tailored, profile);
+    scaleCvMobile();
     renderGaps(tailored.gaps);
     if (typeof tailored.fitScore === "number") renderFitScore(tailored.fitScore, tailored.fitReason);
     if (tailored.interviewPrep) renderInterviewPrep(tailored.interviewPrep);
@@ -809,6 +829,7 @@ async function regenWithCredit(mode) {
     document.getElementById("lockOverlay")?.remove();
     renderCV(profile, tailored, currentCvTemplate);
     fitToOnePage(tailored, profile);
+    scaleCvMobile();
     renderGaps(tailored.gaps);
     if (typeof tailored.fitScore === "number") renderFitScore(tailored.fitScore, tailored.fitReason);
     if (tailored.interviewPrep) renderInterviewPrep(tailored.interviewPrep);
@@ -1418,6 +1439,7 @@ document.addEventListener("click", async function(e) {
       const { profile } = await store.get("profile");
       renderCV(profile, tailored, currentCvTemplate);
       fitToOnePage(tailored, profile);
+      scaleCvMobile();
     }
     renderMiniPreview("cv");
   } else if (id === "coverTplSwatches" || id === "coverTplSwatchesInline") {
@@ -1518,6 +1540,7 @@ document.getElementById("cvCopyText").addEventListener("click", async () => {
         renderCV(profile, tailored, currentCvTemplate);
         fitToOnePage(tailored, profile);
       }
+      scaleCvMobile();
       renderGaps(tailored.gaps);
       if (typeof tailored.fitScore === "number") renderFitScore(tailored.fitScore, tailored.fitReason);
       if (tailored.interviewPrep) renderInterviewPrep(tailored.interviewPrep);

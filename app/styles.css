@@ -886,6 +886,45 @@ button { font: inherit; cursor: pointer; }
 .toast.toast-visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast.toast-error   { background: #a8392b; }
 
+/* ---------- Mobile responsive ---------- */
+
+/* Result bar: wrap to 2 rows on small screens */
+@media (max-width: 700px) {
+  .result-bar { padding: 0 12px; }
+  .result-bar-inner {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 8px 0;
+    gap: 2px 0;
+    overflow: visible;
+  }
+  .result-bar-left { flex: 0 0 100%; padding-bottom: 2px; }
+  .result-job-link { display: none; }
+  .result-controls {
+    flex: 0 0 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+    gap: 4px;
+  }
+  .result-controls::-webkit-scrollbar { display: none; }
+}
+
+/* Stage: hide side panels, stack vertically, scale CV to fit */
+@media (max-width: 860px) {
+  .cv-stage-inner { flex-direction: column; align-items: center; }
+  .interview-panel, .fit-panel { display: none !important; }
+  .stage { padding: 16px 0 40px; overflow: hidden; }
+  /* #page transform applied by scaleCvMobile() in result.js */
+  #page { transform-origin: top left; }
+}
+
+/* Generate page on mobile */
+@media (max-width: 700px) {
+  .gen-page-wrap { padding: 20px 14px 60px; }
+  .status { padding: 24px 16px; }
+}
+
 /* ---------- Auth callback loading screen ---------- */
 .auth-callback-wrap {
   min-height: 100vh; display: flex; align-items: center; justify-content: center;
