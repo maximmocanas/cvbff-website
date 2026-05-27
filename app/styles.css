@@ -719,7 +719,7 @@ button { font: inherit; cursor: pointer; }
 .pack-note    { font-size: 11px; color: var(--faint); width: 100%; }
 
 /* ---------- Generate page ---------- */
-.gen-page-wrap { max-width: 700px; margin: 0 auto; padding: 40px 28px 80px; }
+.gen-page-wrap { max-width: 960px; margin: 0 auto; padding: 40px 28px 80px; }
 .gen-header-row {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 28px; flex-wrap: wrap; gap: 10px;

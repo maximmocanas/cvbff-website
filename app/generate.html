@@ -182,7 +182,7 @@
         const { profile, tailored } = _dummyPreviewData();
         renderCV(profile, tailored, selectedTpl, page);
         page.style.setProperty("--cv-accent", selectedTheme.accent);
-        const scale    = previewW / 794;
+        const scale    = Math.min(previewW / 794, 1.0);
         const previewH = Math.round(1123 * scale);
         // position:absolute removes cv-page from layout flow so the 794px
         // element doesn't push the wrapper height before the scale is applied.
