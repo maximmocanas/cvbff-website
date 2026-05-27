@@ -1417,7 +1417,7 @@ async function generateCover() {
 
 document.getElementById("tabCv").addEventListener("click", () => {
   if (cvReady) { document.getElementById("status").style.display = "none"; showView("cv"); }
-  else showCvPrompt();
+  // else: generation in progress — do nothing, don't re-show the pre-gen panel
 });
 document.getElementById("tabCover").addEventListener("click", () => {
   if (coverReady) { document.getElementById("status").style.display = "none"; showView("cover"); }
@@ -1636,5 +1636,6 @@ document.getElementById("cvCopyText").addEventListener("click", async () => {
   document.getElementById("tabCvIcon").className = "tab-icon";
   document.getElementById("tabCoverIcon").textContent = "○";
   document.getElementById("tabCoverIcon").className = "tab-icon";
-  showCvPrompt();
+  // Template/colour/mode already chosen on generate.html — start immediately.
+  generate();
 })();
