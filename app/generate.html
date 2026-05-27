@@ -171,28 +171,33 @@
       const page = document.getElementById("cvMiniPage");
       if (!page) return;
       try {
-        renderCvPage(page, _dummyPreviewData(), selectedTpl, selectedTheme.accent);
+        const { profile, tailored } = _dummyPreviewData();
+        renderCV(profile, tailored, selectedTpl, page);
+        page.style.setProperty("--cv-accent", selectedTheme.accent);
         const scale = 180 / 794;
         page.style.transform = `scale(${scale})`;
         page.style.transformOrigin = "top left";
         page.style.width = "794px";
         page.parentElement.style.height = Math.round(1123 * scale) + "px";
         page.parentElement.style.overflow = "hidden";
-      } catch { /* cv-render not fully loaded */ }
+      } catch(e) { console.warn("Mini preview error:", e); }
     }
 
     function _dummyPreviewData() {
-      return {
-        firstName: "Jane", lastName: "Doe",
-        location: "London, UK", email: "jane@example.com",
-        phone: "+44 7700 000000", linkedin: "linkedin.com/in/janedoe",
+      const profile = {
+        personal: { firstName: "Jane", lastName: "Doe", location: "London, UK", email: "jane@example.com", phone: "+44 7700 000000", linkedin: "linkedin.com/in/janedoe" },
         photo: { include: false },
-        summary: "Experienced marketing professional with a proven track record of driving growth through data-driven campaigns and cross-functional collaboration.",
-        skills: ["Marketing Strategy", "Data Analysis", "SEO", "Project Management", "Stakeholder Management"],
-        roles: [{ title: "Senior Marketing Manager", company: "Acme Corp", start: "2020", end: "Present", bullets: ["Led a team of 6 to deliver a 40% increase in organic traffic through targeted content strategy.", "Managed £500K campaign budget across digital and offline channels."] }],
+        roles: [{ title: "Senior Marketing Manager", company: "Acme Corp", start: "2020", end: "Present" }],
         education: [{ degree: "BSc Marketing", institution: "University of London", start: "2014", end: "2018" }],
         languages: [], certifications: [], awards: [], portfolio: [],
       };
+      const tailored = {
+        jobTitle: "Senior Marketing Manager",
+        summary: "Experienced marketing professional with a proven track record of driving growth through data-driven campaigns and cross-functional collaboration.",
+        skills: ["Marketing Strategy", "Data Analysis", "SEO", "Project Management", "Stakeholder Management"],
+        roles: [{ ref: 0, bullets: ["Led a team of 6 to deliver a 40% increase in organic traffic through targeted content strategy.", "Managed £500K campaign budget across digital and offline channels."] }],
+      };
+      return { profile, tailored };
     }
 
     // ---------- Char counter ----------
