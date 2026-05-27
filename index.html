@@ -185,6 +185,13 @@
     .nav-cta-btn {
       padding: 7px 14px; font-size: 13px;
     }
+    .nav-signin-btn {
+      padding: 7px 14px; font-size: 13px;
+      color: var(--muted); text-decoration: none;
+      font-weight: 600; border-radius: 8px;
+      transition: color 0.12s;
+    }
+    .nav-signin-btn:hover { color: var(--ink); text-decoration: none; }
     .btn-lg { padding: 16px 28px; font-size: 16px; border-radius: 10px; }
 
     /* ── Nav ── */
@@ -237,6 +244,14 @@
       display: flex; align-items: center; justify-content: center;
       gap: 12px; flex-wrap: wrap;
     }
+    .hero-webapp-note {
+      margin: 16px 0 0; font-size: 13px; color: rgba(255,255,255,0.65);
+    }
+    .hero-webapp-link {
+      color: #fff; font-weight: 600; text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .hero-webapp-link:hover { color: rgba(255,255,255,0.85); }
     .hero-note {
       margin-top: 16px; font-size: 13px; color: var(--faint);
     }
@@ -653,6 +668,7 @@
         <li><a href="#faq">FAQ</a></li>
         <li><a href="/blog">Blog</a></li>
       </ul>
+      <a href="/app/auth" class="nav-signin-btn">Sign in</a>
       <a href="https://chromewebstore.google.com/detail/cvbff/hecpichmncohajdoblcbafikplambnkn" target="_blank" rel="noopener" class="btn btn-primary nav-cta-btn"><span class="nav-cta-text">Add to Chrome</span><span class="nav-cta-short">↗</span></a>
     </div>
   </div>
@@ -672,6 +688,7 @@
       <a href="https://chromewebstore.google.com/detail/cvbff/hecpichmncohajdoblcbafikplambnkn" target="_blank" rel="noopener" class="btn btn-primary btn-lg">Add to Chrome, it's free</a>
       <a href="#how" class="btn btn-secondary btn-lg">See how it works</a>
     </div>
+    <p class="hero-webapp-note">Prefer not to install an extension? <a href="/app/auth" class="hero-webapp-link">Use the web app →</a></p>
 
     <div class="works-on-strip">
       <div class="works-on-label">Works on every job site you use</div>
@@ -1024,6 +1041,7 @@
     <p>Add CvBFF to Chrome in 30 seconds and get 2 free credits. No card required.</p>
     <a href="https://chromewebstore.google.com/detail/cvbff/hecpichmncohajdoblcbafikplambnkn" target="_blank" rel="noopener" class="btn btn-white btn-lg">Add to Chrome, it's free</a>
     <p class="cta-note">Works on LinkedIn, Indeed, and any job posting page.</p>
+    <p class="cta-note" style="margin-top:8px;">No Chrome? <a href="/app/auth" style="color:rgba(255,255,255,0.85); font-weight:600; text-decoration:underline; text-underline-offset:2px;">Use the web app instead →</a></p>
   </div>
 </section>
 
