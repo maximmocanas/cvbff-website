@@ -666,44 +666,9 @@ function renderFitScore(score, bullets) {
 
 function renderGaps(gaps) {
   const box = document.getElementById("gapsBox");
-  if (!box) return;
-  const list = Array.isArray(gaps) ? gaps.filter(Boolean) : [];
-  if (!list.length) { box.style.display = "none"; box.innerHTML = ""; return; }
-  box.style.display = "";
-  box.innerHTML =
-    `<div class="gaps-head"><strong>Couldn't substantiate from your background.</strong> ` +
-    `<span class="gaps-tip">Only add ones you genuinely have — adding saves them to your skills bank.</span></div>` +
-    `<div class="gaps-list">` +
-    list.map(g => {
-      const skillName = typeof g === "object" ? g.skill : g;
-      const label     = typeof g === "object" ? (g.skill + (g.reason ? ": " + g.reason : "")) : g;
-      return `<span class="gap-chip"><span class="gap-label">${escHtml(label)}</span>` +
-        `<button class="gap-add" data-skill="${escHtml(skillName)}" title="Add to my skills">+ Add</button></span>`;
-    }).join("") +
-    `</div>`;
-
-  box.querySelectorAll(".gap-add").forEach(btn => {
-    btn.addEventListener("click", () => addSkill(btn.dataset.skill, btn));
-  });
+  if (box) { box.style.display = "none"; box.innerHTML = ""; }
 }
 
-async function addSkill(skill, btn) {
-  if (!skill) return;
-  btn.disabled = true; btn.textContent = "Adding…";
-  try {
-    const { profile } = await store.get("profile");
-    if (!profile) throw new Error("no profile");
-    profile.skills = Array.isArray(profile.skills) ? profile.skills : [];
-    const exists = profile.skills.some(s => s.trim().toLowerCase() === skill.trim().toLowerCase());
-    if (!exists) profile.skills.push(skill.trim());
-    await store.set({ profile });
-    await saveProfile(profile).catch(() => {});
-    btn.textContent = "Added ✓";
-  } catch {
-    btn.disabled = false; btn.textContent = "+ Add";
-    showToast("Couldn't update your skills. Add it manually in Settings.", true);
-  }
-}
 
 // ---------- Inline editing ----------
 
