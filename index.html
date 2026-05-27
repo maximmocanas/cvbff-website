@@ -192,6 +192,14 @@
       transition: color 0.12s;
     }
     .nav-signin-btn:hover { color: var(--ink); text-decoration: none; }
+    .nav-signup-btn {
+      padding: 7px 14px; font-size: 13px;
+      color: var(--accent); text-decoration: none;
+      font-weight: 700; border-radius: 8px;
+      background: var(--accent-soft);
+      transition: background 0.12s;
+    }
+    .nav-signup-btn:hover { background: #dde4fd; text-decoration: none; }
     .btn-lg { padding: 16px 28px; font-size: 16px; border-radius: 10px; }
 
     /* ── Nav ── */
@@ -668,8 +676,11 @@
         <li><a href="#faq">FAQ</a></li>
         <li><a href="/blog">Blog</a></li>
       </ul>
-      <a href="/app/auth" class="nav-signin-btn">Sign in</a>
-      <a href="/app/auth?signup=1" class="btn btn-secondary nav-cta-btn">Sign up</a>
+      <div style="display:flex; align-items:center; gap:4px;">
+        <a href="/app/auth" class="nav-signin-btn">Sign in</a>
+        <a href="/app/auth?signup=1" class="nav-signup-btn">Sign up</a>
+      </div>
+      <div style="width:1px; height:20px; background:var(--line-mid, #d8d6d0); margin:0 4px;"></div>
       <a href="https://chromewebstore.google.com/detail/cvbff/hecpichmncohajdoblcbafikplambnkn" target="_blank" rel="noopener" class="btn btn-primary nav-cta-btn"><span class="nav-cta-text">Add to Chrome</span><span class="nav-cta-short">↗</span></a>
     </div>
   </div>
