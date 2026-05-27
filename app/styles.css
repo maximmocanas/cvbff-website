@@ -801,11 +801,11 @@ button { font: inherit; cursor: pointer; }
   position: sticky; top: 0; z-index: 100;
   background: var(--card); border-bottom: 1px solid var(--line);
   padding: 0 20px;
-  overflow: hidden; /* prevent credit pill from spilling to a second row */
 }
 .result-bar-inner {
   max-width: 1200px; margin: 0 auto; height: 52px;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  overflow: hidden;
 }
 .result-bar-left { display: flex; align-items: center; gap: 12px; }
 .result-job-link {
