@@ -76,7 +76,8 @@
 
       <!-- Pre-gen panel -->
       <div class="pre-gen-panel" id="preGenPanel" style="display:none">
-        <div class="pre-gen-left">
+        <!-- Controls row -->
+        <div class="pre-gen-controls">
           <div class="pre-gen-field">
             <span class="style-label">Template</span>
             <div class="tpl-swatches" id="cvTplSwatches">
@@ -99,6 +100,7 @@
           </div>
           <button id="genBtn" class="btn btn-accent pre-gen-btn">Generate CV</button>
         </div>
+        <!-- Full-width CV preview -->
         <div class="mini-preview-inner">
           <div id="cvMiniPage" class="cv-page"></div>
         </div>
@@ -170,25 +172,27 @@
     function updateMiniPreview() {
       const page = document.getElementById("cvMiniPage");
       if (!page) return;
+      const wrap = page.parentElement;
+      // getBoundingClientRect forces a reflow and gives the actual rendered width.
+      // If the panel is hidden (display:none) width is 0 — bail out; we'll be
+      // called again from showPreGenPanel() once the panel is visible.
+      const previewW = wrap.getBoundingClientRect().width;
+      if (!previewW) return;
       try {
         const { profile, tailored } = _dummyPreviewData();
         renderCV(profile, tailored, selectedTpl, page);
         page.style.setProperty("--cv-accent", selectedTheme.accent);
-        const PREVIEW_W = 300;
-        const scale = PREVIEW_W / 794;
+        const scale    = previewW / 794;
         const previewH = Math.round(1123 * scale);
-        // position:absolute removes cv-page from flex/block layout flow
-        // so the 794px-wide element doesn't stretch the parent container
-        page.style.position      = "absolute";
-        page.style.top           = "0";
-        page.style.left          = "0";
-        page.style.width         = "794px";
-        page.style.transform     = `scale(${scale})`;
+        // position:absolute removes cv-page from layout flow so the 794px
+        // element doesn't push the wrapper height before the scale is applied.
+        page.style.position        = "absolute";
+        page.style.top             = "0";
+        page.style.left            = "0";
+        page.style.width           = "794px";
+        page.style.transform       = `scale(${scale})`;
         page.style.transformOrigin = "top left";
-        // size the wrapper to exactly the scaled dimensions
-        const wrap = page.parentElement;
         wrap.style.position = "relative";
-        wrap.style.width    = PREVIEW_W + "px";
         wrap.style.height   = previewH + "px";
         wrap.style.overflow = "hidden";
       } catch(e) { console.warn("Mini preview error:", e); }
@@ -225,6 +229,8 @@
     function showPreGenPanel() {
       document.getElementById("preGenPanel").style.display = "";
       document.getElementById("clearJob").style.display = "";
+      // Panel just became visible — measure actual width and render.
+      updateMiniPreview();
     }
     function hidePreGenPanel() {
       document.getElementById("preGenPanel").style.display = "none";
