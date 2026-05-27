@@ -81,6 +81,9 @@ function renderCard(app) {
     pill.classList.add("pill-active");
     try {
       await updateApplication(app.id, { status: next });
+      // Keep _allApps in sync so filters work immediately without a refresh.
+      const mem = _allApps.find(a => a.id === app.id);
+      if (mem) mem.status = next;
     } catch {
       currentStatus = prev;
       pillContainer.querySelectorAll(".status-pill").forEach(p => p.classList.remove("pill-active"));
