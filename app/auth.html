@@ -169,7 +169,7 @@
           const profile = await loadProfile();
           if (profile) await store.set({ profile });
         } catch { /* non-critical */ }
-        location.href = "/app/generate.html";
+        location.href = "/app/applications.html";
       } catch (err) {
         setAuthError(err.message);
       } finally {
@@ -207,7 +207,7 @@
       if (user?.email) {
         try {
           await ensureSession();
-          location.href = "/app/generate.html";
+          location.href = "/app/applications.html";
         } catch { /* session invalid — stay on auth page */ }
       }
     })();
