@@ -742,14 +742,7 @@ function showView(which) {
 function printOnly(which) {
   document.body.classList.remove("print-cv", "print-cover");
   document.body.classList.add(which === "cover" ? "print-cover" : "print-cv");
-  // Reset mobile scale before printing so the full-size CV is captured
-  const page = document.getElementById("page");
-  const savedTransform    = page ? page.style.transform    : "";
-  const savedMarginBottom = page ? page.style.marginBottom : "";
-  const savedMarginRight  = page ? page.style.marginRight  : "";
-  if (page) { page.style.transform = ""; page.style.marginBottom = ""; page.style.marginRight = ""; }
   window.print();
-  if (page) { page.style.transform = savedTransform; page.style.marginBottom = savedMarginBottom; page.style.marginRight = savedMarginRight; }
 }
 
 document.getElementById("download").addEventListener("click", () => printOnly("cv"));

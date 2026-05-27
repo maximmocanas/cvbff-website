@@ -361,7 +361,7 @@
   .no-print { display: none !important; }
   body { background: #fff; }
   .stage { padding: 0; }
-  .cv-page { box-shadow: none; width: 210mm; min-height: 297mm; }
+  .cv-page { box-shadow: none; width: 210mm; min-height: 297mm; transform: none !important; margin: 0 !important; }
   /* Print only the document the user asked for. */
   body.print-cv #coverStage { display: none !important; }
   body.print-cover #stage { display: none !important; }
