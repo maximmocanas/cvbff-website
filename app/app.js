@@ -65,10 +65,10 @@ function renderNav(activePage) {
   nav.className = "app-nav";
   nav.innerHTML = `
     <div class="app-nav-inner">
-      <a class="app-nav-brand" href="/app/generate.html">CvBFF</a>
+      <a class="app-nav-brand" href="/app/applications.html">CvBFF</a>
       <div class="app-nav-links">
-        <a href="/app/generate.html" class="app-nav-link${activePage === "generate"     ? " app-nav-active" : ""}">Generate</a>
         <a href="/app/applications.html" class="app-nav-link${activePage === "applications" ? " app-nav-active" : ""}">Applications</a>
+        <a href="/app/generate.html"     class="app-nav-link${activePage === "generate"     ? " app-nav-active" : ""}">Generate</a>
         <a href="/app/settings.html"     class="app-nav-link${activePage === "settings"     ? " app-nav-active" : ""}">Settings</a>
       </div>
       <button class="app-nav-signout" id="navSignOut">Sign out</button>
