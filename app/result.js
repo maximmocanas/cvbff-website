@@ -8,13 +8,17 @@ function _scalePage(pageId, wrapId) {
   const wrap = document.getElementById(wrapId);
   if (!page || !wrap) return;
   if (window.innerWidth >= 860) {
-    page.style.transform = "";
-    page.style.position  = "";
-    wrap.style.height    = "";
+    page.style.transform  = "";
+    page.style.position   = "";
+    page.style.minHeight  = "";
+    wrap.style.height     = "";
     return;
   }
   const scale = wrap.offsetWidth / 794;
-  const h     = page.offsetHeight || 1123;
+  // Collapse the A4 min-height so the card shrinks to actual content on mobile.
+  // Must be set HERE (after fitToOnePage) not in CSS (before fitToOnePage).
+  page.style.minHeight       = "0";
+  const h                    = page.offsetHeight || 1123;
   page.style.position        = "absolute";
   page.style.transformOrigin = "top left";
   page.style.transform       = `scale(${scale})`;

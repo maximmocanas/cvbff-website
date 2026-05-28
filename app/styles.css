@@ -946,13 +946,10 @@ button { font: inherit; cursor: pointer; }
     position: relative;
     overflow: hidden;
   }
-  #page, #coverPage {
-    position: absolute;
-    top: 0; left: 0;
-    transform-origin: top left;
-    /* Don't enforce A4 height on mobile — card shrinks to actual content */
-    min-height: 0;
-  }
+  /* #page / #coverPage get position:absolute + transform set by _scalePage() in
+     result.js AFTER fitToOnePage() has already run. Do NOT set position:absolute
+     here — if we do, iOS Safari measures scrollHeight incorrectly against the A4
+     constant and fitToOnePage() over-trims bullets down to 2 per job. */
 
   /* Lock overlay: appended to body on mobile (see addCVLockOverlay in result.js)
      so it is never inside the scaled/transformed #page element. */
