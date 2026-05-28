@@ -743,6 +743,9 @@ function showView(which) {
   document.getElementById("coverControls").style.display = cv ? "none" : "contents";
   document.getElementById("stage").style.display = cv ? "" : "none";
   document.getElementById("coverStage").style.display = cv ? "none" : "flex";
+  // Re-scale the cover page whenever it becomes visible — measurements are
+  // unreliable while display:none, so we always recalculate on tab switch.
+  if (!cv) scaleCoverMobile();
   const gaps = document.getElementById("gapsBox");
   if (gaps && !cv) gaps.style.display = "none";
   document.getElementById("tabCv")?.classList.toggle("tab-active", cv);
@@ -964,9 +967,11 @@ async function coverRegenWithCredit(mode) {
     stopMilestones();
     document.getElementById("coverStatus").style.display = "none";
     document.getElementById("coverLockOverlay")?.remove();
+    // Show stage BEFORE fit/scale — measurements (scrollHeight, offsetWidth) return
+    // 0 while the element is display:none, causing scale(0) and wrong font trimming.
+    document.getElementById("coverStage").style.display = "flex";
     renderCover(profile, coverText, coverJobTitle, currentCoverTemplate);
     fitCoverToOnePage(); scaleCoverMobile();
-    document.getElementById("coverStage").style.display = "flex";
     document.getElementById("coverEdit").disabled = false;
     document.getElementById("coverCopy").disabled = false;
     document.getElementById("coverDownload").disabled = false;
