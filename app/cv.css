@@ -359,7 +359,13 @@
 @media print {
   @page { size: A4; margin: 0; }
   .no-print { display: none !important; }
-  body { background: #fff; }
+  /* Cap the entire printed output to exactly one A4 page — prevents blank page 2 */
+  html, body {
+    height: 297mm !important;
+    max-height: 297mm !important;
+    overflow: hidden !important;
+    background: #fff;
+  }
   /* Reset the mobile scale wrapper so the document prints at full A4 size */
   #cvScaleWrap, #coverScaleWrap {
     position: static !important;
@@ -368,12 +374,17 @@
     width: auto !important;
   }
   .stage { padding: 0; overflow: visible !important; }
-  /* result-shell min-height causes a blank second page on mobile — remove it */
-  .result-shell { min-height: 0 !important; }
+  .result-shell { min-height: 0 !important; height: auto !important; }
   .cv-page {
     position: static !important;
-    box-shadow: none; width: 210mm; min-height: 297mm;
-    transform: none !important; margin: 0 !important;
+    box-shadow: none;
+    width: 210mm;
+    /* Exact A4 height — not min-height, so nothing can push a second page */
+    height: 297mm !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    transform: none !important;
+    margin: 0 !important;
   }
   /* Print only the document the user asked for. */
   body.print-cv #coverStage { display: none !important; }

@@ -950,6 +950,8 @@ button { font: inherit; cursor: pointer; }
     position: absolute;
     top: 0; left: 0;
     transform-origin: top left;
+    /* Don't enforce A4 height on mobile — card shrinks to actual content */
+    min-height: 0;
   }
 
   /* Lock overlay: appended to body on mobile (see addCVLockOverlay in result.js)
