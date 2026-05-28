@@ -933,17 +933,27 @@ button { font: inherit; cursor: pointer; }
 
 /* Stage: hide side panels, stack vertically, scale CV to fit */
 @media (max-width: 860px) {
-  .cv-stage-inner { flex-direction: column; align-items: center; }
+  /* stretch so the wrapper fills full stage width — no flex centering of oversized items */
+  .cv-stage-inner { flex-direction: column; align-items: stretch; }
   .interview-panel, .fit-panel { display: none !important; }
-  .stage { padding: 16px 0 40px; overflow: hidden; }
-  /* #page transform applied by scaleCvMobile() in result.js — origin is top center
-     so the scaled CV stays centred in the viewport without needing layout tweaks */
-  #page { transform-origin: top center; }
+  .stage { padding: 16px 0 40px; }
 
-  /* Lock overlay: taken out of the scaled #page and appended to body as a
-     fixed bottom sheet (see addCVLockOverlay in result.js).
-     position:fixed + transform ancestor = position:absolute quirk is avoided
-     because the overlay is placed on body, not inside #page. */
+  /* Scale wrapper: sized by JS to match the scaled document height.
+     #page sits at (0,0) inside it and is scaled via transform from top left.
+     This avoids all flex-centering ambiguity for oversized elements. */
+  #cvScaleWrap, #coverScaleWrap {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  #page, #coverPage {
+    position: absolute;
+    top: 0; left: 0;
+    transform-origin: top left;
+  }
+
+  /* Lock overlay: appended to body on mobile (see addCVLockOverlay in result.js)
+     so it is never inside the scaled/transformed #page element. */
   .cv-lock-overlay-mobile {
     position: fixed;
     bottom: 0; left: 0; right: 0;

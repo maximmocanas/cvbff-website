@@ -1,22 +1,28 @@
 // CvBFF — result page orchestration (web version).
 
-function scaleCvMobile() {
-  const page = document.getElementById("page");
-  if (!page) return;
+// Scale a document page to fill the mobile viewport.
+// Uses a wrapper element (#cvScaleWrap / #coverScaleWrap) so the page sits at
+// position (0,0) and scales from top-left — no flex-centering ambiguity.
+function _scalePage(pageId, wrapId) {
+  const page = document.getElementById(pageId);
+  const wrap = document.getElementById(wrapId);
+  if (!page || !wrap) return;
   if (window.innerWidth >= 860) {
     page.style.transform = "";
-    page.style.marginBottom = "";
+    page.style.position  = "";
+    wrap.style.height    = "";
     return;
   }
-  // Leave 8px breathing room on each side; origin is top center (see CSS)
-  // so the scaled CV stays horizontally centred without any layout hacks.
-  const scale = (window.innerWidth - 16) / 794;
-  const h = page.offsetHeight || 1123;
-  page.style.transform = `scale(${scale})`;
-  // Collapse the layout height so there's no blank space below the CV.
-  page.style.marginBottom = `${Math.round(h * (scale - 1))}px`;
+  const scale = window.innerWidth / 794;
+  const h     = page.offsetHeight || 1123;
+  page.style.position        = "absolute";
+  page.style.transformOrigin = "top left";
+  page.style.transform       = `scale(${scale})`;
+  wrap.style.height = `${Math.round(h * scale)}px`;
 }
-window.addEventListener("resize", scaleCvMobile);
+function scaleCvMobile()    { _scalePage("page",      "cvScaleWrap");    }
+function scaleCoverMobile() { _scalePage("coverPage", "coverScaleWrap"); }
+window.addEventListener("resize", () => { scaleCvMobile(); scaleCoverMobile(); });
 
 function showToast(msg, isError = false) {
   let el = document.getElementById("_toast");
@@ -462,7 +468,7 @@ async function handleCoverUnlock() {
     const { profile } = await store.get("profile");
     document.getElementById("coverLockOverlay")?.remove();
     renderCover(profile, coverText, coverJobTitle, currentCoverTemplate);
-    fitCoverToOnePage();
+    fitCoverToOnePage(); scaleCoverMobile();
     document.getElementById("coverEdit").disabled = false;
     document.getElementById("coverCopy").disabled = false;
     document.getElementById("coverDownload").disabled = false;
@@ -955,7 +961,7 @@ async function coverRegenWithCredit(mode) {
     document.getElementById("coverStatus").style.display = "none";
     document.getElementById("coverLockOverlay")?.remove();
     renderCover(profile, coverText, coverJobTitle, currentCoverTemplate);
-    fitCoverToOnePage();
+    fitCoverToOnePage(); scaleCoverMobile();
     document.getElementById("coverStage").style.display = "flex";
     document.getElementById("coverEdit").disabled = false;
     document.getElementById("coverCopy").disabled = false;
@@ -1111,7 +1117,7 @@ setupEditToggle("coverEdit", "coverPage", async () => {
       coverText = pageEl.innerText.trim();
     }
   }
-  fitCoverToOnePage();
+  fitCoverToOnePage(); scaleCoverMobile();
   if (savedAppId && isCoverUnlocked) {
     await updateApplication(savedAppId, {
       cover_html:  document.getElementById("coverPage")?.innerHTML || null,
@@ -1465,7 +1471,7 @@ document.addEventListener("click", async function(e) {
     if (isCoverUnlocked && coverText) {
       const { profile } = await store.get("profile");
       renderCover(profile, coverText, coverJobTitle, currentCoverTemplate);
-      fitCoverToOnePage();
+      fitCoverToOnePage(); scaleCoverMobile();
     }
     renderMiniPreview("cover");
   }
@@ -1582,7 +1588,7 @@ document.getElementById("cvCopyText").addEventListener("click", async () => {
           document.getElementById("coverPage").className = "cv-page cover-page cv-tpl-cover-" + currentCoverTemplate;
         } else {
           renderCover(profile, coverText, coverJobTitle, currentCoverTemplate);
-          fitCoverToOnePage();
+          fitCoverToOnePage(); scaleCoverMobile();
         }
         coverReady = true;
         isCoverUnlocked = true;

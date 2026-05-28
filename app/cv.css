@@ -360,8 +360,21 @@
   @page { size: A4; margin: 0; }
   .no-print { display: none !important; }
   body { background: #fff; }
-  .stage { padding: 0; }
-  .cv-page { box-shadow: none; width: 210mm; min-height: 297mm; transform: none !important; margin: 0 !important; }
+  /* Reset the mobile scale wrapper so the document prints at full A4 size */
+  #cvScaleWrap, #coverScaleWrap {
+    position: static !important;
+    height: auto !important;
+    overflow: visible !important;
+    width: auto !important;
+  }
+  .stage { padding: 0; overflow: visible !important; }
+  /* result-shell min-height causes a blank second page on mobile — remove it */
+  .result-shell { min-height: 0 !important; }
+  .cv-page {
+    position: static !important;
+    box-shadow: none; width: 210mm; min-height: 297mm;
+    transform: none !important; margin: 0 !important;
+  }
   /* Print only the document the user asked for. */
   body.print-cv #coverStage { display: none !important; }
   body.print-cover #stage { display: none !important; }
