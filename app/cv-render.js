@@ -282,6 +282,28 @@ function fitToOnePage(tailored, profile) {
   page.style.fontSize = "";
   page.style.lineHeight = "";
 
+  // iOS Safari mis-measures scrollHeight when #page (794px wide) sits inside a
+  // narrow overflow:hidden container (the mobile scale wrapper). It either clips
+  // the height to the container height or reflows the content to the container
+  // width — both produce a bogus large scrollHeight, sending the trim loop into
+  // 60 iterations and leaving only 2 lines per job in the PDF.
+  //
+  // Fix: for the entire duration of the fit run, pull #page out of its container
+  // by using position:fixed off-screen. Fixed positioning makes #page measure
+  // against the CSS viewport with its own explicit width (210mm = 794px), giving
+  // the correct A4-scale scrollHeight. Restore position after fitting so
+  // scaleCvMobile() can apply its own transform afterwards.
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 860;
+  let _prevPosition = "", _prevTop = "", _prevLeft = "";
+  if (isMobile) {
+    _prevPosition     = page.style.position;
+    _prevTop          = page.style.top;
+    _prevLeft         = page.style.left;
+    page.style.position = "fixed";
+    page.style.top      = "-9999px";
+    page.style.left     = "0";
+  }
+
   let shrunk = false;
 
   // Step 1: shrink font size.
@@ -323,6 +345,11 @@ function fitToOnePage(tailored, profile) {
       page.style.fontSize = fontSize.toFixed(1) + "pt";
       page.style.lineHeight = lineH.toFixed(2);
     }
+  }
+  if (isMobile) {
+    page.style.position = _prevPosition;
+    page.style.top      = _prevTop;
+    page.style.left     = _prevLeft;
   }
   return { cut, shrunk };
 }

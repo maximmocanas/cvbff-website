@@ -1347,12 +1347,33 @@ function coverOverflows() {
 function fitCoverToOnePage() {
   const page = document.getElementById("coverPage");
   page.style.fontSize = "";
+
+  // Same iOS Safari fix as fitToOnePage — measure with position:fixed so
+  // scrollHeight reflects the 210mm-wide layout, not the container width.
+  const isMobile = window.innerWidth < 860;
+  let _prevPosition = "", _prevTop = "", _prevLeft = "";
+  if (isMobile) {
+    _prevPosition     = page.style.position;
+    _prevTop          = page.style.top;
+    _prevLeft         = page.style.left;
+    page.style.position = "fixed";
+    page.style.top      = "-9999px";
+    page.style.left     = "0";
+  }
+
   let size = 11;
   while (coverOverflows() && size > 9.5) {
     size -= 0.25;
     page.style.fontSize = size.toFixed(2) + "pt";
   }
-  return { fit: !coverOverflows(), shrunk: size < 11 };
+  const result = { fit: !coverOverflows(), shrunk: size < 11 };
+
+  if (isMobile) {
+    page.style.position = _prevPosition;
+    page.style.top      = _prevTop;
+    page.style.left     = _prevLeft;
+  }
+  return result;
 }
 
 async function generateCover() {
