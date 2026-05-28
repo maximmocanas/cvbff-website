@@ -6,15 +6,15 @@ function scaleCvMobile() {
   if (window.innerWidth >= 860) {
     page.style.transform = "";
     page.style.marginBottom = "";
-    page.style.marginRight = "";
     return;
   }
-  const avail = window.innerWidth - 16;
-  const scale = avail / 794;
+  // Leave 8px breathing room on each side; origin is top center (see CSS)
+  // so the scaled CV stays horizontally centred without any layout hacks.
+  const scale = (window.innerWidth - 16) / 794;
   const h = page.offsetHeight || 1123;
   page.style.transform = `scale(${scale})`;
+  // Collapse the layout height so there's no blank space below the CV.
   page.style.marginBottom = `${Math.round(h * (scale - 1))}px`;
-  page.style.marginRight  = `${Math.round(794 * (scale - 1))}px`;
 }
 window.addEventListener("resize", scaleCvMobile);
 
@@ -379,10 +379,9 @@ function renderLockedCV(profile, preview) {
 function addCVLockOverlay() {
   const page = document.getElementById("page");
   if (!page || document.getElementById("lockOverlay")) return;
-  page.style.position = "relative";
+  const isMobile = window.innerWidth < 860;
   const overlay = document.createElement("div");
   overlay.id = "lockOverlay";
-  overlay.className = "cv-lock-overlay";
   overlay.innerHTML = `
     <div class="lock-cta">
       <div class="lock-icon">🔒</div>
@@ -391,7 +390,17 @@ function addCVLockOverlay() {
       <button class="btn btn-accent" id="unlockBtn">Unlock · 1 credit</button>
       <p class="lock-credits-note" id="lockCreditsNote"></p>
     </div>`;
-  page.appendChild(overlay);
+  if (isMobile) {
+    // On mobile the CV is scaled via transform, which makes position:fixed children
+    // behave like position:absolute (CSS quirk). Append to body instead so the
+    // overlay truly sits outside the scaled element and is full-size and tappable.
+    overlay.className = "cv-lock-overlay-mobile";
+    document.body.appendChild(overlay);
+  } else {
+    overlay.className = "cv-lock-overlay";
+    page.style.position = "relative";
+    page.appendChild(overlay);
+  }
   getCredits().then(c => {
     const el = document.getElementById("lockCreditsNote");
     if (el) el.textContent = `You have ${c} credit${c !== 1 ? "s" : ""} remaining.`;
@@ -402,10 +411,9 @@ function addCVLockOverlay() {
 function addCoverLockOverlay() {
   const page = document.getElementById("coverPage");
   if (!page || document.getElementById("coverLockOverlay")) return;
-  page.style.position = "relative";
+  const isMobile = window.innerWidth < 860;
   const overlay = document.createElement("div");
   overlay.id = "coverLockOverlay";
-  overlay.className = "cv-lock-overlay";
   overlay.innerHTML = `
     <div class="lock-cta">
       <div class="lock-icon">🔒</div>
@@ -414,7 +422,14 @@ function addCoverLockOverlay() {
       <button class="btn btn-accent" id="coverUnlockBtn">Unlock · 1 credit</button>
       <p class="lock-credits-note" id="coverLockCreditsNote"></p>
     </div>`;
-  page.appendChild(overlay);
+  if (isMobile) {
+    overlay.className = "cv-lock-overlay-mobile";
+    document.body.appendChild(overlay);
+  } else {
+    overlay.className = "cv-lock-overlay";
+    page.style.position = "relative";
+    page.appendChild(overlay);
+  }
   getCredits().then(c => {
     const el = document.getElementById("coverLockCreditsNote");
     if (el) el.textContent = `You have ${c} credit${c !== 1 ? "s" : ""} remaining.`;

@@ -888,6 +888,27 @@ button { font: inherit; cursor: pointer; }
 
 /* ---------- Mobile responsive ---------- */
 
+/* Nav bar: 2-row layout on small screens */
+@media (max-width: 640px) {
+  .app-nav-inner {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 8px 16px 0;
+    gap: 0;
+  }
+  .app-nav-brand { padding: 4px 0; }
+  .app-nav-signout { margin-left: auto; padding: 4px 8px; font-size: 12px; }
+  .app-nav-links {
+    flex: 0 0 100%;
+    order: 3;
+    border-top: 1px solid var(--line);
+    margin: 4px -16px 0;
+    padding: 4px 8px;
+    gap: 0;
+  }
+  .app-nav-link { font-size: 13px; padding: 7px 8px; }
+}
+
 /* Result bar: wrap to 2 rows on small screens */
 @media (max-width: 700px) {
   .result-bar { padding: 0 12px; }
@@ -915,14 +936,48 @@ button { font: inherit; cursor: pointer; }
   .cv-stage-inner { flex-direction: column; align-items: center; }
   .interview-panel, .fit-panel { display: none !important; }
   .stage { padding: 16px 0 40px; overflow: hidden; }
-  /* #page transform applied by scaleCvMobile() in result.js */
-  #page { transform-origin: top left; }
+  /* #page transform applied by scaleCvMobile() in result.js — origin is top center
+     so the scaled CV stays centred in the viewport without needing layout tweaks */
+  #page { transform-origin: top center; }
+
+  /* Lock overlay: taken out of the scaled #page and appended to body as a
+     fixed bottom sheet (see addCVLockOverlay in result.js).
+     position:fixed + transform ancestor = position:absolute quirk is avoided
+     because the overlay is placed on body, not inside #page. */
+  .cv-lock-overlay-mobile {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    top: auto; height: auto;
+    background: rgba(250, 249, 246, 0.97);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+    border-radius: 16px 16px 0 0;
+    z-index: 200;
+    padding: 20px 24px max(20px, env(safe-area-inset-bottom));
+  }
+  .cv-lock-overlay-mobile .lock-cta {
+    max-width: none; background: transparent;
+    border: none; box-shadow: none; padding: 0;
+  }
+  .cv-lock-overlay-mobile .btn { width: 100%; justify-content: center; padding: 13px; font-size: 15px; }
 }
 
 /* Generate page on mobile */
 @media (max-width: 700px) {
   .gen-page-wrap { padding: 20px 14px 60px; }
   .status { padding: 24px 16px; }
+}
+
+/* Settings: allow date row to wrap on very small screens */
+@media (max-width: 480px) {
+  .role-dates-row { flex-wrap: wrap; }
+}
+
+/* Safe-area: nav top, toast bottom (notched iPhones) */
+@media (max-width: 860px) {
+  .app-nav { padding-top: env(safe-area-inset-top); }
+  .toast { bottom: max(24px, calc(env(safe-area-inset-bottom) + 12px)); }
 }
 
 /* ---------- Auth callback loading screen ---------- */

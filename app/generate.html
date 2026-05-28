@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>CvBFF — Generate CV</title>
   <link rel="stylesheet" href="/app/styles.css">
   <link rel="stylesheet" href="/app/cv.css">
@@ -183,11 +183,12 @@
         });
         const naturalH = (contentH > 0 ? contentH : 1123) + 32; // 32px bottom breathing room
 
-        // Derive preview width from window dimensions — more reliable than
-        // getBoundingClientRect which can misfire while layout is settling.
-        // gen-page-wrap: max-width 960, padding 28*2=56
-        // pre-gen-panel: padding 24*2=48  →  total reduction = 104px, max = 856px
-        const previewW = Math.min(window.innerWidth - 104, 856);
+        // Use the panel's actual rendered width when available (most reliable).
+        // Fall back to window-based calc: gen-page-wrap padding 28*2=56 on desktop,
+        // 14*2=28 on mobile; pre-gen-panel padding 24*2=48. Max preview = 856px.
+        const panelW = document.getElementById("preGenPanel").getBoundingClientRect().width;
+        const wrapPad = window.innerWidth <= 700 ? 28 : 56;
+        const previewW = panelW > 0 ? panelW - 48 : Math.min(window.innerWidth - wrapPad - 48, 856);
         const scale    = Math.min(previewW / 794, 1.0);
         const previewH = Math.round(Math.min(naturalH, 1123) * scale);
 
