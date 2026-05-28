@@ -14,44 +14,6 @@
         <h1 style="margin:0">Generate CV</h1>
         <p style="margin:4px 0 0">Paste a job description or enter the URL and we'll tailor your CV to it.</p>
       </header>
-      <div class="gen-credit-row">
-        <span id="creditCount" style="font-size:13px; font-weight:600; color:var(--accent-ink)">…</span>
-        <button class="btn-refresh-credits" id="refreshCredits" title="Refresh credit balance">↻</button>
-        <button class="btn-buy-credits" id="buyCreditsBtn">Buy credits</button>
-      </div>
-    </div>
-
-    <!-- Shop view (hidden by default) -->
-    <div id="shopView" style="display:none">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-        <span style="font-size:15px; font-weight:700;">Buy credits</span>
-        <button class="btn" id="shopClose">✕ Close</button>
-      </div>
-      <p class="shop-title">Choose a credit pack</p>
-      <div class="pack-list">
-        <button class="pack-card" data-package="pack_10">
-          <span class="pack-credits">10 credits</span>
-          <span class="pack-price">$1.99</span>
-          <span class="pack-note">Try it out — 5 full applications</span>
-        </button>
-        <button class="pack-card" data-package="pack_30">
-          <span class="pack-credits">30 credits</span>
-          <span class="pack-price">$4.99</span>
-          <span class="pack-note">15 full applications</span>
-        </button>
-        <button class="pack-card pack-card-popular" data-package="pack_65">
-          <span class="pack-badge">Most popular</span>
-          <span class="pack-credits">65 credits</span>
-          <span class="pack-price">$9.99</span>
-          <span class="pack-note">32 full applications</span>
-        </button>
-        <button class="pack-card" data-package="pack_100">
-          <span class="pack-credits">100 credits</span>
-          <span class="pack-price">$14.99</span>
-          <span class="pack-note">Best value — 50 full applications</span>
-        </button>
-      </div>
-      <p class="auth-error" id="shopError" style="display:none; margin-top:10px;"></p>
     </div>
 
     <!-- Main input area -->
@@ -310,58 +272,6 @@
       location.href = "/app/result.html";
     });
 
-    // ---------- Credits ----------
-    async function loadCredits() {
-      try {
-        const credits = await getCredits();
-        const el = document.getElementById("creditCount");
-        if (el) {
-          el.textContent = `${credits} credit${credits !== 1 ? "s" : ""}`;
-          el.style.color = credits === 0 ? "var(--danger)" : credits <= 2 ? "#b45309" : "var(--accent-ink)";
-        }
-      } catch { /* non-critical */ }
-    }
-
-    document.getElementById("refreshCredits").addEventListener("click", async () => {
-      const btn = document.getElementById("refreshCredits");
-      btn.disabled = true;
-      await loadCredits();
-      btn.disabled = false;
-    });
-
-    // ---------- Shop ----------
-    function _shopSetVisible(v) {
-      document.getElementById("shopView").style.display   = v ? "" : "none";
-      document.getElementById("mainInput").style.display  = v ? "none" : "";
-    }
-    document.getElementById("buyCreditsBtn").addEventListener("click", () => {
-      document.getElementById("shopError").style.display = "none";
-      _shopSetVisible(true);
-    });
-    document.getElementById("shopClose").addEventListener("click", () => _shopSetVisible(false));
-
-    document.querySelectorAll(".pack-card").forEach(card => {
-      card.addEventListener("click", async () => {
-        const packageId = card.dataset.package;
-        const shopError = document.getElementById("shopError");
-        const priceEl   = card.querySelector(".pack-price");
-        shopError.style.display = "none";
-        document.querySelectorAll(".pack-card").forEach(c => { c.disabled = true; });
-        const origPrice = priceEl.textContent;
-        priceEl.textContent = "Opening…";
-        try {
-          const url = await createCheckoutSession(packageId);
-          window.open(url, "_blank");
-        } catch (err) {
-          shopError.textContent = err.message || "Could not start checkout — try again.";
-          shopError.style.display = "";
-          priceEl.textContent = origPrice;
-        } finally {
-          document.querySelectorAll(".pack-card").forEach(c => { c.disabled = false; });
-        }
-      });
-    });
-
     // ---------- Init ----------
     (async () => {
       const user = await authGuard();
@@ -369,7 +279,6 @@
       renderNav("generate");
       initThemeSwatches();
       updateMiniPreview();
-      await loadCredits();
 
       // Profile health check.
       try {

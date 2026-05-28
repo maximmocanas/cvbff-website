@@ -153,6 +153,9 @@ function updateCreditPill(credits) {
   if (typeof credits !== "number") { pill.style.display = "none"; return; }
   countEl.textContent = `${credits} credit${credits !== 1 ? "s" : ""}`;
   pill.style.display = "";
+  // Show the Buy credits button once we know the user is authenticated.
+  const buyBtn = document.getElementById("resultBuyCredits");
+  if (buyBtn) buyBtn.style.display = "";
 }
 
 async function fetchAndShowCreditPill() {
@@ -1528,7 +1531,15 @@ document.getElementById("cvCopyText").addEventListener("click", async () => {
 
 // ---------- Init ----------
 
+// Wire the "Buy credits" button in the result bar to the shared shop modal.
+document.getElementById("resultBuyCredits")?.addEventListener("click", () => {
+  if (typeof openShopModal === "function") openShopModal();
+});
+
 (async function start() {
+  // Install shop modal early so it's ready before the user can click.
+  if (typeof _installShopModal === "function") _installShopModal();
+
   // Auth guard.
   const currentUser = await getUser().catch(() => null);
   if (!currentUser?.email) {

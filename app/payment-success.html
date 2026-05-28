@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CvBFF — Payment</title>
+  <link rel="stylesheet" href="/app/styles.css">
+  <style>
+    body { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); }
+    .payment-card {
+      text-align: center; padding: 48px 40px;
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: var(--shadow); max-width: 400px; width: 100%;
+    }
+    .payment-icon { font-size: 48px; margin-bottom: 16px; }
+    .payment-title { font-size: 22px; font-weight: 700; margin: 0 0 8px; }
+    .payment-sub   { font-size: 14px; color: var(--muted); margin: 0 0 28px; }
+    .payment-btn   { display: inline-block; }
+  </style>
+</head>
+<body>
+  <div class="payment-card">
+    <div class="payment-icon" id="payIcon">✅</div>
+    <h1 class="payment-title" id="payTitle">Credits added!</h1>
+    <p class="payment-sub" id="paySub">Taking you back to where you were…</p>
+    <a id="payBtn" class="btn btn-accent payment-btn" href="/app/generate.html">Continue →</a>
+  </div>
+
+  <script>
+    (function () {
+      const cancelled   = new URLSearchParams(location.search).get("cancelled") === "1";
+      const returnUrl   = localStorage.getItem("cvbff_buyReturnUrl") || "/app/generate.html";
+      // Clean up so refreshing this page doesn't redirect to a stale URL.
+      localStorage.removeItem("cvbff_buyReturnUrl");
+
+      const btn   = document.getElementById("payBtn");
+      const icon  = document.getElementById("payIcon");
+      const title = document.getElementById("payTitle");
+      const sub   = document.getElementById("paySub");
+
+      btn.href = returnUrl;
+
+      if (cancelled) {
+        icon.textContent  = "↩";
+        title.textContent = "Purchase cancelled";
+        sub.textContent   = "No charge was made. Taking you back…";
+        // Redirect immediately — nothing happened, no need to wait.
+        location.replace(returnUrl);
+      } else {
+        // Redirect after a short delay so the user sees the confirmation.
+        setTimeout(() => location.replace(returnUrl), 2500);
+      }
+    })();
+  </script>
+</body>
+</html>

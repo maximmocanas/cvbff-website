@@ -68,6 +68,35 @@ a:hover { text-decoration: underline; }
 }
 .app-nav-signout:hover { color: var(--danger); background: var(--danger-soft); }
 
+/* Nav right section: credit pill + buy + sign out */
+.app-nav-right {
+  display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0;
+}
+.nav-credit-pill {
+  display: flex; align-items: center; gap: 4px;
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: 20px; padding: 3px 6px 3px 12px;
+  font-size: 12px; font-weight: 600; color: var(--accent-ink);
+  white-space: nowrap;
+}
+.nav-refresh-btn { padding: 2px 4px !important; font-size: 12px !important; }
+.nav-buy-btn { font-size: 12px !important; padding: 5px 10px !important; }
+
+/* Shop modal — dropdown card that anchors under the nav */
+.nav-shop-modal { position: fixed; inset: 0; z-index: 500; }
+.nav-shop-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.35); }
+.nav-shop-card {
+  position: absolute; top: 60px; right: 16px;
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+  padding: 20px 20px 24px; width: 320px;
+  max-width: calc(100vw - 32px); z-index: 1;
+}
+.nav-shop-hdr {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+}
+.nav-shop-title { font-size: 15px; font-weight: 700; }
+
 /* ---------- Layout ---------- */
 .wrap { max-width: 900px; margin: 0 auto; padding: 40px 28px 80px; }
 
@@ -897,7 +926,12 @@ button { font: inherit; cursor: pointer; }
     gap: 0;
   }
   .app-nav-brand { padding: 4px 0; }
-  .app-nav-signout { margin-left: auto; padding: 4px 8px; font-size: 12px; }
+  .app-nav-right { order: 2; gap: 6px; }
+  .app-nav-signout { padding: 4px 8px; font-size: 12px; }
+  /* Hide "Sign out" text on very small screens to save space */
+  @media (max-width: 400px) {
+    .app-nav-signout { display: none; }
+  }
   .app-nav-links {
     flex: 0 0 100%;
     order: 3;
@@ -907,6 +941,8 @@ button { font: inherit; cursor: pointer; }
     gap: 0;
   }
   .app-nav-link { font-size: 13px; padding: 7px 8px; }
+  .nav-shop-card { top: auto; bottom: 0; right: 0; left: 0; width: 100%;
+    max-width: 100%; border-radius: var(--radius) var(--radius) 0 0; }
 }
 
 /* Result bar: wrap to 2 rows on small screens */
