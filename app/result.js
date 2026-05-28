@@ -13,7 +13,7 @@ function _scalePage(pageId, wrapId) {
     wrap.style.height    = "";
     return;
   }
-  const scale = window.innerWidth / 794;
+  const scale = wrap.offsetWidth / 794;
   const h     = page.offsetHeight || 1123;
   page.style.position        = "absolute";
   page.style.transformOrigin = "top left";
