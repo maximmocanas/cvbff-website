@@ -785,7 +785,13 @@ function showView(which) {
 function printOnly(which) {
   document.body.classList.remove("print-cv", "print-cover");
   document.body.classList.add(which === "cover" ? "print-cover" : "print-cv");
+  if (which !== "cover" && cvPageCount > 1) {
+    document.body.dataset.printPages = String(cvPageCount);
+  } else {
+    delete document.body.dataset.printPages;
+  }
   window.print();
+  delete document.body.dataset.printPages;
 }
 
 document.getElementById("download").addEventListener("click", () => printOnly("cv"));

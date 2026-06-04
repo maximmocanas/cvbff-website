@@ -366,6 +366,16 @@
     overflow: hidden !important;
     background: #fff;
   }
+  body[data-print-pages="2"], body[data-print-pages="2"] html {
+    height: 594mm !important;
+    max-height: 594mm !important;
+    overflow: visible !important;
+  }
+  body[data-print-pages="3"], body[data-print-pages="3"] html {
+    height: 891mm !important;
+    max-height: 891mm !important;
+    overflow: visible !important;
+  }
   /* Reset the mobile scale wrapper so the document prints at full A4 size */
   #cvScaleWrap, #coverScaleWrap {
     position: static !important;
@@ -379,12 +389,19 @@
     position: static !important;
     box-shadow: none;
     width: 210mm;
-    /* Exact A4 height — not min-height, so nothing can push a second page */
     height: 297mm !important;
     min-height: 0 !important;
     overflow: hidden !important;
     transform: none !important;
     margin: 0 !important;
+  }
+  body[data-print-pages="2"] .cv-page {
+    height: 594mm !important;
+    overflow: visible !important;
+  }
+  body[data-print-pages="3"] .cv-page {
+    height: 891mm !important;
+    overflow: visible !important;
   }
   /* Print only the document the user asked for. */
   body.print-cv #coverStage { display: none !important; }
