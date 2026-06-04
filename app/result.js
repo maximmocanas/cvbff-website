@@ -1561,12 +1561,16 @@ document.getElementById("resultBuyCredits")?.addEventListener("click", () => {
     const { cvPrefs = {} } = await store.get("cvPrefs");
     currentCvTemplate    = cvPrefs.cvTemplate    || "classic";
     currentCoverTemplate = cvPrefs.coverTemplate || "classic";
+    cvPageCount          = Number(cvPrefs.pageCount) || 1;
     applyTheme(cvPrefs.themeId || "blue-indigo");
     renderThemeSwatches(cvPrefs.themeId || "blue-indigo");
     updateTplSwatches("cvTplSwatches",       currentCvTemplate);
     updateTplSwatches("cvTplSwatchesInline", currentCvTemplate);
     updateTplSwatches("coverTplSwatches",       currentCoverTemplate);
     updateTplSwatches("coverTplSwatchesInline", currentCoverTemplate);
+    document.querySelectorAll("#pageSwatches .tpl-swatch").forEach(b =>
+      b.classList.toggle("tpl-swatch-active", Number(b.dataset.pages) === cvPageCount)
+    );
   } catch { /* non-critical */ }
 
   renderMiniPreview("cv");

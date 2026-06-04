@@ -81,17 +81,24 @@
   <script src="/app/cv-render.js"></script>
   <script>
     const THEMES = [
-      { name: "blue",    accent: "#4F6EF7" },
-      { name: "slate",   accent: "#475569" },
-      { name: "emerald", accent: "#059669" },
-      { name: "rose",    accent: "#e11d48" },
-      { name: "amber",   accent: "#b45309" },
-      { name: "violet",  accent: "#7c3aed" },
+      { id: "blue-indigo", name: "blue",    accent: "#4F6EF7" },
+      { id: "slate",       name: "slate",   accent: "#475569" },
+      { id: "emerald",     name: "emerald", accent: "#059669" },
+      { id: "rose",        name: "rose",    accent: "#e11d48" },
+      { id: "amber",       name: "amber",   accent: "#b45309" },
+      { id: "violet",      name: "violet",  accent: "#7c3aed" },
     ];
 
     let selectedTpl       = "classic";
     let selectedTheme     = THEMES[0];
     let selectedPageCount = 1;
+
+    async function savePrefs() {
+      try {
+        const { cvPrefs = {} } = await store.get("cvPrefs");
+        await store.set({ cvPrefs: { ...cvPrefs, cvTemplate: selectedTpl, themeId: selectedTheme.id, pageCount: selectedPageCount } });
+      } catch { /* non-critical */ }
+    }
 
     // ---------- Theme swatches ----------
     function initThemeSwatches() {
@@ -107,6 +114,7 @@
           container.querySelectorAll(".theme-swatch").forEach(b => b.classList.remove("theme-swatch-active"));
           btn.classList.add("theme-swatch-active");
           updateMiniPreview();
+          savePrefs();
         });
         container.appendChild(btn);
       });
@@ -120,6 +128,7 @@
       document.querySelectorAll("#pageSwatches .tpl-swatch").forEach(b =>
         b.classList.toggle("tpl-swatch-active", Number(b.dataset.pages) === selectedPageCount)
       );
+      savePrefs();
     });
 
     // ---------- Template swatches ----------
@@ -130,6 +139,7 @@
       document.querySelectorAll("#cvTplSwatches .tpl-swatch").forEach(b => b.classList.remove("tpl-swatch-active"));
       btn.classList.add("tpl-swatch-active");
       updateMiniPreview();
+      savePrefs();
     });
 
     // ---------- Mini preview ----------
@@ -296,6 +306,33 @@
       if (!user) return;
       renderNav("generate");
       initThemeSwatches();
+
+      // Restore last-used preferences.
+      try {
+        const { cvPrefs = {} } = await store.get("cvPrefs");
+        if (cvPrefs.cvTemplate) {
+          selectedTpl = cvPrefs.cvTemplate;
+          document.querySelectorAll("#cvTplSwatches .tpl-swatch").forEach(b =>
+            b.classList.toggle("tpl-swatch-active", b.dataset.tpl === selectedTpl)
+          );
+        }
+        if (cvPrefs.themeId) {
+          const saved = THEMES.find(t => t.id === cvPrefs.themeId);
+          if (saved) {
+            selectedTheme = saved;
+            document.querySelectorAll("#themeSwatches .theme-swatch").forEach((b, i) =>
+              b.classList.toggle("theme-swatch-active", THEMES[i]?.id === cvPrefs.themeId)
+            );
+          }
+        }
+        if (cvPrefs.pageCount) {
+          selectedPageCount = Number(cvPrefs.pageCount);
+          document.querySelectorAll("#pageSwatches .tpl-swatch").forEach(b =>
+            b.classList.toggle("tpl-swatch-active", Number(b.dataset.pages) === selectedPageCount)
+          );
+        }
+      } catch { /* non-critical */ }
+
       updateMiniPreview();
 
       // Profile health check.
