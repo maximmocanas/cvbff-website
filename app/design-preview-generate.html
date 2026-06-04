@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CvBFF — Generate CV Preview</title>
+  <style>
+    :root {
+      --bg: #f1f0ed;
+      --card: #ffffff;
+      --sidebar: #1a1a22;
+      --sidebar-hover: #2a2a36;
+      --ink: #1a1a1a;
+      --muted: #6b6b6b;
+      --faint: #9a988f;
+      --line: #e7e5df;
+      --accent: #4F6EF7;
+      --accent-soft: #EEF1FE;
+      --accent-ink: #3B57D9;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px; flex-shrink: 0;
+      background: var(--sidebar);
+      display: flex; flex-direction: column;
+      padding: 20px 12px;
+      position: fixed; top: 0; left: 0; bottom: 0;
+    }
+    .sidebar-wordmark {
+      font-size: 18px; font-weight: 800; color: #fff;
+      letter-spacing: -0.02em;
+      padding: 4px 10px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 12px;
+    }
+    .sidebar-wordmark span { color: var(--accent); }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: var(--radius-sm);
+      color: rgba(255,255,255,0.55);
+      font-size: 13.5px; font-weight: 500;
+      cursor: pointer; margin-bottom: 2px;
+      text-decoration: none;
+      transition: background 0.12s, color 0.12s;
+    }
+    .nav-item:hover { background: var(--sidebar-hover); color: rgba(255,255,255,0.9); }
+    .nav-item.active { background: var(--accent); color: #fff; font-weight: 600; }
+    .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+    .sidebar-section-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: rgba(255,255,255,0.25);
+      padding: 14px 12px 6px;
+    }
+    .sidebar-bottom {
+      margin-top: auto;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 12px;
+    }
+    .credit-pill-sidebar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(79,110,247,0.15);
+      border: 1px solid rgba(79,110,247,0.3);
+      border-radius: var(--radius-sm); padding: 9px 12px; margin-bottom: 8px;
+    }
+    .credit-pill-sidebar .label { font-size: 11px; color: rgba(255,255,255,0.5); }
+    .credit-pill-sidebar .count { font-size: 16px; font-weight: 700; color: #fff; }
+    .btn-buy {
+      width: 100%; background: var(--accent); color: #fff;
+      border: none; border-radius: var(--radius-sm);
+      padding: 8px 12px; font-size: 12.5px; font-weight: 600;
+      cursor: pointer; text-align: center;
+    }
+
+    /* Main */
+    .main { margin-left: 220px; flex: 1; padding: 28px 28px 48px; max-width: 900px; }
+
+    .topbar { margin-bottom: 24px; }
+    .topbar-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .topbar-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .topbar-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    .credits-row {
+      display: none; align-items: center; gap: 6px;
+      flex-shrink: 0; margin-top: 4px;
+    }
+    .mobile-credits {
+      display: flex;
+      align-items: center; gap: 5px;
+      background: var(--accent-soft);
+      color: var(--accent-ink);
+      font-size: 12px; font-weight: 700;
+      padding: 5px 11px; border-radius: 999px;
+      white-space: nowrap; cursor: default;
+    }
+    .btn-buy-sm {
+      background: var(--accent); color: #fff;
+      border: none; border-radius: 999px;
+      font-size: 11.5px; font-weight: 700;
+      padding: 5px 11px; cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* Input card */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .input-card { margin-bottom: 16px; }
+
+    .card-section {
+      padding: 20px 22px;
+    }
+    .card-section + .card-section {
+      border-top: 1px solid var(--line);
+    }
+
+    .section-label {
+      font-size: 11.5px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--muted); margin-bottom: 10px;
+    }
+
+    .job-textarea {
+      width: 100%; resize: none; height: 160px;
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 13.5px; font-family: inherit; color: var(--ink);
+      background: #fafaf9;
+      outline: none;
+      transition: border-color 0.12s;
+      line-height: 1.55;
+    }
+    .job-textarea:focus { border-color: var(--accent); background: #fff; }
+    .job-textarea::placeholder { color: var(--faint); }
+
+    .url-row {
+      display: flex; gap: 8px; align-items: center;
+      margin-top: 10px;
+    }
+    .url-input {
+      flex: 1;
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 13px; font-family: inherit; color: var(--ink);
+      background: #fafaf9; outline: none;
+    }
+    .url-input::placeholder { color: var(--faint); }
+    .btn {
+      padding: 8px 16px; border-radius: var(--radius-sm);
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
+      white-space: nowrap;
+    }
+    .btn-accent {
+      background: var(--accent); border-color: var(--accent); color: #fff;
+    }
+
+    /* Options row */
+    /* Options list — settings-row style */
+    .options-list { display: flex; flex-direction: column; }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .option-row-left { flex-shrink: 0; min-width: 140px; }
+    .option-row-label { font-size: 14px; font-weight: 600; color: var(--ink); }
+    .option-row-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+    .option-row-right {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .opt-btn {
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 13px; font-weight: 500;
+      border: 1.5px solid var(--line);
+      background: var(--bg); color: var(--muted);
+      cursor: pointer;
+      transition: background 0.1s, border-color 0.1s, color 0.1s;
+    }
+    .opt-btn-active {
+      background: var(--ink); border-color: var(--ink);
+      color: #fff; font-weight: 600;
+    }
+
+    .colour-swatch {
+      width: 26px; height: 26px; border-radius: 50%;
+      cursor: pointer; border: 2.5px solid transparent;
+      transition: transform 0.1s;
+    }
+    .colour-swatch.active { border-color: var(--ink); transform: scale(1.15); }
+
+    /* Toggle */
+    .toggle-wrap { display: flex; align-items: center; cursor: pointer; }
+    .toggle-input { display: none; }
+    .toggle-track {
+      width: 42px; height: 24px;
+      background: var(--line); border-radius: 999px;
+      position: relative; transition: background 0.2s;
+    }
+    .toggle-input:checked + .toggle-track { background: var(--ink); }
+    .toggle-thumb {
+      position: absolute; top: 3px; left: 3px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #fff; transition: left 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle-input:checked + .toggle-track .toggle-thumb { left: 21px; }
+
+    /* Generate button area */
+    .generate-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 22px;
+      border-top: 1px solid var(--line);
+    }
+    .generate-hint { font-size: 12.5px; color: var(--muted); }
+    .generate-hint strong { color: var(--ink); }
+
+    .btn-generate {
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px; font-weight: 600;
+      background: var(--ink); color: #fff;
+      border: 1.5px solid transparent;
+      cursor: pointer; white-space: nowrap;
+      transition: opacity 0.1s;
+    }
+    .btn-generate:hover { opacity: 0.8; }
+    .btn-generate:disabled {
+      background: var(--line); color: var(--faint);
+      border-color: var(--line); cursor: not-allowed;
+      opacity: 1;
+    }
+    .btn-generate-secondary {
+      background: transparent; color: var(--ink);
+      border-color: var(--line-strong, #d6d3ca);
+    }
+    .btn-generate-secondary:hover { background: var(--bg); }
+    .btn-generate-secondary:disabled {
+      color: var(--faint); border-color: var(--line);
+      background: transparent;
+    }
+
+    /* Mini preview card */
+    .preview-card {
+      display: flex; flex-direction: column;
+    }
+    .mini-cv {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      margin-top: 4px;
+      position: relative;
+    }
+    .mini-cv-inner {
+      padding: 16px;
+      font-size: 6.5px;
+      line-height: 1.4;
+      color: #333;
+      transform-origin: top left;
+    }
+    .mini-name { font-size: 11px; font-weight: 700; color: #1a1a1a; }
+    .mini-role { font-size: 7.5px; color: #555; margin-bottom: 6px; }
+    .mini-section-head {
+      font-size: 6px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--accent);
+      border-bottom: 1px solid #e0e0e0; padding-bottom: 2px;
+      margin: 8px 0 4px;
+    }
+    .mini-line {
+      height: 4px; background: #f0eeea; border-radius: 2px;
+      margin-bottom: 3px;
+    }
+    .mini-line.short { width: 60%; }
+    .mini-line.med { width: 80%; }
+    .mini-line.full { width: 100%; }
+
+    /* Profile completeness */
+    .completeness-card {
+      margin-top: 16px;
+    }
+    .completeness-bar-wrap {
+      display: flex; align-items: center; gap: 10px; margin-top: 6px;
+    }
+    .completeness-bar-bg {
+      flex: 1; height: 6px; background: var(--line);
+      border-radius: 999px; overflow: hidden;
+    }
+    .completeness-bar-fill {
+      height: 100%; background: var(--accent);
+      border-radius: 999px; width: 78%;
+    }
+    .completeness-pct { font-size: 12px; font-weight: 700; color: var(--accent); }
+    .completeness-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* Preview label */
+    .preview-label {
+      position: fixed; top: 12px; right: 12px;
+      background: #1a1a22; color: #fff;
+      font-size: 11px; font-weight: 600;
+      padding: 5px 12px; border-radius: 999px;
+      letter-spacing: 0.04em; z-index: 999;
+    }
+
+    /* Bottom nav (mobile only) */
+    .bottom-nav {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--sidebar);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+    .bottom-nav-inner {
+      display: flex; justify-content: space-around; align-items: center;
+    }
+    .bottom-nav-item {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 3px; padding: 4px 16px;
+      color: rgba(255,255,255,0.45); font-size: 10px; font-weight: 500;
+      text-decoration: none; border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+    .bottom-nav-item.active { color: var(--accent); }
+    .bottom-nav-icon { font-size: 18px; }
+
+    /* Mobile overrides */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .bottom-nav { display: block; }
+      .main {
+        margin-left: 0;
+        padding: 16px 14px calc(150px + env(safe-area-inset-bottom));
+      }
+
+      .topbar-title { font-size: 18px; }
+      .topbar { margin-bottom: 16px; }
+      .credits-row { display: flex; }
+
+      .option-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px 16px;
+      }
+      .option-row-right {
+        justify-content: flex-start;
+        width: 100%;
+      }
+
+      .card-section { padding: 12px 16px; }
+      .job-textarea { height: 84px; }
+      .option-row { padding: 9px 16px; }
+      .option-row-sub { display: none; }
+
+      /* Generate row: fixed above bottom nav */
+      .generate-row {
+        position: fixed;
+        bottom: 70px;
+        left: 0; right: 0;
+        background: var(--card);
+        border-top: 1px solid var(--line);
+        box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+        border-radius: 0;
+        padding: 10px 14px;
+        display: flex; flex-direction: column; gap: 7px;
+        z-index: 50;
+      }
+      .generate-hint { text-align: center; font-size: 11.5px; margin-bottom: 2px; }
+      .generate-row > div { flex-direction: column !important; gap: 7px; width: 100%; }
+      .btn-generate { width: 100%; text-align: center; padding: 10px 16px; font-size: 13px; }
+
+      /* Bottom grid: single column on mobile */
+      .bottom-grid { grid-template-columns: 1fr !important; }
+
+      .preview-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-label">DESIGN PREVIEW — not live</div>
+
+<!-- Bottom nav (mobile) -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a class="bottom-nav-item active" href="#">
+      <span class="bottom-nav-icon">✦</span>
+      <span>Generate</span>
+    </a>
+    <a class="bottom-nav-item" href="#">
+      <span class="bottom-nav-icon">◫</span>
+      <span>Applications</span>
+    </a>
+    <a class="bottom-nav-item" href="#">
+      <span class="bottom-nav-icon">⚙</span>
+      <span>Profile</span>
+    </a>
+  </div>
+</nav>
+
+<div class="shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-wordmark">Cv<span>BFF</span></div>
+    <div class="sidebar-section-label">Menu</div>
+    <a class="nav-item active" href="#">
+      <span class="nav-icon">✦</span> Generate CV
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">◫</span> Applications
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">⚙</span> Profile
+    </a>
+    <div class="sidebar-bottom">
+      <div class="credit-pill-sidebar">
+        <div>
+          <div class="label">Credits remaining</div>
+          <div class="count">12</div>
+        </div>
+        <div style="font-size:20px; color:rgba(255,255,255,0.3)">⬡</div>
+      </div>
+      <button class="btn-buy">Buy credits</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <div class="topbar">
+      <div class="topbar-row">
+        <div>
+          <div class="topbar-title">Generate CV</div>
+          <div class="topbar-sub">Paste a job posting and we'll build a tailored CV in seconds.</div>
+        </div>
+        <div class="credits-row">
+          <div class="mobile-credits">⬡ 12 credits</div>
+          <button class="btn-buy-sm">Buy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input card -->
+    <div class="card input-card">
+
+      <!-- Job text -->
+      <div class="card-section">
+        <div class="section-label">Job posting</div>
+        <textarea class="job-textarea" placeholder="Paste the full job description here…">Commercial Operations Manager
+
+Cerivo is a fast-growing B2B SaaS company helping sales teams close faster. We're looking for a Commercial Operations Manager to own our revenue stack — from CRM to enablement to pipeline reporting.
+
+Requirements:
+• 3+ years in sales ops, revenue ops, or commercial operations
+• HubSpot or Salesforce proficiency
+• Experience building enablement materials and sales playbooks
+• Strong analytical skills — you should be able to build a board-ready pipeline report from scratch</textarea>
+        <div class="url-row">
+          <input class="url-input" placeholder="Or paste a job URL to fetch automatically…" type="url">
+          <button class="btn">Fetch text</button>
+        </div>
+      </div>
+
+      <!-- Options -->
+      <div class="options-list">
+
+        <div class="option-row">
+          <div class="option-row-left">
+            <div class="option-row-label">Template</div>
+            <div class="option-row-sub">Choose your CV layout</div>
+          </div>
+          <div class="option-row-right">
+            <button class="opt-btn opt-btn-active">Classic</button>
+            <button class="opt-btn">Executive</button>
+            <button class="opt-btn">Minimal</button>
+            <button class="opt-btn">Thick Line</button>
+          </div>
+        </div>
+
+        <div class="option-row">
+          <div class="option-row-left">
+            <div class="option-row-label">Colour</div>
+            <div class="option-row-sub">Pick an accent colour</div>
+          </div>
+          <div class="option-row-right">
+            <div class="colour-swatch active" style="background:#4F6EF7"></div>
+            <div class="colour-swatch" style="background:#475569"></div>
+            <div class="colour-swatch" style="background:#059669"></div>
+            <div class="colour-swatch" style="background:#e11d48"></div>
+            <div class="colour-swatch" style="background:#b45309"></div>
+            <div class="colour-swatch" style="background:#7c3aed"></div>
+          </div>
+        </div>
+
+        <div class="option-row" style="border-bottom:none">
+          <div class="option-row-left">
+            <div class="option-row-label">Pages</div>
+            <div class="option-row-sub">How long should your CV be?</div>
+          </div>
+          <div class="option-row-right">
+            <button class="opt-btn opt-btn-active">1 page</button>
+            <button class="opt-btn">2 pages</button>
+            <button class="opt-btn">3 pages</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Generate row -->
+      <div class="generate-row">
+        <div class="generate-hint" style="white-space:nowrap">Free preview</div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-generate">Generate CV →</button>
+          <button class="btn-generate btn-generate-secondary">Generate cover letter →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mini preview + completeness -->
+    <div class="bottom-grid" style="display:grid; grid-template-columns: 1fr 260px; gap:16px;">
+
+      <!-- Mini CV preview -->
+      <div class="card" style="padding:20px 22px;">
+        <div class="section-label" style="margin-bottom:12px">CV preview</div>
+        <div class="mini-cv">
+          <div class="mini-cv-inner">
+            <div class="mini-name">Maxim Mocanas</div>
+            <div class="mini-role" style="color:var(--accent); font-weight:600">Commercial Operations Manager</div>
+            <div style="font-size:6px; color:#888; margin-bottom:6px">Copenhagen · maxim@example.com · linkedin.com/in/maxim</div>
+            <div class="mini-section-head">Summary</div>
+            <div class="mini-line full"></div>
+            <div class="mini-line med"></div>
+            <div class="mini-line short"></div>
+            <div class="mini-section-head">Skills</div>
+            <div class="mini-line med"></div>
+            <div class="mini-line full"></div>
+            <div class="mini-section-head">Work Experience</div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+              <div style="font-size:7px;font-weight:700">Commercial Operation Analyst</div>
+              <div style="font-size:6px;color:#888">2024 – Present</div>
+            </div>
+            <div style="font-size:6.5px;color:#555;margin-bottom:4px">Agreena · Copenhagen</div>
+            <div class="mini-line full"></div>
+            <div class="mini-line med"></div>
+            <div class="mini-line full"></div>
+            <div class="mini-line short"></div>
+            <div style="margin-top:6px;display:flex;justify-content:space-between">
+              <div style="font-size:7px;font-weight:700">Marketing Operations Lead</div>
+              <div style="font-size:6px;color:#888">2022 – 2024</div>
+            </div>
+            <div style="font-size:6.5px;color:#555;margin-bottom:4px">SaaS Co · Remote</div>
+            <div class="mini-line med"></div>
+            <div class="mini-line full"></div>
+            <div class="mini-section-head">Education</div>
+            <div class="mini-line med"></div>
+            <div class="mini-line short"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile health + tips -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+
+        <div class="card" style="padding:18px 20px;">
+          <div class="section-label" style="margin-bottom:10px">Profile quality</div>
+          <div class="completeness-bar-wrap">
+            <div class="completeness-bar-bg">
+              <div class="completeness-bar-fill"></div>
+            </div>
+            <div class="completeness-pct">78%</div>
+          </div>
+          <div class="completeness-hint" style="margin-top:8px">Good — expect a strong 1–2 page CV</div>
+          <div style="margin-top:12px; display:flex; flex-direction:column; gap:6px;">
+            <div style="font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px;">
+              <span style="color:#059669; font-weight:700">✓</span> Work experience
+            </div>
+            <div style="font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px;">
+              <span style="color:#059669; font-weight:700">✓</span> Skills bank
+            </div>
+            <div style="font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px;">
+              <span style="color:#059669; font-weight:700">✓</span> Education
+            </div>
+            <div style="font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px;">
+              <span style="color:#e11d48; font-weight:700">+</span> Add certifications
+            </div>
+            <div style="font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px;">
+              <span style="color:#e11d48; font-weight:700">+</span> Add languages
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:18px 20px;">
+          <div class="section-label" style="margin-bottom:8px">Tip</div>
+          <div style="font-size:12.5px; color:var(--muted); line-height:1.55">
+            The more detail in your work experience bullets, the better the AI can match you to this role's exact requirements.
+          </div>
+          <a href="#" style="font-size:12px; font-weight:600; color:var(--accent); display:inline-block; margin-top:8px; text-decoration:none">Update profile →</a>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Disable/enable generate buttons based on textarea content
+  const textarea = document.querySelector('.job-textarea');
+  const genBtns = document.querySelectorAll('.btn-generate');
+  function updateBtns() {
+    const hasText = textarea.value.trim().length > 0;
+    genBtns.forEach(b => b.disabled = !hasText);
+  }
+  textarea.addEventListener('input', updateBtns);
+  updateBtns();
+</script>
+
+</body>
+</html>

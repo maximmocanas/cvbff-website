@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CvBFF — Result Preview</title>
+  <style>
+    :root {
+      --bg: #f1f0ed;
+      --card: #ffffff;
+      --sidebar: #1a1a22;
+      --sidebar-hover: #2a2a36;
+      --ink: #1a1a1a;
+      --muted: #6b6b6b;
+      --faint: #9a988f;
+      --line: #e7e5df;
+      --accent: #4F6EF7;
+      --accent-soft: #EEF1FE;
+      --accent-ink: #3B57D9;
+      --success: #059669;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.05);
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px; flex-shrink: 0;
+      background: var(--sidebar);
+      display: flex; flex-direction: column;
+      padding: 20px 12px;
+      position: fixed; top: 0; left: 0; bottom: 0;
+    }
+    .sidebar-wordmark {
+      font-size: 18px; font-weight: 800; color: #fff;
+      letter-spacing: -0.02em;
+      padding: 4px 10px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 12px;
+    }
+    .sidebar-wordmark span { color: var(--accent); }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: var(--radius-sm);
+      color: rgba(255,255,255,0.55);
+      font-size: 13.5px; font-weight: 500;
+      cursor: pointer; margin-bottom: 2px; text-decoration: none;
+    }
+    .nav-item:hover { background: var(--sidebar-hover); color: rgba(255,255,255,0.9); }
+    .nav-item.active { background: var(--accent); color: #fff; font-weight: 600; }
+    .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+    .sidebar-section-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: rgba(255,255,255,0.25);
+      padding: 14px 12px 6px;
+    }
+    .sidebar-bottom {
+      margin-top: auto;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 12px;
+    }
+    .credit-pill-sidebar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(79,110,247,0.15);
+      border: 1px solid rgba(79,110,247,0.3);
+      border-radius: var(--radius-sm); padding: 9px 12px; margin-bottom: 8px;
+    }
+    .credit-pill-sidebar .label { font-size: 11px; color: rgba(255,255,255,0.5); }
+    .credit-pill-sidebar .count { font-size: 16px; font-weight: 700; color: #fff; }
+    .btn-buy {
+      width: 100%; background: var(--accent); color: #fff;
+      border: none; border-radius: var(--radius-sm);
+      padding: 8px 12px; font-size: 12.5px; font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Main */
+    .main { margin-left: 220px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* Top bar */
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 52px; flex-shrink: 0;
+      position: sticky; top: 0; z-index: 10;
+    }
+
+    /* Tabs */
+    .tab-group { display: flex; gap: 2px; }
+    .tab {
+      padding: 6px 16px; border-radius: var(--radius-sm);
+      font-size: 13px; font-weight: 500;
+      cursor: pointer; border: none; background: transparent;
+      color: var(--muted);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .tab.active { background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; }
+    .tab-check { font-size: 11px; }
+    .tab-check.done { color: var(--success); }
+    .tab-check.pending { color: var(--faint); }
+
+    /* Action buttons */
+    .actions { display: flex; align-items: center; gap: 7px; }
+
+    /* Mobile credits — hidden on desktop where sidebar shows it */
+    .mobile-credits {
+      display: flex;
+      align-items: center; gap: 5px;
+      background: var(--accent-soft);
+      color: var(--accent-ink);
+      font-size: 12px; font-weight: 700;
+      padding: 5px 11px; border-radius: 999px;
+      white-space: nowrap; cursor: default; flex-shrink: 0;
+    }
+    .btn-buy-sm {
+      background: var(--accent); color: #fff;
+      border: none; border-radius: 999px;
+      font-size: 11.5px; font-weight: 700;
+      padding: 5px 11px; cursor: pointer;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .credits-stylebar-group {
+      display: none; align-items: center; gap: 6px; flex-shrink: 0;
+    }
+    .btn {
+      padding: 6px 12px; border-radius: var(--radius-sm);
+      font-size: 12.5px; font-weight: 600; cursor: pointer;
+      border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
+      white-space: nowrap;
+    }
+    .btn-accent { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .btn-accent:hover { opacity: 0.85; }
+
+    /* Style bar */
+    .stylebar {
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      padding: 8px 24px;
+      display: flex; align-items: center; gap: 16px;
+      flex-shrink: 0;
+    }
+    .style-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--muted); white-space: nowrap;
+    }
+    .tpl-swatches { display: flex; gap: 5px; }
+    .tpl-swatch {
+      padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 500;
+      border: 1.5px solid var(--line); background: transparent; color: var(--muted); cursor: pointer;
+    }
+    .tpl-swatch.active { background: var(--ink); border-color: var(--ink); color: #fff; font-weight: 600; }
+    .style-sep { width: 1px; height: 16px; background: var(--line); margin: 0 4px; }
+    .colour-swatches { display: flex; gap: 5px; align-items: center; }
+    .colour-dot {
+      width: 18px; height: 18px; border-radius: 50%;
+      cursor: pointer; border: 2px solid transparent;
+    }
+    .colour-dot.active { border-color: var(--ink); }
+
+    /* Content area */
+    .content {
+      flex: 1;
+      display: flex;
+      gap: 20px;
+      padding: 24px;
+      align-items: flex-start;
+    }
+
+    /* CV page */
+    .cv-wrap { flex: 1; display: flex; justify-content: center; }
+    .cv-page {
+      background: #fff;
+      width: 595px;
+      min-height: 842px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.1);
+      border-radius: 3px;
+      padding: 40px 44px;
+      position: relative;
+      font-size: 10px;
+      line-height: 1.45;
+      color: #1a1a1a;
+    }
+
+    /* Lock overlay */
+    .lock-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 320px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.97) 40%, #fff 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-end;
+      padding-bottom: 44px;
+      border-radius: 0 0 3px 3px;
+    }
+    .lock-icon { font-size: 28px; margin-bottom: 10px; }
+    .lock-title { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+    .lock-sub { font-size: 12.5px; color: var(--muted); margin-bottom: 16px; }
+    .btn-unlock {
+      padding: 9px 24px; border-radius: var(--radius-sm);
+      font-size: 13.5px; font-weight: 700;
+      background: var(--accent); color: #fff; border: none; cursor: pointer;
+      box-shadow: 0 2px 12px rgba(79,110,247,0.3);
+    }
+
+    /* CV content styles */
+    .cv-name { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #1a1a1a; }
+    .cv-role { font-size: 11px; color: #4F6EF7; font-weight: 600; margin-top: 2px; }
+    .cv-contact { font-size: 8.5px; color: #777; margin-top: 4px; }
+    .cv-divider { border: none; border-top: 1.5px solid #4F6EF7; margin: 12px 0 8px; }
+    .cv-section-head {
+      font-size: 7.5px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.1em; color: #4F6EF7; margin: 12px 0 5px;
+    }
+    .cv-summary { font-size: 8.5px; color: #333; line-height: 1.55; }
+    .cv-skills { font-size: 8px; color: #444; line-height: 1.6; }
+    .cv-role-head { display: flex; justify-content: space-between; margin-bottom: 2px; }
+    .cv-role-title { font-size: 9px; font-weight: 700; }
+    .cv-role-date { font-size: 8px; color: #888; }
+    .cv-role-company { font-size: 8px; color: #555; margin-bottom: 4px; }
+    .cv-bullet { font-size: 8px; color: #333; margin-bottom: 2px; padding-left: 10px; position: relative; line-height: 1.5; }
+    .cv-bullet::before { content: "•"; position: absolute; left: 2px; color: #4F6EF7; }
+
+    /* Right panel */
+    .right-panel { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; }
+
+    .panel-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .panel-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--muted); margin-bottom: 12px;
+    }
+
+    /* Fit score ring */
+    .fit-ring-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .fit-ring-svg { width: 52px; height: 52px; }
+    .fit-ring-track { fill: none; stroke: #e7e5df; stroke-width: 5; }
+    .fit-ring-arc { fill: none; stroke-width: 5; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; }
+    .fit-score-val { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; color: var(--accent); }
+    .fit-score-label { font-size: 11px; color: var(--muted); }
+    .fit-bullet {
+      font-size: 11.5px; color: var(--muted); padding: 5px 0;
+      border-top: 1px solid var(--line); line-height: 1.45;
+    }
+    .fit-bullet:first-of-type { border-top: none; }
+
+    /* Interview prep */
+    .ip-section-head { font-size: 11px; font-weight: 700; color: var(--ink); margin: 10px 0 5px; }
+    .ip-section-head:first-child { margin-top: 0; }
+    .ip-bullet { font-size: 11.5px; color: var(--muted); padding: 3px 0 3px 10px; position: relative; line-height: 1.4; }
+    .ip-bullet::before { content: "·"; position: absolute; left: 2px; font-weight: 700; color: var(--accent); }
+
+    /* Preview label */
+    .preview-label {
+      position: fixed; top: 12px; right: 12px;
+      background: #1a1a22; color: #fff;
+      font-size: 11px; font-weight: 600;
+      padding: 5px 12px; border-radius: 999px;
+      letter-spacing: 0.04em; z-index: 999;
+    }
+
+    /* Bottom nav (mobile only) */
+    .bottom-nav {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--sidebar);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+    .bottom-nav-inner { display: flex; justify-content: space-around; align-items: center; }
+    .bottom-nav-item {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 3px; padding: 4px 16px;
+      color: rgba(255,255,255,0.45); font-size: 10px; font-weight: 500;
+      text-decoration: none; cursor: pointer;
+    }
+    .bottom-nav-item.active { color: var(--accent); }
+    .bottom-nav-icon { font-size: 18px; }
+
+    /* Collapse sidebar when viewport is too narrow for sidebar + CV + right panel */
+    @media (max-width: 1100px) {
+      .sidebar { display: none; }
+      .bottom-nav { display: block; }
+      .main { margin-left: 0; }
+      .preview-label { display: none; }
+
+      /* Topbar: hide secondary actions, keep key ones */
+      .topbar { padding: 0 16px; gap: 8px; }
+      .actions .btn:not(.btn-accent) { display: none; }
+      .actions .btn-accent { font-size: 12px; padding: 5px 10px; }
+      .credits-stylebar-group { display: flex; }
+
+      /* Stylebar scrolls horizontally */
+      .stylebar {
+        padding: 8px 16px;
+        overflow-x: auto;
+        gap: 10px;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Content: CV on top, panels below — all same width */
+      .content {
+        flex-direction: column;
+        padding: 20px 24px calc(80px + env(safe-area-inset-bottom));
+        gap: 16px;
+        align-items: center;
+      }
+
+      /* CV and right-panel both constrained to 595px so they always match */
+      .cv-wrap {
+        width: 100%; max-width: 595px;
+        overflow: hidden;
+        display: block;
+      }
+      .right-panel {
+        width: 100%; max-width: 595px;
+        flex-direction: row; flex-wrap: wrap; gap: 12px;
+      }
+      .panel-card { flex: 1; min-width: 220px; }
+      .panel-card:first-child { flex: 0 0 100%; }
+    }
+
+    /* Narrow phones: scale CV to fill container, single-column panels */
+    @media (max-width: 660px) {
+      .content { padding-left: 16px; padding-right: 16px; }
+      .topbar { padding: 0 16px; }
+      .stylebar { padding: 8px 16px; }
+      .panel-card { flex: 0 0 100% !important; min-width: unset !important; }
+    }
+
+    @media (max-width: 430px) {
+      .content { padding-left: 12px; padding-right: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-label">DESIGN PREVIEW — not live</div>
+
+<!-- Bottom nav (mobile) -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a class="bottom-nav-item" href="design-preview-generate.html">
+      <span class="bottom-nav-icon">✦</span>
+      <span>Generate</span>
+    </a>
+    <a class="bottom-nav-item active" href="#">
+      <span class="bottom-nav-icon">◫</span>
+      <span>Applications</span>
+    </a>
+    <a class="bottom-nav-item" href="#">
+      <span class="bottom-nav-icon">⚙</span>
+      <span>Profile</span>
+    </a>
+  </div>
+</nav>
+
+<div class="shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-wordmark">Cv<span>BFF</span></div>
+    <div class="sidebar-section-label">Menu</div>
+    <a class="nav-item" href="design-preview-generate.html">
+      <span class="nav-icon">✦</span> Generate CV
+    </a>
+    <a class="nav-item active" href="#">
+      <span class="nav-icon">◫</span> Applications
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">⚙</span> Profile
+    </a>
+    <div class="sidebar-bottom">
+      <div class="credit-pill-sidebar">
+        <div>
+          <div class="label">Credits remaining</div>
+          <div class="count">11</div>
+        </div>
+      </div>
+      <button class="btn-buy">Buy credits</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Top bar -->
+    <div class="topbar">
+      <div class="tab-group">
+        <button class="tab active">
+          <span class="tab-check done">✓</span> CV
+        </button>
+        <button class="tab">
+          <span class="tab-check pending">✗</span> Cover letter
+        </button>
+      </div>
+      <div class="actions">
+        <button class="btn">Edit text</button>
+        <button class="btn">Regenerate</button>
+        <button class="btn">Save</button>
+        <button class="btn btn-accent">Download PDF</button>
+      </div>
+    </div>
+
+    <!-- Style bar -->
+    <div class="stylebar">
+      <div class="credits-stylebar-group">
+        <div class="mobile-credits">⬡ 11 credits</div>
+        <button class="btn-buy-sm">Buy</button>
+        <div style="width:1px; height:16px; background:var(--line); flex-shrink:0;"></div>
+      </div>
+      <span class="style-label">Template</span>
+      <div class="tpl-swatches">
+        <button class="tpl-swatch active">Classic</button>
+        <button class="tpl-swatch">Executive</button>
+        <button class="tpl-swatch">Minimal</button>
+        <button class="tpl-swatch">Thick Line</button>
+      </div>
+      <div class="style-sep"></div>
+      <span class="style-label">Colour</span>
+      <div class="colour-swatches">
+        <div class="colour-dot active" style="background:#4F6EF7"></div>
+        <div class="colour-dot" style="background:#475569"></div>
+        <div class="colour-dot" style="background:#059669"></div>
+        <div class="colour-dot" style="background:#e11d48"></div>
+        <div class="colour-dot" style="background:#b45309"></div>
+        <div class="colour-dot" style="background:#7c3aed"></div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- CV page -->
+      <div class="cv-wrap">
+        <div class="cv-page">
+          <div class="cv-name">Maxim Mocanas</div>
+          <div class="cv-role">Commercial Operations Manager</div>
+          <div class="cv-contact">Copenhagen, Denmark &nbsp;·&nbsp; +45 91 98 74 &nbsp;·&nbsp; maxim.mocanas@gmail.com &nbsp;·&nbsp; linkedin.com/in/maximmocanas</div>
+          <hr class="cv-divider">
+
+          <div class="cv-section-head">Summary</div>
+          <div class="cv-summary">Commercial operations professional with hands-on experience across sales enablement, CRM architecture, and revenue pipeline management in fast-scaling B2B SaaS environments. Spent two years at Agreena building the enablement infrastructure and performance frameworks that helped three sales teams operate with clarity and confidence — then stepped further back to design AI-powered automations and marketing attribution systems that connected marketing spend to revenue outcomes. Ready to bring that same energy to Cerivo's commercial operations stack, closing faster and with more data behind every decision.</div>
+
+          <div class="cv-section-head">Skills</div>
+          <div class="cv-skills">Sales Enablement · HubSpot CRM (Owner) · Revenue Operations · Sales Content Creation · Pipeline Reporting · Marketing Attribution & ROI Analysis · KPI Framework Design · B2B SaaS · AI Workflow Design (Claude AI / ChatGPT) · Cross-Functional Collaboration · Process Documentation · Stakeholder Mapping</div>
+
+          <div class="cv-section-head">Work Experience</div>
+
+          <div class="cv-role-head">
+            <span class="cv-role-title">Commercial Operation Analyst — Agreena, Copenhagen</span>
+            <span class="cv-role-date">2024 – Present</span>
+          </div>
+          <div class="cv-role-company"></div>
+          <div class="cv-bullet">Designed and delivered a company-wide sales enablement programme equipping all reps across three sales teams with skills to source leads, identify decision-makers, enrich contacts, and maintain CRM hygiene independently.</div>
+          <div class="cv-bullet">Built and maintained a full suite of sales enablement content including outreach templates, call frameworks, and step-by-step sourcing guides — tailored to each team's distinct buyer profiles and deal stages.</div>
+          <div class="cv-bullet">Developed battle-card-style competitive diagnostics answering key buyer objection questions, translating analysis into rep-ready talking points.</div>
+          <div class="cv-bullet">Designed individual KPI frameworks defining activity benchmarks — calls, emails, meetings, conversions — for each lead tier, creating the accountability structure managers needed to run structured performance conversations.</div>
+
+          <!-- Lock overlay -->
+          <div class="lock-overlay">
+            <div class="lock-icon">🔒</div>
+            <div class="lock-title">Unlock your full CV</div>
+            <div class="lock-sub">Use 1 credit to unlock, download, and save</div>
+            <button class="btn-unlock">Unlock for 1 credit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="right-panel">
+
+        <!-- Fit score -->
+        <div class="panel-card">
+          <div class="panel-title">Fit score</div>
+          <div class="fit-ring-wrap">
+            <svg class="fit-ring-svg" viewBox="0 0 52 52">
+              <circle class="fit-ring-track" cx="26" cy="26" r="21"/>
+              <circle class="fit-ring-arc" cx="26" cy="26" r="21"
+                stroke="#4F6EF7"
+                stroke-dasharray="131.9"
+                stroke-dashoffset="19.8"/>
+            </svg>
+            <div>
+              <div class="fit-score-val">85%</div>
+              <div class="fit-score-label">Strong match</div>
+            </div>
+          </div>
+          <div class="fit-bullet">✓ Revenue ops & pipeline experience aligns directly</div>
+          <div class="fit-bullet">✓ HubSpot ownership matches required stack</div>
+          <div class="fit-bullet">✓ Enablement content creation — exact requirement</div>
+          <div class="fit-bullet">△ Board-level reporting: highlight Power BI work more</div>
+        </div>
+
+        <!-- Interview prep -->
+        <div class="panel-card">
+          <div class="panel-title">Interview prep</div>
+          <div class="ip-section-head">Brush up on</div>
+          <div class="ip-bullet">Salesforce basics (they may use alongside HubSpot)</div>
+          <div class="ip-bullet">Pipeline velocity metrics and how to present them</div>
+
+          <div class="ip-section-head">Likely questions</div>
+          <div class="ip-bullet">How do you build enablement for teams with different buyer profiles?</div>
+          <div class="ip-bullet">Walk me through a KPI framework you designed from scratch.</div>
+          <div class="ip-bullet">How have you used AI to speed up commercial ops work?</div>
+        </div>
+
+        <!-- Skill gaps -->
+        <div class="panel-card">
+          <div class="panel-title">Skill gaps</div>
+          <div style="display:flex; flex-wrap:wrap; gap:5px;">
+            <span style="background:#FEF3C7; color:#92400E; font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px;">Salesforce</span>
+            <span style="background:#FEE2E2; color:#991B1B; font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px;">Board reporting</span>
+            <span style="background:#FEF3C7; color:#92400E; font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px;">SQL</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Scale CV to exactly fill its container on any viewport
+  function scaleCv() {
+    var wrap = document.querySelector('.cv-wrap');
+    var page = document.querySelector('.cv-page');
+    if (!wrap || !page) return;
+    var w = wrap.clientWidth;
+    if (w <= 0 || w >= 595) {
+      page.style.transform = '';
+      page.style.marginBottom = '';
+      return;
+    }
+    var scale = w / 595;
+    page.style.transform = 'scale(' + scale + ')';
+    page.style.transformOrigin = 'top left';
+    page.style.marginBottom = (842 * scale - 842) + 'px';
+  }
+  document.addEventListener('DOMContentLoaded', scaleCv);
+  window.addEventListener('resize', scaleCv);
+</script>
+</body>
+</html>
