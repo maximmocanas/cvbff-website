@@ -1,0 +1,31 @@
+# CvBFF
+
+> AI resume builder and CV tailoring Chrome extension. Paste any job posting and get a tailored resume, cover letter, and fit score in seconds. Pay per use — no subscription needed.
+
+CvBFF is a Chrome extension and web app that uses AI (Claude) to generate a tailored resume and cover letter for each job a user applies to. It reads the job posting, matches it against the user's saved work experience, and produces a keyword-optimised, ATS-friendly resume in 1, 2, or 3 pages. Users get a fit score and interview prep for each application.
+
+## Key pages
+
+- [Home](https://cvbff.com/): Main landing page
+- [Blog](https://cvbff.com/blog/): CV and job search guides
+- [Privacy Policy](https://cvbff.com/privacy): Privacy policy
+- [Terms](https://cvbff.com/terms): Terms of service
+
+## Blog posts
+
+- [AI CV Tailoring Guide](https://cvbff.com/blog/ai-cv-tailoring-guide): How to use AI to tailor your CV to job postings
+- [ChatGPT vs AI Resume Builders](https://cvbff.com/blog/chatgpt-vs-cv-tools): Comparison of generic AI vs dedicated resume tools
+- [5 Resume Mistakes Costing You Interviews](https://cvbff.com/blog/cv-mistakes-costing-you-interviews): Common CV/resume errors to fix
+- [CV Personal Statement Examples](https://cvbff.com/blog/cv-personal-statement-examples): Examples and formula for strong personal statements
+- [CV Skills Section Guide](https://cvbff.com/blog/cv-skills-section): What to put in your skills section
+- [CV vs Resume](https://cvbff.com/blog/cv-vs-resume): Differences and when to use each
+- [CV With No Experience](https://cvbff.com/blog/cv-with-no-experience): Guide for students and graduates
+- [How to Beat ATS Systems](https://cvbff.com/blog/how-to-beat-ats-systems): Optimising for applicant tracking systems
+- [How to Write a Cover Letter](https://cvbff.com/blog/how-to-write-a-cover-letter): Structure and examples
+- [How to Write Work Experience on a CV](https://cvbff.com/blog/how-to-write-work-experience-cv): Writing bullet points that impress
+- [Job Search Strategy](https://cvbff.com/blog/job-search-strategy): How to apply efficiently at scale
+- [How to Tailor Your CV to a Job Posting](https://cvbff.com/blog/tailor-your-cv-to-a-job-posting): Step-by-step tailoring guide
+
+## Optional
+
+Llms-full: https://cvbff.com/llms-full.txt

@@ -1,0 +1,74 @@
+# CvBFF — Full AI Crawler Reference
+
+> AI resume builder and CV tailoring Chrome extension. Paste any job posting and get a tailored resume, cover letter, and fit score in seconds. Pay per use — no subscription needed.
+
+## What CvBFF Does
+
+CvBFF is an AI-powered resume and CV builder available as a Chrome extension and web app. It generates a fully tailored resume (or CV) and cover letter for each specific job a user applies to, using their saved work history and profile data. The output is keyword-optimised for ATS (Applicant Tracking Systems) and formatted for immediate use.
+
+## How It Works
+
+1. The user installs the CvBFF Chrome extension or visits the web app at cvbff.com.
+2. They browse to any job posting on any job board (LinkedIn, Indeed, Glassdoor, company career pages, etc.).
+3. They click "Read this page" — CvBFF reads and extracts the job description automatically.
+4. They click "Apply to job" to start the generation flow.
+5. They select a CV template (4 options) and colour scheme (6 options).
+6. They select CV length: 1, 2, or 3 pages.
+7. The AI (Claude by Anthropic) generates a tailored resume and cover letter matched to the specific job posting, drawing only from the user's real saved experience — no hallucinations or invented content.
+8. The user receives a free preview. Unlocking the full document costs 1 credit.
+9. The user also receives a fit score (0–100) explaining how well their profile matches the role, plus tailored interview prep suggestions.
+10. All applications, CVs, and cover letters are automatically saved to the user's applications tracker.
+
+## What Makes CvBFF Different
+
+- **Chrome extension**: Works directly on any job board, no copy-pasting required. The extension reads the job posting from the page the user is already on.
+- **Pay-per-use credits**: No subscription. Users buy credits and spend 1 per document unlock or regeneration. Starting from $1.99 for 10 credits.
+- **Based on real profile data**: CvBFF stores the user's full work history, skills, education, certifications, and languages. The AI tailors from this real data — it cannot invent experience.
+- **4 CV templates**: Classic, Executive, Minimal, and Thick Underline.
+- **6 colour schemes**: Users choose the visual style of their CV.
+- **1, 2, or 3 page CVs**: Content is automatically scaled and prioritised to fill the selected page count without overflow or blank space.
+- **ATS-optimised output**: Keywords from the job posting are naturally incorporated. The AI is instructed to avoid AI-sounding artefacts and produce human-sounding language.
+- **Applications tracker**: Every generated CV and cover letter is saved. Users can track application status (Applied, Interview, Offer, Rejected), filter, sort, and delete entries.
+- **Fit score and interview prep**: Each generation includes a 0–100 fit score with explanation and a set of interview preparation suggestions specific to the role.
+- **Inline editing**: Users can manually edit any part of their generated CV or cover letter before downloading.
+- **Google OAuth**: Sign in with Google is fully supported alongside email/password.
+
+## Pricing Model
+
+CvBFF uses a credit system with no subscription:
+- Unlocking a CV: 1 credit
+- Unlocking a cover letter: 1 credit
+- Regenerating a CV or cover letter: 1 credit
+- Previewing is always free
+- Credits are purchased via Stripe. Starting from $1.99 for 10 credits.
+
+## Technical Details
+
+- Frontend: Vanilla JS, HTML, CSS. Chrome Extension (Manifest V3).
+- Backend: Supabase (authentication and database).
+- AI: Claude (claude-sonnet-4-6) via a Cloudflare Worker proxy.
+- Payments: Stripe.
+- The Cloudflare Worker validates the user's JWT, checks credits, calls Claude, and returns results. Credit deduction is server-side only.
+
+## Blog Posts
+
+- [AI CV Tailoring Guide](https://cvbff.com/blog/ai-cv-tailoring-guide): How AI CV tailoring works, what to expect, and how to use it without getting burned. Covers the difference between generic AI and purpose-built tools, and what good tailoring actually looks like in 2026.
+- [ChatGPT vs AI Resume Builders](https://cvbff.com/blog/chatgpt-vs-cv-tools): A detailed comparison of using ChatGPT versus a dedicated AI resume builder for job applications. Covers hallucination risk, context loss, formatting gaps, and when each tool is the right choice.
+- [5 Resume Mistakes Costing You Interviews](https://cvbff.com/blog/cv-mistakes-costing-you-interviews): The five most common CV and resume mistakes that cause applications to be rejected before a human reads them, and how to fix each one.
+- [CV Personal Statement Examples](https://cvbff.com/blog/cv-personal-statement-examples): Real examples of strong personal statements (also called CV summaries or professional profiles), plus a formula for writing one that works for any role.
+- [CV Skills Section Guide](https://cvbff.com/blog/cv-skills-section): What to include in the skills section, how to order it, what to leave out, and how to tailor it for every application. Includes ATS considerations.
+- [CV vs Resume](https://cvbff.com/blog/cv-vs-resume): The definitive guide to the difference between a CV and a resume, when to use each, and how terminology varies by country and industry.
+- [CV With No Experience](https://cvbff.com/blog/cv-with-no-experience): A guide for students, graduates, and first-time job seekers on how to build a CV that gets interviews when you have no formal work experience.
+- [How to Beat ATS Systems](https://cvbff.com/blog/how-to-beat-ats-systems): How applicant tracking systems work, why CVs get filtered out, and how to optimise your resume to pass ATS legitimately — without gaming or keyword stuffing.
+- [How to Write a Cover Letter](https://cvbff.com/blog/how-to-write-a-cover-letter): A 4-part cover letter structure that gets read in 2026, with examples and a template. Covers what modern recruiters look for and what to avoid.
+- [How to Write Work Experience on a CV](https://cvbff.com/blog/how-to-write-work-experience-cv): How to structure the work experience section, write bullet points that impress, use metrics, and tailor entries for each job application.
+- [Job Search Strategy](https://cvbff.com/blog/job-search-strategy): A practical workflow for applying to 20 quality jobs in a 2-hour session, with batch triage, profile setup, application tracking, and avoiding the spammer vs perfectionist failure modes.
+- [How to Tailor Your CV to a Job Posting](https://cvbff.com/blog/tailor-your-cv-to-a-job-posting): Step-by-step guide to keyword matching, mirroring job description language, reordering experience, and passing ATS filters for each application.
+
+## Key URLs
+
+- Homepage: https://cvbff.com/
+- Blog index: https://cvbff.com/blog/
+- Privacy policy: https://cvbff.com/privacy
+- Terms of service: https://cvbff.com/terms
+- Chrome Web Store: https://chromewebstore.google.com/detail/cvbff/
