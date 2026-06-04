@@ -275,7 +275,6 @@ function _clip(s, max) { return s == null ? "" : String(s).slice(0, max); }
 
 function collect() {
   return {
-    mode: document.getElementById("mode").value,
     personal: {
       firstName: _clip(val("firstName"), 100),
       lastName:  _clip(val("lastName"),  100),
@@ -327,7 +326,6 @@ function collect() {
 // ---------- Populate DOM from saved data ----------
 
 function populate(data) {
-  if (data.mode) setVal("mode", data.mode);
   setVal("firstName", data.personal?.firstName);
   setVal("lastName",  data.personal?.lastName);
   setVal("location",  data.personal?.location);
