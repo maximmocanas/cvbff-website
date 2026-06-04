@@ -54,7 +54,7 @@ function setStatus(text, isError) {
 
 // ---------- Prompt ----------
 
-function buildPrompt(profile, jobText) {
+function buildPrompt(profile, jobText, pageCount = 1) {
   const roles = (profile.roles || []).map((r, i) => {
     const startStr = [r.startMonth, r.start].filter(Boolean).join(" ");
     const endStr   = [r.endMonth,   r.end  ].filter(Boolean).join(" ");
@@ -90,7 +90,30 @@ PROCESS:
 - SKILLS LIST: include a skill only if it either (a) appears in the skills bank and is relevant to the posting, or (b) you have written it into a bullet via tool inference. Every skill in the list must be backed by at least one bullet.
 - GAPS: only posting requirements with genuinely no basis in the background AND not in the skills bank. Never put skills bank items here.`;
 
-  return `You are an expert CV writer. Produce a ONE-PAGE CV tailored to the job posting below, grounded in the candidate's real experience.
+  const pageRules = pageCount === 3 ? {
+    label:       "THREE PAGES",
+    desc:        "Content should richly fill three A4 pages.",
+    budget:      "Budget ~38–48 bullets total across summary and all roles.",
+    allocation:  "Give every role comprehensive coverage — 6–10 bullets each. Surface detailed achievements, projects, and metrics for every role. Never drop a role.",
+    summary:     "Summary 100–130 words.",
+    skills:      "~18–24 skills, most posting-relevant first.",
+  } : pageCount === 2 ? {
+    label:       "TWO PAGES",
+    desc:        "Content should richly fill two A4 pages.",
+    budget:      "Budget ~24–32 bullets total across summary and all roles.",
+    allocation:  "Give highly relevant roles up to 8 bullets; older or less-relevant roles 3–4. Never drop a role entirely. Recency breaks ties.",
+    summary:     "Summary 75–100 words.",
+    skills:      "~14–18 skills, most posting-relevant first.",
+  } : {
+    label:       "ONE PAGE",
+    desc:        "Must fit one A4 page.",
+    budget:      "Budget ~14–16 bullets total across summary and all roles.",
+    allocation:  "Score each role's relevance to THIS posting; give relevant roles more bullets (up to ~6), compress weak/older roles to 1–2. Never drop a role entirely. Recency breaks ties.",
+    summary:     "Summary 50–75 words.",
+    skills:      "~10–14 skills, most posting-relevant first.",
+  };
+
+  return `You are an expert CV writer. Produce a ${pageRules.label} CV tailored to the job posting below, grounded in the candidate's real experience.
 
 JOB POSTING:
 """
@@ -111,12 +134,12 @@ TONE MATCHING: Read the posting's voice and mirror it. If it's a startup/scale-u
 UNIVERSAL RULES:
 1. HONESTY: Never claim a skill or achievement with no basis in the background. Reframing, emphasising, and surfacing transferable experience is encouraged; fabrication is not.
 2. KEYWORD MATCH: Mirror the posting's terminology wherever it truthfully applies, for ATS alignment.
-3. ONE PAGE: Must fit one A4 page. Budget ~14–16 bullets total across summary and all roles.
-4. RELEVANCE-WEIGHTED ALLOCATION: Score each role's relevance to THIS posting; give relevant roles more bullets (up to ~6), compress weak/older roles to 1–2. Never drop a role entirely.
+3. ${pageRules.label}: ${pageRules.desc} ${pageRules.budget}
+4. RELEVANCE-WEIGHTED ALLOCATION: ${pageRules.allocation}
 5. REPRESENTATIVE-FIRST FOR COMPRESSED ROLES: A role compressed to 1–2 bullets must still capture its DEFINING responsibilities.
 6. ORDER: Roles newest-first. Each role object MUST include its original "ref" index.
-7. LENGTH: Summary 50–75 words. Each bullet 12–22 words, starting with a strong verb.
-8. SKILLS: ~10–14 skills, most posting-relevant first.
+7. LENGTH: ${pageRules.summary} Each bullet 12–22 words, starting with a strong verb.
+8. SKILLS: ${pageRules.skills}
 9. SPECIFICITY: every bullet must pull a real, concrete detail from the background.
 10. SKILLS-BULLETS ALIGNMENT: every skill or tool in the skills list must be evidenced by at least one bullet (or the summary).
 
@@ -331,7 +354,7 @@ async function generate() {
 
   try {
     const res = await workerFetch({
-      messages: [{ role: "user", content: buildPrompt(profile, job.text) }],
+      messages: [{ role: "user", content: buildPrompt(profile, job.text, cvPageCount) }],
     });
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));
@@ -523,7 +546,7 @@ async function handleUnlock() {
 
     document.getElementById("lockOverlay")?.remove();
     renderCV(profile, tailored, currentCvTemplate);
-    fitToOnePage(tailored, profile);
+    fitCvToPages(tailored, profile, cvPageCount);
     scaleCvMobile();
     renderGaps(tailored.gaps);
     if (typeof tailored.fitScore === "number") renderFitScore(tailored.fitScore, tailored.fitReason);
@@ -564,6 +587,7 @@ async function handleUnlock() {
 
 let cvReady = false;
 let coverReady = false;
+let cvPageCount = 1;
 const activeMode = "modeling";
 let tailored = null;
 let coverJobTitle = "";
@@ -818,7 +842,7 @@ async function regenWithCredit(mode) {
     let job;
     ({ profile, job } = await loadProfileAndJob());
     const res = await workerFetch({
-      messages: [{ role: "user", content: buildPrompt(profile, job.text) }],
+      messages: [{ role: "user", content: buildPrompt(profile, job.text, cvPageCount) }],
     }, "/regenerate");
 
     if (!res.ok) {
@@ -847,7 +871,7 @@ async function regenWithCredit(mode) {
     showView("cv");
     document.getElementById("lockOverlay")?.remove();
     renderCV(profile, tailored, currentCvTemplate);
-    fitToOnePage(tailored, profile);
+    fitCvToPages(tailored, profile, cvPageCount);
     scaleCvMobile();
     renderGaps(tailored.gaps);
     if (typeof tailored.fitScore === "number") renderFitScore(tailored.fitScore, tailored.fitReason);
@@ -1477,7 +1501,7 @@ document.addEventListener("click", async function(e) {
     if (isUnlocked && tailored) {
       const { profile } = await store.get("profile");
       renderCV(profile, tailored, currentCvTemplate);
-      fitToOnePage(tailored, profile);
+      fitCvToPages(tailored, profile, cvPageCount);
       scaleCvMobile();
     }
     renderMiniPreview("cv");
@@ -1495,6 +1519,17 @@ document.addEventListener("click", async function(e) {
   }
 });
 
+
+// Page count swatch toggle (pre-gen panel on result page — used when loading a saved app).
+document.getElementById("pageSwatches")?.addEventListener("click", e => {
+  const btn = e.target.closest("[data-pages]");
+  if (!btn) return;
+  cvPageCount = Number(btn.dataset.pages);
+  document.querySelectorAll("#pageSwatches .tpl-swatch").forEach(b =>
+    b.classList.toggle("tpl-swatch-active", Number(b.dataset.pages) === cvPageCount)
+  );
+  savePrefs({ pageCount: cvPageCount });
+});
 
 // ---------- Init ----------
 
@@ -1566,7 +1601,7 @@ document.getElementById("resultBuyCredits")?.addEventListener("click", () => {
         document.getElementById("page").className = "cv-page cv-tpl-" + currentCvTemplate;
       } else {
         renderCV(profile, tailored, currentCvTemplate);
-        fitToOnePage(tailored, profile);
+        fitCvToPages(tailored, profile, cvPageCount);
       }
       scaleCvMobile();
       renderGaps(tailored.gaps);
@@ -1616,7 +1651,10 @@ document.getElementById("resultBuyCredits")?.addEventListener("click", () => {
   // Normal flow: use pendingJob + profile.
   try {
     const s = await store.get(["profile", "pendingJob"]);
-    // Apply template/theme from generate page if passed.
+    // Apply template/theme/pageCount from generate page if passed.
+    if (s.pendingJob?.pageCount) {
+      cvPageCount = Number(s.pendingJob.pageCount);
+    }
     if (s.pendingJob?.template) {
       currentCvTemplate = s.pendingJob.template;
       updateTplSwatches("cvTplSwatches",       currentCvTemplate);

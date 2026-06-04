@@ -53,6 +53,14 @@
             <span class="style-label">Colour</span>
             <div id="themeSwatches" class="theme-swatches"></div>
           </div>
+          <div class="pre-gen-field">
+            <span class="style-label">Pages</span>
+            <div class="tpl-swatches" id="pageSwatches">
+              <button class="tpl-swatch tpl-swatch-active" data-pages="1">1 page</button>
+              <button class="tpl-swatch" data-pages="2">2 pages</button>
+              <button class="tpl-swatch" data-pages="3">3 pages</button>
+            </div>
+          </div>
           <button id="genBtn" class="btn btn-accent pre-gen-btn">Generate CV</button>
         </div>
         <!-- Full-width CV preview -->
@@ -81,9 +89,9 @@
       { name: "violet",  accent: "#7c3aed" },
     ];
 
-    let selectedTpl   = "classic";
-    let selectedTheme = THEMES[0];
-    let selectedMode  = "tailoring";
+    let selectedTpl       = "classic";
+    let selectedTheme     = THEMES[0];
+    let selectedPageCount = 1;
 
     // ---------- Theme swatches ----------
     function initThemeSwatches() {
@@ -103,6 +111,16 @@
         container.appendChild(btn);
       });
     }
+
+    // ---------- Page count swatches ----------
+    document.getElementById("pageSwatches").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-pages]");
+      if (!btn) return;
+      selectedPageCount = Number(btn.dataset.pages);
+      document.querySelectorAll("#pageSwatches .tpl-swatch").forEach(b =>
+        b.classList.toggle("tpl-swatch-active", Number(b.dataset.pages) === selectedPageCount)
+      );
+    });
 
     // ---------- Template swatches ----------
     document.getElementById("cvTplSwatches").addEventListener("click", (e) => {
@@ -264,9 +282,9 @@
           text,
           url: url || "",
           at: Date.now(),
-          template: selectedTpl,
-          theme:    selectedTheme.accent,
-          mode:     selectedMode,
+          template:  selectedTpl,
+          theme:     selectedTheme.accent,
+          pageCount: selectedPageCount,
         }
       });
       location.href = "/app/result.html";
@@ -285,13 +303,6 @@
         const { profile } = await store.get("profile");
         const hasRoles = (profile?.roles || []).some(r => r.title || r.background);
         if (!hasRoles) document.getElementById("noProfileWarn").style.display = "";
-      } catch { /* non-critical */ }
-
-      // Load default mode from profile (mode picker is in Settings; we still
-      // read the saved preference so the correct mode is used at generation time).
-      try {
-        const { profile } = await store.get("profile");
-        if (profile?.mode) selectedMode = profile.mode;
       } catch { /* non-critical */ }
 
       // Restore any pending job text (e.g. if user navigated back).

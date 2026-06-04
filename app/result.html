@@ -13,7 +13,6 @@
       <div class="result-bar-inner">
         <div class="result-bar-left">
           <a class="result-wordmark" href="/app/applications.html">CvBFF</a>
-          <span id="modePill" class="mode-pill" style="display:none"></span>
           <span id="creditPill" class="credit-pill" style="display:none">
             <span id="creditPillCount">…</span>
           </span>
@@ -24,7 +23,6 @@
           <!-- CV view controls -->
           <span id="cvControls" style="display:contents">
             <button class="btn" id="cvEdit" disabled>Edit text</button>
-            <button class="btn" id="cvCopyText" disabled>Copy</button>
             <button class="btn" id="regen" disabled>Regenerate</button>
             <button class="btn" id="saveApp" disabled>Save</button>
             <button class="btn btn-accent" id="download" disabled>Download PDF</button>
@@ -95,10 +93,11 @@
             <div id="cvThemeSwatchesInline" class="theme-swatches pre-gen-swatches"></div>
           </div>
           <div class="pre-gen-field">
-            <span class="style-label">Mode</span>
-            <div class="tpl-swatches" id="modeSwatches">
-              <button class="tpl-swatch tpl-swatch-active" data-mode="tailoring">Tailoring</button>
-              <button class="tpl-swatch" data-mode="modeling">Modeling</button>
+            <span class="style-label">Pages</span>
+            <div class="tpl-swatches" id="pageSwatches">
+              <button class="tpl-swatch tpl-swatch-active" data-pages="1">1 page</button>
+              <button class="tpl-swatch" data-pages="2">2 pages</button>
+              <button class="tpl-swatch" data-pages="3">3 pages</button>
             </div>
           </div>
           <button id="genTrigger" class="btn btn-accent pre-gen-btn" style="display:none">Generate CV</button>

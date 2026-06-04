@@ -263,52 +263,40 @@ function renderCV(profile, tailored, templateId, targetEl) {
   }
 }
 
-// A4 printable height at our padding ≈ 297mm − 2×16mm. Compare in px.
-function overflowsOnePage() {
+function overflowsPages(n) {
   const page = document.getElementById("page");
-  // 297mm ≈ 1122.5px at 96dpi; allow a 2px tolerance.
-  const A4_PX = 297 / 25.4 * 96;
-  return page.scrollHeight > A4_PX + 2;
+  const A4_PX = 297 / 25.4 * 96; // 297mm at 96dpi
+  return page.scrollHeight > n * A4_PX + 2;
 }
 
-// Fit to one A4 page. Strategy (in order):
-//   1. Reduce font size (10.2pt → 9pt) in small steps.
-//   2. Tighten line-height (1.4 → 1.2) in small steps.
-//   3. Last resort: drop trailing bullets from the least-relevant roles.
-// Returns { cut, shrunk } so the caller can show an appropriate note.
-function fitToOnePage(tailored, profile) {
+// Fit the CV to n A4 pages. Strategy:
+//   1. Set min-height so the page fills the target height.
+//   2. Reduce font size (10.2pt → 9pt) and tighten line-height if content overflows.
+//   3. For 1-page mode only: trim trailing bullets as a last resort.
+// Uses position:fixed off-screen on mobile to avoid iOS Safari scrollHeight bugs.
+// Returns { cut, shrunk }.
+function fitCvToPages(tailored, profile, pages = 1) {
   const page = document.getElementById("page");
-  // Reset any scaling from a previous fit run before measuring.
-  page.style.fontSize = "";
+  page.style.fontSize   = "";
   page.style.lineHeight = "";
+  page.style.minHeight  = pages > 1 ? (pages * 297) + "mm" : "";
 
-  // iOS Safari mis-measures scrollHeight when #page (794px wide) sits inside a
-  // narrow overflow:hidden container (the mobile scale wrapper). It either clips
-  // the height to the container height or reflows the content to the container
-  // width — both produce a bogus large scrollHeight, sending the trim loop into
-  // 60 iterations and leaving only 2 lines per job in the PDF.
-  //
-  // Fix: for the entire duration of the fit run, pull #page out of its container
-  // by using position:fixed off-screen. Fixed positioning makes #page measure
-  // against the CSS viewport with its own explicit width (210mm = 794px), giving
-  // the correct A4-scale scrollHeight. Restore position after fitting so
-  // scaleCvMobile() can apply its own transform afterwards.
   const isMobile = typeof window !== "undefined" && window.innerWidth < 860;
   let _prevPosition = "", _prevTop = "", _prevLeft = "";
   if (isMobile) {
-    _prevPosition     = page.style.position;
-    _prevTop          = page.style.top;
-    _prevLeft         = page.style.left;
-    page.style.position = "fixed";
-    page.style.top      = "-9999px";
-    page.style.left     = "0";
+    _prevPosition        = page.style.position;
+    _prevTop             = page.style.top;
+    _prevLeft            = page.style.left;
+    page.style.position  = "fixed";
+    page.style.top       = "-9999px";
+    page.style.left      = "0";
   }
 
   let shrunk = false;
 
   // Step 1: shrink font size.
   let fontSize = 10.2;
-  while (overflowsOnePage() && fontSize > 9.0) {
+  while (overflowsPages(pages) && fontSize > 9.0) {
     fontSize = Math.round((fontSize - 0.2) * 10) / 10;
     page.style.fontSize = fontSize.toFixed(1) + "pt";
     shrunk = true;
@@ -316,36 +304,37 @@ function fitToOnePage(tailored, profile) {
 
   // Step 2: tighten line-height.
   let lineH = 1.4;
-  while (overflowsOnePage() && lineH > 1.2) {
+  while (overflowsPages(pages) && lineH > 1.2) {
     lineH = Math.round((lineH - 0.05) * 100) / 100;
     page.style.lineHeight = lineH.toFixed(2);
     shrunk = true;
   }
 
-  // Step 3: trim bullets only if scaling wasn't enough.
-  let cut = 0, guard = 0;
-  while (overflowsOnePage() && guard++ < 60) {
-    const roles = tailored.roles || [];
-    let target = -1, floorPass = false;
-    // Pass 1: cut from least-relevant role that still has >1 bullet.
-    for (let i = roles.length - 1; i >= 0; i--) {
-      if ((roles[i].bullets || []).length > 1) { target = i; break; }
-    }
-    // Pass 2: everything at 1 bullet — trim summary bullets, then give up.
-    if (target === -1) {
-      if ((tailored.summaryBullets || []).length > 0) {
-        tailored.summaryBullets.pop(); floorPass = true;
-      } else break;
-    }
-    if (!floorPass && target >= 0) roles[target].bullets.pop();
-    cut++;
-    renderCV(profile, tailored, _lastCvTemplateId);
-    // Re-apply scaling after the re-render wipes innerHTML.
-    if (shrunk) {
-      page.style.fontSize = fontSize.toFixed(1) + "pt";
-      page.style.lineHeight = lineH.toFixed(2);
+  // Step 3: trim bullets — only for 1-page CVs.
+  let cut = 0;
+  if (pages === 1) {
+    let guard = 0;
+    while (overflowsPages(1) && guard++ < 60) {
+      const roles = tailored.roles || [];
+      let target = -1, floorPass = false;
+      for (let i = roles.length - 1; i >= 0; i--) {
+        if ((roles[i].bullets || []).length > 1) { target = i; break; }
+      }
+      if (target === -1) {
+        if ((tailored.summaryBullets || []).length > 0) {
+          tailored.summaryBullets.pop(); floorPass = true;
+        } else break;
+      }
+      if (!floorPass && target >= 0) roles[target].bullets.pop();
+      cut++;
+      renderCV(profile, tailored, _lastCvTemplateId);
+      if (shrunk) {
+        page.style.fontSize   = fontSize.toFixed(1) + "pt";
+        page.style.lineHeight = lineH.toFixed(2);
+      }
     }
   }
+
   if (isMobile) {
     page.style.position = _prevPosition;
     page.style.top      = _prevTop;
