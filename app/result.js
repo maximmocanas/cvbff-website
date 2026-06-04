@@ -54,7 +54,7 @@ function setStatus(text, isError) {
 
 // ---------- Prompt ----------
 
-function buildPrompt(profile, jobText, mode) {
+function buildPrompt(profile, jobText) {
   const roles = (profile.roles || []).map((r, i) => {
     const startStr = [r.startMonth, r.start].filter(Boolean).join(" ");
     const endStr   = [r.endMonth,   r.end  ].filter(Boolean).join(" ");
@@ -71,7 +71,7 @@ function buildPrompt(profile, jobText, mode) {
   const awardsList = (profile.awards || []).filter(a => a.title)
     .map(a => `${a.title}${a.org ? ` (${a.org}${a.year ? ", " + a.year : ""})` : a.year ? ` (${a.year})` : ""}`).join("; ");
 
-  const modeBlock = mode === "modeling" ? `
+  const modeBlock = `
 MODE: MODELING (aggressive evidence-hunting).
 
 CRITICAL DISTINCTION — two different sources of evidence, treated differently:
@@ -88,12 +88,7 @@ PROCESS:
 - Step 2: Go requirement by requirement through the posting. For EACH, search the background for genuine evidence — including loose, transferable, or implied matches. Examples: posting wants "SQL" and background says "pulled and analysed data in dashboards" → surface that as evidence; posting wants "works under pressure" and background says "managed competing deadlines across three teams" → build a bullet from that real fact.
 - TOOL INFERENCE (for posting requirements not in skills bank): When the posting names a specific tool (e.g. Athena, dbt, Tableau) and the background shows adjacent or equivalent experience (e.g. SQL on AWS, data transformation pipelines, BI dashboards), infer the candidate plausibly used or encountered it and name it in a relevant bullet grounded in their real context. Do not name a tool with no plausible basis.
 - SKILLS LIST: include a skill only if it either (a) appears in the skills bank and is relevant to the posting, or (b) you have written it into a bullet via tool inference. Every skill in the list must be backed by at least one bullet.
-- GAPS: only posting requirements with genuinely no basis in the background AND not in the skills bank. Never put skills bank items here.` : `
-MODE: TAILORING (faithful).
-- Re-emphasise, reorder, and mirror the wording of experience the candidate has ALREADY described. Surface genuinely transferable experience, but stay close to what is prominent in the background.
-- SKILLS BANK items relevant to the posting: treat as confirmed skills. If a relevant skills bank item doesn't appear in the background text, identify the most plausible role and write a brief grounded bullet for it rather than omitting it.
-- SKILLS LIST: select from the skills bank; only include a skill if it is reflected in at least one bullet or the summary.
-- GAPS: leave the "gaps" array empty (this mode does not chase unstated requirements).`;
+- GAPS: only posting requirements with genuinely no basis in the background AND not in the skills bank. Never put skills bank items here.`;
 
   return `You are an expert CV writer. Produce a ONE-PAGE CV tailored to the job posting below, grounded in the candidate's real experience.
 
@@ -262,9 +257,6 @@ function showCvPrompt() {
   }
   updateTplSwatches("cvTplSwatchesInline", currentCvTemplate);
   renderThemeSwatchesInline("cv", _currentThemeId);
-  document.querySelectorAll("#modeSwatches .tpl-swatch").forEach(b =>
-    b.classList.toggle("tpl-swatch-active", b.dataset.mode === activeMode)
-  );
   renderMiniPreview("cv");
 }
 
@@ -339,7 +331,7 @@ async function generate() {
 
   try {
     const res = await workerFetch({
-      messages: [{ role: "user", content: buildPrompt(profile, job.text, activeMode) }],
+      messages: [{ role: "user", content: buildPrompt(profile, job.text) }],
     });
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));
@@ -537,14 +529,10 @@ async function handleUnlock() {
     if (typeof tailored.fitScore === "number") renderFitScore(tailored.fitScore, tailored.fitReason);
     if (tailored.interviewPrep) renderInterviewPrep(tailored.interviewPrep);
     document.getElementById("cvEdit").disabled = false;
-    document.getElementById("cvCopyText").disabled = false;
     document.getElementById("download").disabled = false;
     document.getElementById("saveApp").disabled = false;
     document.getElementById("tabCvIcon").textContent = "✓";
     document.getElementById("tabCvIcon").className = "tab-icon tab-check";
-
-    const mp = document.getElementById("modePill");
-    if (mp) { mp.textContent = activeMode === "modeling" ? "Modeling" : "Tailoring"; mp.style.display = ""; }
 
     const styleBar = document.getElementById("styleBar");
     if (styleBar) styleBar.style.display = "";
@@ -576,7 +564,7 @@ async function handleUnlock() {
 
 let cvReady = false;
 let coverReady = false;
-let activeMode = "tailoring";
+const activeMode = "modeling";
 let tailored = null;
 let coverJobTitle = "";
 let generationId = null;
@@ -830,7 +818,7 @@ async function regenWithCredit(mode) {
     let job;
     ({ profile, job } = await loadProfileAndJob());
     const res = await workerFetch({
-      messages: [{ role: "user", content: buildPrompt(profile, job.text, activeMode) }],
+      messages: [{ role: "user", content: buildPrompt(profile, job.text) }],
     }, "/regenerate");
 
     if (!res.ok) {
@@ -865,7 +853,6 @@ async function regenWithCredit(mode) {
     if (typeof tailored.fitScore === "number") renderFitScore(tailored.fitScore, tailored.fitReason);
     if (tailored.interviewPrep) renderInterviewPrep(tailored.interviewPrep);
     document.getElementById("cvEdit").disabled = false;
-    document.getElementById("cvCopyText").disabled = false;
     document.getElementById("download").disabled = false;
     document.getElementById("saveApp").disabled = false;
     document.getElementById("regen").disabled = false;
@@ -875,8 +862,6 @@ async function regenWithCredit(mode) {
     document.getElementById("tabBar").style.display = "";
     const styleBarR = document.getElementById("styleBar");
     if (styleBarR) styleBarR.style.display = "";
-    const mpR = document.getElementById("modePill");
-    if (mpR) { mpR.textContent = activeMode === "modeling" ? "Modeling" : "Tailoring"; mpR.style.display = ""; }
 
     try {
       const { generateCount = 0 } = await store.get("generateCount");
@@ -1510,24 +1495,6 @@ document.addEventListener("click", async function(e) {
   }
 });
 
-document.getElementById("modeSwatches")?.addEventListener("click", e => {
-  const btn = e.target.closest("[data-mode]");
-  if (!btn) return;
-  activeMode = btn.dataset.mode;
-  document.querySelectorAll("#modeSwatches .tpl-swatch").forEach(b =>
-    b.classList.toggle("tpl-swatch-active", b.dataset.mode === activeMode)
-  );
-});
-
-document.getElementById("cvCopyText").addEventListener("click", async () => {
-  try {
-    const text = document.getElementById("page")?.innerText || "";
-    await navigator.clipboard.writeText(text);
-    const b = document.getElementById("cvCopyText");
-    const orig = b.textContent; b.textContent = "Copied ✓";
-    setTimeout(() => (b.textContent = orig), 1500);
-  } catch { showToast("Couldn't copy — select the text and copy manually.", true); }
-});
 
 // ---------- Init ----------
 
@@ -1581,7 +1548,6 @@ document.getElementById("resultBuyCredits")?.addEventListener("click", () => {
       tailored          = saved.tailored        || {};
       coverText         = saved.cover_text      || "";
       coverJobTitle     = saved.cover_job_title || "";
-      activeMode        = saved.mode            || "tailoring";
       isUnlocked        = true;
       savedAppId        = saved.id             || null;
       _coverCreatedAt   = saved.created_at     || "";
@@ -1608,7 +1574,6 @@ document.getElementById("resultBuyCredits")?.addEventListener("click", () => {
       if (tailored.interviewPrep) renderInterviewPrep(tailored.interviewPrep);
       document.getElementById("cvEdit").disabled = false;
       document.getElementById("regen").disabled = false;
-      document.getElementById("cvCopyText").disabled = false;
       document.getElementById("download").disabled = false;
       const saveAppBtn = document.getElementById("saveApp");
       saveAppBtn.disabled = false;
@@ -1620,8 +1585,6 @@ document.getElementById("resultBuyCredits")?.addEventListener("click", () => {
       document.getElementById("tabCvIcon").className = "tab-icon tab-check";
       const styleBarSaved = document.getElementById("styleBar");
       if (styleBarSaved) styleBarSaved.style.display = "";
-      const mpS = document.getElementById("modePill");
-      if (mpS) { mpS.textContent = activeMode === "modeling" ? "Modeling" : "Tailoring"; mpS.style.display = ""; }
 
       if (coverText) {
         if (saved.cover_html) {
@@ -1653,17 +1616,11 @@ document.getElementById("resultBuyCredits")?.addEventListener("click", () => {
   // Normal flow: use pendingJob + profile.
   try {
     const s = await store.get(["profile", "pendingJob"]);
-    if (s.profile?.mode === "modeling" || s.profile?.mode === "tailoring") {
-      activeMode = s.profile.mode;
-    }
     // Apply template/theme from generate page if passed.
     if (s.pendingJob?.template) {
       currentCvTemplate = s.pendingJob.template;
       updateTplSwatches("cvTplSwatches",       currentCvTemplate);
       updateTplSwatches("cvTplSwatchesInline", currentCvTemplate);
-    }
-    if (s.pendingJob?.mode) {
-      activeMode = s.pendingJob.mode;
     }
     if (s.pendingJob?.theme) {
       const matchedTheme = COLOR_THEMES.find(t => t.hex === s.pendingJob.theme);
