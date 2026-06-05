@@ -207,43 +207,65 @@ async function loadProfileAndJob() {
 // ---------- Milestones ----------
 
 const CV_MILESTONES = [
-  "Looking at your CV and experience…",
-  "Researching the job posting…",
-  "Identifying the strongest matches…",
-  "Crafting tailored bullet points…",
-  "Polishing the final draft…",
+  { label: "Job posting read",      sub: "Job description processed" },
+  { label: "Profile loaded",        sub: "Work experience, skills, education" },
+  { label: "Writing your CV",       sub: "Matching your background to the role requirements" },
+  { label: "Calculating fit score", sub: "" },
+  { label: "Interview prep",        sub: "" },
 ];
 const COVER_MILESTONES = [
-  "Looking at your CV and experience…",
-  "Researching the posting and company…",
-  "Planning the letter structure…",
-  "Drafting your cover letter…",
-  "Refining the tone and content…",
+  { label: "Job posting read",          sub: "Job description processed" },
+  { label: "Profile loaded",            sub: "Work experience, skills, education" },
+  { label: "Writing your cover letter", sub: "Crafting a compelling narrative for the role" },
+  { label: "Proofreading",              sub: "" },
+  { label: "Finalising",               sub: "" },
 ];
 
 let _milestoneTimer = null;
 
-function renderStepper(milestones, containerId, activeIndex) {
+function renderStepper(steps, containerId, activeIndex) {
   const container = document.getElementById(containerId);
   if (!container) return;
-  container.innerHTML = `<div class="ms-stepper">` +
-    milestones.map((label, i) => {
-      const cls = `ms-step${i < activeIndex ? " ms-done" : ""}${i === activeIndex ? " ms-active" : ""}`;
-      return `<div class="${cls}"><div class="ms-dot"></div><div class="ms-content"><span class="ms-label">${label}</span></div></div>`;
-    }).join("") +
-  `</div>`;
+
+  const isCover     = containerId === "coverMilestones";
+  const cardTitle   = isCover ? "Building your cover letter" : "Building your CV";
+  const cardSub     = isCover
+    ? "Personalising your letter for the role.<br>This takes about 30 seconds."
+    : "Tailoring your experience to the job posting.<br>This takes about 30 seconds.";
+
+  const stepsHtml = steps.map((step, i) => {
+    const done    = i < activeIndex;
+    const active  = i === activeIndex;
+    let iconHtml;
+    if (done)        iconHtml = `<div class="gen-step-icon gen-step-icon-done">✓</div>`;
+    else if (active) iconHtml = `<div class="gen-step-icon gen-step-icon-active">✦</div>`;
+    else             iconHtml = `<div class="gen-step-icon gen-step-icon-pending"></div>`;
+
+    const badge   = active  ? ` <span class="gen-in-progress">In progress</span>` : "";
+    const subHtml = step.sub ? `<div class="gen-step-sub">${step.sub}</div>` : "";
+    const rowCls  = done ? "gen-step-done" : active ? "gen-step-active" : "gen-step-pending";
+
+    return (i > 0 ? '<hr class="gen-step-divider">' : "") +
+      `<div class="gen-step-row ${rowCls}">${iconHtml}<div class="gen-step-content">` +
+      `<div class="gen-step-label">${step.label}${badge}</div>${subHtml}</div></div>`;
+  }).join("");
+
+  container.innerHTML =
+    `<div class="gen-loading-card">` +
+    `<svg class="gen-spinner-svg" viewBox="0 0 60 60">` +
+    `<circle cx="30" cy="30" r="24" fill="none" stroke="var(--line)" stroke-width="4"/>` +
+    `<circle cx="30" cy="30" r="24" fill="none" stroke="var(--accent)" stroke-width="4"` +
+    ` stroke-dasharray="28 123" stroke-linecap="round"/></svg>` +
+    `<h2 class="gen-loading-title">${cardTitle}</h2>` +
+    `<p class="gen-loading-sub">${cardSub}</p>` +
+    `<div class="gen-steps-list">${stepsHtml}</div>` +
+    `<p class="gen-lock-note">🔒 Don't close this tab</p></div>`;
 }
 
-function startMilestones(milestones, containerId) {
+function startMilestones(steps, containerId) {
   stopMilestones();
-  let i = 0;
-  renderStepper(milestones, containerId, 0);
+  renderStepper(steps, containerId, 2); // steps 0–1 done, step 2 active
   document.getElementById(containerId).style.display = "";
-  _milestoneTimer = setInterval(() => {
-    i = Math.min(i + 1, milestones.length - 1);
-    renderStepper(milestones, containerId, i);
-    if (i === milestones.length - 1) stopMilestones();
-  }, 9000);
 }
 
 function stopMilestones() {
@@ -335,7 +357,7 @@ async function generate() {
 
   const s = document.getElementById("status");
   s.style.display = ""; s.classList.remove("error");
-  document.getElementById("cvGenHeader").style.display = "";
+  document.getElementById("cvGenHeader").style.display = "none";
   document.getElementById("statusText").style.display = "none";
   document.getElementById("genTrigger").style.display = "none";
   const cvPanelGen = document.getElementById("cvPreGenPanel");
@@ -840,7 +862,7 @@ async function regenWithCredit(mode) {
   document.getElementById("stage").style.display = "none";
   const s = document.getElementById("status");
   s.style.display = ""; s.classList.remove("error");
-  document.getElementById("cvGenHeader").style.display = "";
+  document.getElementById("cvGenHeader").style.display = "none";
   document.getElementById("statusText").style.display = "none";
   document.getElementById("genTrigger").style.display = "none";
   startMilestones(CV_MILESTONES, "cvMilestones");
@@ -947,7 +969,7 @@ async function coverRegenWithCredit(mode) {
   document.getElementById("coverStage").style.display = "none";
   const cs = document.getElementById("coverStatus");
   cs.style.display = ""; cs.classList.remove("error");
-  document.getElementById("coverGenHeader").style.display = "";
+  document.getElementById("coverGenHeader").style.display = "none";
   document.getElementById("coverStatusText").style.display = "none";
   document.getElementById("coverGenTrigger").style.display = "none";
   startMilestones(COVER_MILESTONES, "coverMilestones");
@@ -1416,7 +1438,7 @@ async function generateCover() {
 
   const cs = document.getElementById("coverStatus");
   cs.style.display = ""; cs.classList.remove("error");
-  document.getElementById("coverGenHeader").style.display = "";
+  document.getElementById("coverGenHeader").style.display = "none";
   document.getElementById("coverStatusText").style.display = "none";
   document.getElementById("coverGenTrigger").style.display = "none";
   const coverPanelGen = document.getElementById("coverPreGenPanel");
