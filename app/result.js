@@ -1655,6 +1655,10 @@ document.getElementById("resultBuyCredits")?.addEventListener("click", () => {
         document.getElementById("tabCoverIcon").textContent = "✓";
         document.getElementById("tabCoverIcon").className = "tab-icon tab-check";
       }
+
+      if (saved.startWithCover && coverText) {
+        setTimeout(() => document.getElementById("tabCover")?.click(), 150);
+      }
     } catch (err) {
       setStatus(err.message, true);
     }

@@ -9,10 +9,37 @@
 <body>
   <main class="app-main">
   <div class="wrap">
-    <header class="masthead">
-      <h1>My Applications</h1>
-      <p>Your saved CVs and cover letters. Click any card to open the full result instantly.</p>
+    <header class="masthead apps-masthead">
+      <div>
+        <h1>My Applications</h1>
+        <p>Your saved CVs and cover letters. Click any card to open.</p>
+      </div>
+      <a href="/app/generate.html" class="btn btn-accent apps-gen-btn">+ Generate CV</a>
     </header>
+
+    <!-- Stats strip -->
+    <div id="appsStats" class="apps-stats" style="display:none">
+      <div class="apps-stat-card">
+        <div class="apps-stat-label">TOTAL APPLIED</div>
+        <div class="apps-stat-value" id="statTotal">0</div>
+        <div class="apps-stat-sub" id="statTotalSub"></div>
+      </div>
+      <div class="apps-stat-card">
+        <div class="apps-stat-label">INTERVIEWS</div>
+        <div class="apps-stat-value apps-stat-green" id="statInterviews">0</div>
+        <div class="apps-stat-sub" id="statInterviewsSub"></div>
+      </div>
+      <div class="apps-stat-card">
+        <div class="apps-stat-label">OFFERS</div>
+        <div class="apps-stat-value apps-stat-green" id="statOffers">0</div>
+        <div class="apps-stat-sub" id="statOffersSub"></div>
+      </div>
+      <div class="apps-stat-card">
+        <div class="apps-stat-label">AVG FIT SCORE</div>
+        <div class="apps-stat-value" id="statAvgScore">—</div>
+        <div class="apps-stat-sub">Across all CVs</div>
+      </div>
+    </div>
 
     <div id="appsStatus" class="apps-status">
       <div class="spinner"></div>
@@ -37,7 +64,7 @@
       </select>
     </div>
 
-    <div id="appsGrid" class="apps-grid" style="display:none"></div>
+    <div id="appsList" class="apps-list" style="display:none"></div>
   </div>
 
   <script src="/app/config.js"></script>
