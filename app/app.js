@@ -137,54 +137,67 @@ function openShopModal() {
   document.getElementById("_navShopModal").style.display = "";
 }
 
-// ---------- Nav bar ----------
+// ---------- Sidebar nav ----------
 
 function renderNav(activePage) {
   _installShopModal();
-  const nav = document.createElement("nav");
-  nav.className = "app-nav";
-  nav.innerHTML = `
-    <div class="app-nav-inner">
-      <a class="app-nav-brand" href="/app/applications.html">CvBFF</a>
-      <div class="app-nav-links">
-        <a href="/app/applications.html" class="app-nav-link${activePage === "applications" ? " app-nav-active" : ""}">Applications</a>
-        <a href="/app/generate.html"     class="app-nav-link${activePage === "generate"     ? " app-nav-active" : ""}">Generate</a>
-        <a href="/app/settings.html"     class="app-nav-link${activePage === "settings"     ? " app-nav-active" : ""}">Settings</a>
-      </div>
-      <div class="app-nav-right">
-        <span class="nav-credit-pill" id="navCreditPill">
-          <span id="navCreditCount">…</span>
-          <button class="btn-refresh-credits nav-refresh-btn" id="navRefreshCredits" title="Refresh balance">↻</button>
-        </span>
-        <button class="btn-buy-credits nav-buy-btn" id="navBuyCredits">Buy credits</button>
-        <button class="app-nav-signout" id="navSignOut">Sign out</button>
-      </div>
-    </div>`;
-  document.body.insertBefore(nav, document.body.firstChild);
 
-  document.getElementById("navSignOut").addEventListener("click", async () => {
+  const sidebar = document.createElement("aside");
+  sidebar.className = "app-sidebar";
+  sidebar.innerHTML = `
+    <a class="sidebar-wordmark" href="/app/applications.html">CvBFF</a>
+    <div class="sidebar-section-label">Menu</div>
+    <a href="/app/generate.html" class="sidebar-nav-item${activePage === "generate" ? " sidebar-nav-active" : ""}">
+      <span class="sidebar-nav-icon">✦</span> Generate CV
+    </a>
+    <a href="/app/applications.html" class="sidebar-nav-item${activePage === "applications" ? " sidebar-nav-active" : ""}">
+      <span class="sidebar-nav-icon">◫</span> Applications
+    </a>
+    <a href="/app/settings.html" class="sidebar-nav-item${activePage === "settings" ? " sidebar-nav-active" : ""}">
+      <span class="sidebar-nav-icon">⚙</span> Profile
+    </a>
+    <div class="sidebar-bottom">
+      <div class="sidebar-credit-pill">
+        <span class="sidebar-credit-label">Credits remaining</span>
+        <span class="sidebar-credit-count" id="sidebarCreditCount">…</span>
+      </div>
+      <button class="sidebar-buy-btn" id="sidebarBuyCredits">Buy credits</button>
+      <button class="sidebar-sign-out" id="sidebarSignOut">Sign out</button>
+    </div>`;
+  document.body.insertBefore(sidebar, document.body.firstChild);
+
+  const bottomNav = document.createElement("nav");
+  bottomNav.className = "app-bottom-nav";
+  bottomNav.innerHTML = `
+    <div class="app-bottom-nav-inner">
+      <a href="/app/generate.html" class="bottom-nav-item${activePage === "generate" ? " bottom-nav-active" : ""}">
+        <span class="bottom-nav-icon">✦</span><span>Generate</span>
+      </a>
+      <a href="/app/applications.html" class="bottom-nav-item${activePage === "applications" ? " bottom-nav-active" : ""}">
+        <span class="bottom-nav-icon">◫</span><span>Applications</span>
+      </a>
+      <a href="/app/settings.html" class="bottom-nav-item${activePage === "settings" ? " bottom-nav-active" : ""}">
+        <span class="bottom-nav-icon">⚙</span><span>Profile</span>
+      </a>
+    </div>`;
+  document.body.appendChild(bottomNav);
+
+  document.getElementById("sidebarSignOut").addEventListener("click", async () => {
     await signOut().catch(() => {});
     location.href = "/app/auth.html";
   });
-  document.getElementById("navBuyCredits").addEventListener("click", openShopModal);
-  document.getElementById("navRefreshCredits").addEventListener("click", async () => {
-    const btn = document.getElementById("navRefreshCredits");
-    btn.disabled = true;
-    await _refreshNavCredits();
-    btn.disabled = false;
-  });
+  document.getElementById("sidebarBuyCredits").addEventListener("click", openShopModal);
 
-  // Load credits asynchronously — non-blocking.
   _refreshNavCredits();
 }
 
 async function _refreshNavCredits() {
   try {
     const c = await getCredits();
-    const el = document.getElementById("navCreditCount");
+    const el = document.getElementById("sidebarCreditCount");
     if (el) {
-      el.textContent = `${c} credit${c !== 1 ? "s" : ""}`;
-      el.style.color = c === 0 ? "var(--danger)" : c <= 2 ? "#b45309" : "";
+      el.textContent = c;
+      el.style.color = c === 0 ? "var(--danger)" : c <= 2 ? "#b45309" : "#fff";
     }
   } catch { /* non-critical */ }
 }

@@ -1555,6 +1555,7 @@ document.getElementById("resultBuyCredits")?.addEventListener("click", () => {
     location.href = "/app/auth.html";
     return;
   }
+  if (typeof renderNav === "function") renderNav("result");
 
   // Load saved preferences.
   try {
