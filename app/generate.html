@@ -9,72 +9,113 @@
 </head>
 <body>
   <main class="app-main">
-  <div class="gen-page-wrap">
-    <div class="gen-header-row">
-      <header class="masthead" style="margin:0">
-        <h1 style="margin:0">Generate CV</h1>
-        <p style="margin:4px 0 0">Paste a job description or enter the URL and we'll tailor your CV to it.</p>
-      </header>
-    </div>
+    <div class="gen-wrap">
 
-    <!-- Main input area -->
-    <div id="mainInput">
-      <!-- Job text textarea -->
-      <div class="section job-input-section" style="padding:22px 24px; margin-bottom:0; border-bottom-left-radius:0; border-bottom-right-radius:0; border-bottom:none;">
-        <h2 style="margin:0 0 6px;">Job posting</h2>
-        <p class="hint" style="margin:0 0 14px;">Paste the job description below, or enter a URL and click Fetch.</p>
-        <textarea id="jobText" class="job-textarea" placeholder="Paste the job description here…" maxlength="50000"></textarea>
-        <p class="char-counter" id="charCounter">0 / 50,000 characters</p>
+      <!-- Page title -->
+      <div class="gen-topbar">
+        <div>
+          <div class="gen-title">Generate CV</div>
+          <div class="gen-sub">Paste a job posting and we'll build a tailored CV in seconds.</div>
+        </div>
+        <div class="gen-mobile-credits" id="genMobileCredits">
+          <span class="gen-mobile-pill" id="genMobilePill">… credits</span>
+          <button class="gen-mobile-buy" id="genMobileBuy">Buy</button>
+        </div>
       </div>
 
-      <!-- URL fetch row -->
-      <div class="section" style="padding:14px 24px; border-top-left-radius:0; border-top-right-radius:0; border-top:none; margin-bottom:0;">
-        <div class="job-url-row">
-          <input type="url" id="jobUrl" class="job-url-input" placeholder="Or paste a job posting URL to fetch the text automatically…">
-          <button class="btn" id="fetchUrl">Fetch text</button>
-          <button class="btn" id="clearJob" style="display:none">Clear</button>
+      <!-- Input card -->
+      <div class="gen-card">
+
+        <div class="gen-card-section">
+          <div class="gen-section-label">Job posting</div>
+          <textarea id="jobText" class="gen-textarea" placeholder="Paste the full job description here…" maxlength="50000"></textarea>
+          <div class="gen-url-row">
+            <input type="url" id="jobUrl" class="gen-url-input" placeholder="Or paste a job URL to fetch automatically…">
+            <button class="btn" id="fetchUrl">Fetch text</button>
+            <button class="btn" id="clearJob" style="display:none">Clear</button>
+          </div>
+          <p id="fetchStatus" style="font-size:12px; color:var(--muted); margin:8px 0 0; display:none;"></p>
         </div>
-        <p id="fetchStatus" style="font-size:12px; color:var(--muted); margin:8px 0 0; display:none;"></p>
+
+        <div class="gen-option-row">
+          <div class="gen-option-left">
+            <div class="gen-option-label">Template</div>
+            <div class="gen-option-sub">Choose your CV layout</div>
+          </div>
+          <div class="gen-option-right" id="cvTplSwatches">
+            <button class="gen-opt gen-opt-active" data-tpl="classic">Classic</button>
+            <button class="gen-opt" data-tpl="executive">Executive</button>
+            <button class="gen-opt" data-tpl="minimal">Minimal</button>
+            <button class="gen-opt" data-tpl="thick-underline">Thick Line</button>
+          </div>
+        </div>
+
+        <div class="gen-option-row">
+          <div class="gen-option-left">
+            <div class="gen-option-label">Colour</div>
+            <div class="gen-option-sub">Pick an accent colour</div>
+          </div>
+          <div class="gen-option-right" id="themeSwatches"></div>
+        </div>
+
+        <div class="gen-option-row gen-option-row-last">
+          <div class="gen-option-left">
+            <div class="gen-option-label">Pages</div>
+            <div class="gen-option-sub">How long should your CV be?</div>
+          </div>
+          <div class="gen-option-right" id="pageSwatches">
+            <button class="gen-opt gen-opt-active" data-pages="1">1 page</button>
+            <button class="gen-opt" data-pages="2">2 pages</button>
+            <button class="gen-opt" data-pages="3">3 pages</button>
+          </div>
+        </div>
+
+        <div class="gen-generate-row">
+          <span class="gen-generate-hint">Free preview</span>
+          <div class="gen-generate-btns">
+            <button class="btn-gen" id="genBtn" disabled>Generate CV →</button>
+            <button class="btn-gen btn-gen-outline" id="genCoverBtn" disabled>Generate cover letter →</button>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Pre-gen panel -->
-      <div class="pre-gen-panel" id="preGenPanel" style="display:none">
-        <!-- Controls row -->
-        <div class="pre-gen-controls">
-          <div class="pre-gen-field">
-            <span class="style-label">Template</span>
-            <div class="tpl-swatches" id="cvTplSwatches">
-              <button class="tpl-swatch tpl-swatch-active" data-tpl="classic">Classic</button>
-              <button class="tpl-swatch" data-tpl="executive">Executive</button>
-              <button class="tpl-swatch" data-tpl="minimal">Minimal</button>
-              <button class="tpl-swatch" data-tpl="thick-underline">Thick Underline</button>
-            </div>
+      <!-- Bottom: CV preview + profile quality -->
+      <div class="gen-bottom-grid">
+
+        <div class="gen-card gen-preview-card">
+          <div class="gen-section-label" style="margin-bottom:12px">CV preview</div>
+          <div class="gen-mini-wrap">
+            <div id="cvMiniPage" class="cv-page"></div>
           </div>
-          <div class="pre-gen-field">
-            <span class="style-label">Colour</span>
-            <div id="themeSwatches" class="theme-swatches"></div>
-          </div>
-          <div class="pre-gen-field">
-            <span class="style-label">Pages</span>
-            <div class="tpl-swatches" id="pageSwatches">
-              <button class="tpl-swatch tpl-swatch-active" data-pages="1">1 page</button>
-              <button class="tpl-swatch" data-pages="2">2 pages</button>
-              <button class="tpl-swatch" data-pages="3">3 pages</button>
-            </div>
-          </div>
-          <button id="genBtn" class="btn btn-accent pre-gen-btn">Generate CV</button>
         </div>
-        <!-- Full-width CV preview -->
-        <div class="mini-preview-inner">
-          <div id="cvMiniPage" class="cv-page"></div>
+
+        <div class="gen-quality-col">
+          <div class="gen-card gen-quality-card">
+            <div class="gen-section-label">Profile quality</div>
+            <div class="gen-quality-bar-row">
+              <div class="gen-quality-track">
+                <div class="gen-quality-fill" id="genQualityFill" style="width:0%"></div>
+              </div>
+              <span class="gen-quality-pct" id="genQualityPct">0%</span>
+            </div>
+            <p class="gen-quality-hint" id="genQualityHint"></p>
+            <div id="genQualityItems" class="gen-quality-items"></div>
+          </div>
+          <div class="gen-card gen-tip-card">
+            <div class="gen-section-label">Tip</div>
+            <p class="gen-tip-text">The more detail in your work experience bullets, the better the AI can match you to the role's exact requirements.</p>
+            <a href="/app/settings.html" class="gen-tip-link">Update profile →</a>
+          </div>
         </div>
+
       </div>
 
       <p id="noProfileWarn" style="display:none; color:#b45309; font-size:13px; margin-top:12px;">
         ⚠️ Add your work experience in <a href="/app/settings.html">Settings</a> before generating.
       </p>
     </div>
-  </div>
+  </main>
 
   <script src="/app/config.js"></script>
   <script src="/app/app.js"></script>
@@ -105,15 +146,14 @@
     function initThemeSwatches() {
       const container = document.getElementById("themeSwatches");
       THEMES.forEach((t, i) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "theme-swatch" + (i === 0 ? " theme-swatch-active" : "");
+        const btn = document.createElement("div");
+        btn.className = "gen-colour" + (i === 0 ? " gen-colour-active" : "");
         btn.style.background = t.accent;
         btn.title = t.name;
         btn.addEventListener("click", () => {
           selectedTheme = t;
-          container.querySelectorAll(".theme-swatch").forEach(b => b.classList.remove("theme-swatch-active"));
-          btn.classList.add("theme-swatch-active");
+          container.querySelectorAll(".gen-colour").forEach(b => b.classList.remove("gen-colour-active"));
+          btn.classList.add("gen-colour-active");
           updateMiniPreview();
           savePrefs();
         });
@@ -121,24 +161,24 @@
       });
     }
 
-    // ---------- Page count swatches ----------
-    document.getElementById("pageSwatches").addEventListener("click", (e) => {
+    // ---------- Page swatches ----------
+    document.getElementById("pageSwatches").addEventListener("click", e => {
       const btn = e.target.closest("[data-pages]");
       if (!btn) return;
       selectedPageCount = Number(btn.dataset.pages);
-      document.querySelectorAll("#pageSwatches .tpl-swatch").forEach(b =>
-        b.classList.toggle("tpl-swatch-active", Number(b.dataset.pages) === selectedPageCount)
+      document.querySelectorAll("#pageSwatches .gen-opt").forEach(b =>
+        b.classList.toggle("gen-opt-active", Number(b.dataset.pages) === selectedPageCount)
       );
       savePrefs();
     });
 
     // ---------- Template swatches ----------
-    document.getElementById("cvTplSwatches").addEventListener("click", (e) => {
-      const btn = e.target.closest(".tpl-swatch");
+    document.getElementById("cvTplSwatches").addEventListener("click", e => {
+      const btn = e.target.closest(".gen-opt");
       if (!btn) return;
       selectedTpl = btn.dataset.tpl;
-      document.querySelectorAll("#cvTplSwatches .tpl-swatch").forEach(b => b.classList.remove("tpl-swatch-active"));
-      btn.classList.add("tpl-swatch-active");
+      document.querySelectorAll("#cvTplSwatches .gen-opt").forEach(b => b.classList.remove("gen-opt-active"));
+      btn.classList.add("gen-opt-active");
       updateMiniPreview();
       savePrefs();
     });
@@ -147,96 +187,96 @@
     function updateMiniPreview() {
       const page = document.getElementById("cvMiniPage");
       if (!page) return;
-      // Only run when the panel is visible (has layout dimensions).
-      const panel = document.getElementById("preGenPanel");
-      if (panel.style.display === "none") return;
       const wrap = page.parentElement;
       try {
-        const { profile, tailored } = _dummyPreviewData();
-
-        // Render into the page first so we can measure actual content height.
+        const { profile, tailored } = _dummyData();
         page.style.position = "absolute";
-        page.style.top      = "0";
-        page.style.left     = "0";
-        page.style.width    = "794px";
-        page.style.transform = "none"; // no scale yet while measuring
+        page.style.top = "0"; page.style.left = "0";
+        page.style.width = "794px";
+        page.style.transform = "none";
         wrap.style.position = "relative";
-        wrap.style.height   = "auto";
+        wrap.style.height = "auto";
         wrap.style.overflow = "visible";
         renderCV(profile, tailored, selectedTpl, page);
         page.style.setProperty("--cv-accent", selectedTheme.accent);
 
-        // Measure how tall the actual content is (not the full A4 blank page).
         let contentH = 0;
-        page.querySelectorAll(":scope > *").forEach(child => {
-          const bottom = child.offsetTop + child.offsetHeight;
-          if (bottom > contentH) contentH = bottom;
+        page.querySelectorAll(":scope > *").forEach(c => {
+          const b = c.offsetTop + c.offsetHeight;
+          if (b > contentH) contentH = b;
         });
-        const naturalH = (contentH > 0 ? contentH : 1123) + 32; // 32px bottom breathing room
-
-        // Use the panel's actual rendered width when available (most reliable).
-        // Fall back to window-based calc: gen-page-wrap padding 28*2=56 on desktop,
-        // 14*2=28 on mobile; pre-gen-panel padding 24*2=48. Max preview = 856px.
-        const panelW = document.getElementById("preGenPanel").getBoundingClientRect().width;
-        const wrapPad = window.innerWidth <= 700 ? 28 : 56;
-        const previewW = panelW > 0 ? panelW - 48 : Math.min(window.innerWidth - wrapPad - 48, 856);
-        const scale    = Math.min(previewW / 794, 1.0);
-        const previewH = Math.round(Math.min(naturalH, 1123) * scale);
-
-        page.style.transform       = `scale(${scale})`;
+        const naturalH = (contentH > 0 ? contentH : 1123) + 32;
+        const wrapW = wrap.getBoundingClientRect().width;
+        const scale = Math.min((wrapW > 0 ? wrapW : 400) / 794, 1.0);
+        page.style.transform = `scale(${scale})`;
         page.style.transformOrigin = "top left";
-        wrap.style.height   = previewH + "px";
+        wrap.style.height = Math.round(Math.min(naturalH, 1123) * scale) + "px";
         wrap.style.overflow = "hidden";
-      } catch(e) { console.warn("Mini preview error:", e); }
+      } catch(e) { console.warn("Mini preview:", e); }
     }
 
-    function _dummyPreviewData() {
-      const profile = {
-        personal: { firstName: "Jane", lastName: "Doe", location: "London, UK", email: "jane@example.com", phone: "+44 7700 000000", linkedin: "linkedin.com/in/janedoe" },
-        photo: { include: false },
-        roles: [{ title: "Senior Marketing Manager", company: "Acme Corp", start: "2020", end: "Present" }],
-        education: [{ degree: "BSc Marketing", institution: "University of London", start: "2014", end: "2018" }],
-        languages: [], certifications: [], awards: [], portfolio: [],
+    function _dummyData() {
+      return {
+        profile: {
+          personal: { firstName: "Jane", lastName: "Doe", location: "London, UK", email: "jane@example.com", linkedin: "linkedin.com/in/janedoe" },
+          photo: { include: false },
+          roles: [{ title: "Senior Marketing Manager", company: "Acme Corp", start: "2020", end: "Present" }],
+          education: [{ degree: "BSc Marketing", institution: "University of London", start: "2014", end: "2018" }],
+          languages: [], certifications: [], awards: [], portfolio: [],
+        },
+        tailored: {
+          jobTitle: "Senior Marketing Manager",
+          summary: "Experienced marketing professional with a proven track record of driving growth through data-driven campaigns.",
+          skills: ["Marketing Strategy", "Data Analysis", "SEO", "Project Management", "Stakeholder Management"],
+          roles: [{ ref: 0, bullets: ["Led a team of 6 to deliver a 40% increase in organic traffic.", "Managed £500K campaign budget across digital and offline channels."] }],
+        },
       };
-      const tailored = {
-        jobTitle: "Senior Marketing Manager",
-        summary: "Experienced marketing professional with a proven track record of driving growth through data-driven campaigns and cross-functional collaboration.",
-        skills: ["Marketing Strategy", "Data Analysis", "SEO", "Project Management", "Stakeholder Management"],
-        roles: [{ ref: 0, bullets: ["Led a team of 6 to deliver a 40% increase in organic traffic through targeted content strategy.", "Managed £500K campaign budget across digital and offline channels."] }],
-      };
-      return { profile, tailored };
     }
 
-    // ---------- Char counter ----------
-    const jobTextEl = document.getElementById("jobText");
-    const charCounter = document.getElementById("charCounter");
+    // ---------- Profile quality ----------
+    function renderProfileQuality(profile) {
+      const checks = [
+        { label: "Work experience",  ok: p => (p?.roles || []).some(r => r.title || r.background) },
+        { label: "Skills bank",      ok: p => (p?.skills || []).length >= 3 },
+        { label: "Education",        ok: p => (p?.education || []).length > 0 },
+        { label: "Certifications",   ok: p => (p?.certifications || []).length > 0 },
+        { label: "Languages",        ok: p => (p?.languages || []).length > 0 },
+        { label: "Profile photo",    ok: p => !!p?.photo?.url },
+      ];
+      const done = checks.filter(c => c.ok(profile));
+      const pct  = Math.round((done.length / checks.length) * 100);
+      document.getElementById("genQualityFill").style.width = pct + "%";
+      document.getElementById("genQualityPct").textContent = pct + "%";
+      document.getElementById("genQualityHint").textContent =
+        pct >= 80 ? "Great — expect a strong, detailed CV" :
+        pct >= 50 ? "Good — expect a strong 1–2 page CV" :
+                    "Add more details for a better CV";
+      document.getElementById("genQualityItems").innerHTML = checks.map(c => {
+        const ok = c.ok(profile);
+        return `<div class="gen-quality-item">
+          <span class="gen-qi-dot ${ok ? "gen-qi-ok" : "gen-qi-miss"}">${ok ? "✓" : "+"}</span>
+          <span>${ok ? c.label : "Add " + c.label.toLowerCase()}</span>
+        </div>`;
+      }).join("");
+    }
+
+    // ---------- Textarea ----------
+    const jobTextEl  = document.getElementById("jobText");
+    const genBtnEl   = document.getElementById("genBtn");
+    const genCoverEl = document.getElementById("genCoverBtn");
+
     jobTextEl.addEventListener("input", () => {
-      const len = jobTextEl.value.length;
-      charCounter.textContent = `${len.toLocaleString()} / 50,000 characters`;
-      charCounter.style.color = len >= 48000 ? "var(--danger)" : len >= 40000 ? "#b45309" : "var(--muted)";
-      if (len > 0) showPreGenPanel();
-      else hidePreGenPanel();
+      const has = jobTextEl.value.trim().length > 0;
+      genBtnEl.disabled   = !has;
+      genCoverEl.disabled = !has;
+      document.getElementById("clearJob").style.display = has ? "" : "none";
     });
 
-    function showPreGenPanel() {
-      document.getElementById("preGenPanel").style.display = "";
-      document.getElementById("clearJob").style.display = "";
-      // Panel just became visible — measure actual width and render.
-      updateMiniPreview();
-    }
-    function hidePreGenPanel() {
-      document.getElementById("preGenPanel").style.display = "none";
-      document.getElementById("clearJob").style.display = "none";
-    }
-
-    // ---------- Clear ----------
     document.getElementById("clearJob").addEventListener("click", () => {
       jobTextEl.value = "";
       document.getElementById("jobUrl").value = "";
-      charCounter.textContent = "0 / 50,000 characters";
-      charCounter.style.color = "";
       document.getElementById("fetchStatus").style.display = "none";
-      hidePreGenPanel();
+      jobTextEl.dispatchEvent(new Event("input"));
     });
 
     // ---------- URL fetch ----------
@@ -246,22 +286,17 @@
       const btn = document.getElementById("fetchUrl");
       if (!url) return;
       if (!/^https?:\/\//i.test(url)) {
-        statusEl.textContent = "Please enter a full URL starting with http:// or https://";
-        statusEl.style.color = "var(--danger)";
-        statusEl.style.display = "";
+        statusEl.textContent = "Please enter a full URL starting with https://";
+        statusEl.style.color = "var(--danger)"; statusEl.style.display = "";
         return;
       }
-      btn.disabled = true;
-      btn.textContent = "Fetching…";
+      btn.disabled = true; btn.textContent = "Fetching…";
       statusEl.style.display = "none";
       try {
         const session = await ensureSession();
         const res = await fetch(`${API_URL}/scrape`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${session.access_token}`,
-          },
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` },
           body: JSON.stringify({ url }),
         });
         const data = await res.json();
@@ -271,35 +306,27 @@
         jobTextEl.value = text;
         jobTextEl.dispatchEvent(new Event("input"));
         statusEl.textContent = `Fetched ${text.length.toLocaleString()} characters.`;
-        statusEl.style.color = "var(--muted)";
-        statusEl.style.display = "";
+        statusEl.style.color = "var(--muted)"; statusEl.style.display = "";
       } catch (err) {
         statusEl.textContent = err.message;
-        statusEl.style.color = "var(--danger)";
-        statusEl.style.display = "";
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Fetch text";
-      }
+        statusEl.style.color = "var(--danger)"; statusEl.style.display = "";
+      } finally { btn.disabled = false; btn.textContent = "Fetch text"; }
     });
 
     // ---------- Generate ----------
-    document.getElementById("genBtn").addEventListener("click", async () => {
+    async function goGenerate(startWithCover) {
       const text = jobTextEl.value.trim();
       if (!text) return;
-      const url = document.getElementById("jobUrl").value.trim();
-      await store.set({
-        pendingJob: {
-          text,
-          url: url || "",
-          at: Date.now(),
-          template:  selectedTpl,
-          theme:     selectedTheme.accent,
-          pageCount: selectedPageCount,
-        }
-      });
+      await store.set({ pendingJob: {
+        text, url: document.getElementById("jobUrl").value.trim() || "",
+        at: Date.now(), template: selectedTpl,
+        theme: selectedTheme.accent, pageCount: selectedPageCount,
+        startWithCover: !!startWithCover,
+      }});
       location.href = "/app/result.html";
-    });
+    }
+    genBtnEl.addEventListener("click",   () => goGenerate(false));
+    genCoverEl.addEventListener("click", () => goGenerate(true));
 
     // ---------- Init ----------
     (async () => {
@@ -308,55 +335,58 @@
       renderNav("generate");
       initThemeSwatches();
 
-      // Restore last-used preferences.
+      // Restore prefs
       try {
         const { cvPrefs = {} } = await store.get("cvPrefs");
         if (cvPrefs.cvTemplate) {
           selectedTpl = cvPrefs.cvTemplate;
-          document.querySelectorAll("#cvTplSwatches .tpl-swatch").forEach(b =>
-            b.classList.toggle("tpl-swatch-active", b.dataset.tpl === selectedTpl)
-          );
+          document.querySelectorAll("#cvTplSwatches .gen-opt").forEach(b =>
+            b.classList.toggle("gen-opt-active", b.dataset.tpl === selectedTpl));
         }
         if (cvPrefs.themeId) {
           const saved = THEMES.find(t => t.id === cvPrefs.themeId);
           if (saved) {
             selectedTheme = saved;
-            document.querySelectorAll("#themeSwatches .theme-swatch").forEach((b, i) =>
-              b.classList.toggle("theme-swatch-active", THEMES[i]?.id === cvPrefs.themeId)
-            );
+            document.querySelectorAll("#themeSwatches .gen-colour").forEach((b, i) =>
+              b.classList.toggle("gen-colour-active", THEMES[i]?.id === cvPrefs.themeId));
           }
         }
         if (cvPrefs.pageCount) {
           selectedPageCount = Number(cvPrefs.pageCount);
-          document.querySelectorAll("#pageSwatches .tpl-swatch").forEach(b =>
-            b.classList.toggle("tpl-swatch-active", Number(b.dataset.pages) === selectedPageCount)
-          );
+          document.querySelectorAll("#pageSwatches .gen-opt").forEach(b =>
+            b.classList.toggle("gen-opt-active", Number(b.dataset.pages) === selectedPageCount));
         }
       } catch { /* non-critical */ }
 
       updateMiniPreview();
 
-      // Profile health check.
+      // Profile quality + warning
       try {
         const { profile } = await store.get("profile");
+        renderProfileQuality(profile || {});
         const hasRoles = (profile?.roles || []).some(r => r.title || r.background);
         if (!hasRoles) document.getElementById("noProfileWarn").style.display = "";
       } catch { /* non-critical */ }
 
-      // Restore any pending job text (e.g. if user navigated back).
+      // Show mobile credits
+      try {
+        const c = await getCredits();
+        const pill = document.getElementById("genMobilePill");
+        if (pill) pill.textContent = c + " credit" + (c !== 1 ? "s" : "");
+        document.getElementById("genMobileCredits").style.display = "";
+      } catch { /* non-critical */ }
+      document.getElementById("genMobileBuy").addEventListener("click", openShopModal);
+
+      // Restore pending job text
       try {
         const { pendingJob } = await store.get("pendingJob");
-        if (pendingJob?.text && Date.now() - pendingJob.at < 5 * 60 * 1000) {
-          // Only restore if recent (< 5 min) and user hasn't typed anything yet.
-          if (!jobTextEl.value) {
-            jobTextEl.value = pendingJob.text;
-            jobTextEl.dispatchEvent(new Event("input"));
-            if (pendingJob.url) document.getElementById("jobUrl").value = pendingJob.url;
-          }
+        if (pendingJob?.text && Date.now() - pendingJob.at < 5 * 60 * 1000 && !jobTextEl.value) {
+          jobTextEl.value = pendingJob.text;
+          jobTextEl.dispatchEvent(new Event("input"));
+          if (pendingJob.url) document.getElementById("jobUrl").value = pendingJob.url;
         }
       } catch { /* non-critical */ }
     })();
   </script>
-  </main>
 </body>
 </html>

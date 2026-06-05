@@ -379,6 +379,7 @@ async function generate() {
     document.getElementById("regen").disabled = false;
     document.getElementById("tabBar").style.display = "";
     stopMilestones();
+    if (autoStartCover) { autoStartCover = false; setTimeout(() => document.getElementById("tabCover").click(), 300); }
   } catch (err) {
     stopMilestones();
     setStatus(err.message, true);
@@ -587,6 +588,7 @@ async function handleUnlock() {
 
 let cvReady = false;
 let coverReady = false;
+let autoStartCover = false;
 let cvPageCount = 1;
 const activeMode = "modeling";
 let tailored = null;
@@ -1683,6 +1685,7 @@ document.getElementById("resultBuyCredits")?.addEventListener("click", () => {
       const link = document.getElementById("jobLink");
       if (link) { link.href = s.pendingJob.url; link.style.display = ""; }
     }
+    if (s.pendingJob?.startWithCover) autoStartCover = true;
   } catch { /* defaults */ }
 
   fetchAndShowCreditPill();
