@@ -54,15 +54,22 @@ function fitRingSvg(score, color) {
   </svg>`;
 }
 
+const STATUS_MAP = {
+  applied:   { label: "Applied",   cls: "badge-applied" },
+  interview: { label: "Interview", cls: "badge-interview" },
+  offer:     { label: "Offer",     cls: "badge-offer" },
+  rejected:  { label: "Rejected",  cls: "badge-rejected" },
+};
+
 function statusBadge(status) {
-  const map = {
-    applied:   { label: "Applied",   cls: "badge-applied" },
-    interview: { label: "Interview", cls: "badge-interview" },
-    offer:     { label: "Offer",     cls: "badge-offer" },
-    rejected:  { label: "Rejected",  cls: "badge-rejected" },
-  };
-  const s = map[status] || map.applied;
-  return `<span class="app-status-badge ${s.cls}">${s.label}</span>`;
+  const s = STATUS_MAP[status] || STATUS_MAP.applied;
+  const opts = Object.entries(STATUS_MAP)
+    .map(([k, v]) => `<button class="app-status-opt" data-status="${k}">${v.label}</button>`)
+    .join("");
+  return `<div class="app-status-wrap">
+    <button class="app-status-badge ${s.cls}">${s.label} ▾</button>
+    <div class="app-status-drop" style="display:none">${opts}</div>
+  </div>`;
 }
 
 function renderCard(app) {
@@ -108,6 +115,42 @@ function renderCard(app) {
   card.querySelector(".app-open-cv").addEventListener("click", () => openApp(app, false));
   card.querySelector(".app-open-cover").addEventListener("click", () => { if (hasCover) openApp(app, true); });
   card.querySelector(".app-del").addEventListener("click", () => deleteApp(app.id, card));
+
+  const badgeBtn = card.querySelector(".app-status-badge");
+  const drop     = card.querySelector(".app-status-drop");
+  let currentStatus = status;
+
+  badgeBtn.addEventListener("click", e => {
+    e.stopPropagation();
+    document.querySelectorAll(".app-status-drop").forEach(d => { if (d !== drop) d.style.display = "none"; });
+    drop.style.display = drop.style.display === "none" ? "" : "none";
+  });
+
+  drop.querySelectorAll(".app-status-opt").forEach(opt => {
+    opt.addEventListener("click", async e => {
+      e.stopPropagation();
+      const newStatus = opt.dataset.status;
+      if (newStatus === currentStatus) { drop.style.display = "none"; return; }
+      drop.style.display = "none";
+      const s = STATUS_MAP[newStatus];
+      badgeBtn.textContent = s.label + " ▾";
+      badgeBtn.className = `app-status-badge ${s.cls}`;
+      const rec = _allApps.find(a => a.id === app.id);
+      const prev = currentStatus;
+      currentStatus = newStatus;
+      if (rec) rec.status = newStatus;
+      try {
+        await updateApplication(app.id, { status: newStatus });
+        showToast("Status updated");
+      } catch (err) {
+        badgeBtn.textContent = STATUS_MAP[prev].label + " ▾";
+        badgeBtn.className = `app-status-badge ${STATUS_MAP[prev].cls}`;
+        currentStatus = prev;
+        if (rec) rec.status = prev;
+        showToast("Couldn't update status: " + err.message, true);
+      }
+    });
+  });
 
   return card;
 }
@@ -231,6 +274,10 @@ function _applyFilterSort() {
     document.getElementById("appsSortSelect").addEventListener("change", e => {
       _activeSort = e.target.value;
       _applyFilterSort();
+    });
+
+    document.addEventListener("click", () => {
+      document.querySelectorAll(".app-status-drop").forEach(d => d.style.display = "none");
     });
 
   } catch (err) {
