@@ -42,21 +42,25 @@
 
     <div id="styleBar" class="style-bar no-print" style="display:none">
       <div class="style-bar-inner">
-        <span class="style-label">Template</span>
-        <div class="tpl-swatches" id="cvTplSwatches">
-          <button class="tpl-swatch tpl-swatch-active" data-tpl="classic">Classic</button>
-          <button class="tpl-swatch" data-tpl="executive">Executive</button>
-          <button class="tpl-swatch" data-tpl="minimal">Minimal</button>
-          <button class="tpl-swatch" data-tpl="thick-underline">Thick Underline</button>
+        <div class="style-bar-row">
+          <span class="style-label">Template</span>
+          <div class="tpl-swatches" id="cvTplSwatches">
+            <button class="tpl-swatch tpl-swatch-active" data-tpl="classic">Classic</button>
+            <button class="tpl-swatch" data-tpl="executive">Executive</button>
+            <button class="tpl-swatch" data-tpl="minimal">Minimal</button>
+            <button class="tpl-swatch" data-tpl="thick-underline">Thick Underline</button>
+          </div>
+          <div class="tpl-swatches" id="coverTplSwatches" style="display:none">
+            <button class="tpl-swatch tpl-swatch-active" data-tpl="classic">Classic</button>
+            <button class="tpl-swatch" data-tpl="minimal-letterhead">Minimal</button>
+            <button class="tpl-swatch" data-tpl="split-header">Split Header</button>
+            <button class="tpl-swatch" data-tpl="executive-formal">Executive</button>
+          </div>
         </div>
-        <div class="tpl-swatches" id="coverTplSwatches" style="display:none">
-          <button class="tpl-swatch tpl-swatch-active" data-tpl="classic">Classic</button>
-          <button class="tpl-swatch" data-tpl="minimal-letterhead">Minimal</button>
-          <button class="tpl-swatch" data-tpl="split-header">Split Header</button>
-          <button class="tpl-swatch" data-tpl="executive-formal">Executive</button>
+        <div class="style-bar-row">
+          <span class="style-label">Colour</span>
+          <div id="themeSwatches" class="theme-swatches"></div>
         </div>
-        <div class="style-sep"></div>
-        <div id="themeSwatches" class="theme-swatches"></div>
       </div>
     </div>
 

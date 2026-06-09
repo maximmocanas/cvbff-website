@@ -942,13 +942,17 @@ button { font: inherit; cursor: pointer; }
 .result-controls { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
 .style-bar {
   background: var(--card); border-bottom: 1px solid var(--line);
-  padding: 8px 20px;
+  padding: 12px 20px;
 }
 .style-bar-inner {
   max-width: 1200px; margin: 0 auto;
-  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  display: flex; flex-direction: column; gap: 10px;
 }
-.style-sep { width: 1px; height: 20px; background: var(--line); flex-shrink: 0; }
+.style-bar-row {
+  display: flex; align-items: center; gap: 12px;
+}
+.style-bar-row .style-label { min-width: 72px; }
+.style-sep { display: none; }
 .stage {
   display: flex; justify-content: center;
   padding: 40px 20px; background: var(--bg); flex: 1;
