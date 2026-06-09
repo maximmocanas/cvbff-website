@@ -14,7 +14,7 @@
       <!-- Page title -->
       <div class="gen-topbar">
         <div>
-          <div class="gen-title">Generate CV</div>
+          <div class="gen-title">Generate</div>
           <div class="gen-sub">Paste a job posting and we'll build a tailored CV in seconds.</div>
         </div>
         <div class="gen-mobile-credits" id="genMobileCredits">
@@ -73,8 +73,7 @@
         <div class="gen-generate-row">
           <span class="gen-generate-hint">Free preview</span>
           <div class="gen-generate-btns">
-            <button class="btn-gen" id="genBtn" disabled>Generate CV →</button>
-            <button class="btn-gen btn-gen-outline" id="genCoverBtn" disabled>Generate cover letter →</button>
+            <button class="btn-gen" id="genBtn" disabled>Generate →</button>
           </div>
         </div>
 
@@ -84,9 +83,20 @@
       <div class="gen-bottom-grid">
 
         <div class="gen-card gen-preview-card">
-          <div class="gen-section-label" style="margin-bottom:12px">CV preview</div>
-          <div class="gen-mini-wrap">
-            <div id="cvMiniPage" class="cv-page"></div>
+          <div class="gen-preview-head">
+            <span class="gen-section-label" id="previewLabel">CV preview</span>
+            <div class="gen-preview-toggle">
+              <button type="button" class="gen-toggle-btn gen-toggle-active" id="previewToggleCv" data-output="cv">CV</button>
+              <button type="button" class="gen-toggle-btn" id="previewToggleCover" data-output="cover">Cover letter</button>
+            </div>
+          </div>
+          <div class="gen-preview-body">
+            <div class="gen-mini-wrap" id="cvMiniWrap">
+              <div id="cvMiniPage" class="cv-page"></div>
+            </div>
+            <div class="gen-mini-wrap" id="coverMiniWrap" style="display:none">
+              <div id="coverMiniPage" class="cv-page cover-page"></div>
+            </div>
           </div>
         </div>
 
@@ -134,6 +144,8 @@
     let selectedTpl       = "classic";
     let selectedTheme     = THEMES[0];
     let selectedPageCount = 1;
+    let selectedOutput    = "cv";   // "cv" | "cover" — what the Generate button produces
+    let _coverRendered    = false;  // lazy-render the cover mini-preview on first switch
 
     async function savePrefs() {
       try {
@@ -154,7 +166,7 @@
           selectedTheme = t;
           container.querySelectorAll(".gen-colour").forEach(b => b.classList.remove("gen-colour-active"));
           btn.classList.add("gen-colour-active");
-          updateMiniPreview();
+          refreshActivePreview();
           savePrefs();
         });
         container.appendChild(btn);
@@ -179,40 +191,103 @@
       selectedTpl = btn.dataset.tpl;
       document.querySelectorAll("#cvTplSwatches .gen-opt").forEach(b => b.classList.remove("gen-opt-active"));
       btn.classList.add("gen-opt-active");
-      updateMiniPreview();
+      if (selectedOutput === "cv") updateMiniPreview();
       savePrefs();
     });
 
+    // ---------- CV / Cover letter preview toggle ----------
+    function setOutput(output) {
+      selectedOutput = (output === "cover") ? "cover" : "cv";
+      const isCover = selectedOutput === "cover";
+      document.getElementById("previewToggleCv").classList.toggle("gen-toggle-active", !isCover);
+      document.getElementById("previewToggleCover").classList.toggle("gen-toggle-active", isCover);
+      document.getElementById("cvMiniWrap").style.display    = isCover ? "none" : "";
+      document.getElementById("coverMiniWrap").style.display = isCover ? "" : "none";
+      document.getElementById("previewLabel").textContent = isCover ? "Cover letter preview" : "CV preview";
+      // Re-render the now-visible preview so scaling uses the real wrapper width.
+      refreshActivePreview();
+    }
+    document.getElementById("previewToggleCv").addEventListener("click", () => setOutput("cv"));
+    document.getElementById("previewToggleCover").addEventListener("click", () => setOutput("cover"));
+
     // ---------- Mini preview ----------
+    function _esc(s) {
+      return (s == null ? "" : String(s))
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    }
+
+    // Scale an A4 (794px) page down to fit its wrapper width.
+    function _scaleMiniPage(page) {
+      const wrap = page.parentElement;
+      page.style.position = "absolute";
+      page.style.top = "0"; page.style.left = "0";
+      page.style.width = "794px";
+      page.style.transform = "none";
+      wrap.style.position = "relative";
+      wrap.style.height = "auto";
+      wrap.style.overflow = "visible";
+      page.style.setProperty("--cv-accent", selectedTheme.accent);
+
+      let contentH = 0;
+      page.querySelectorAll(":scope > *").forEach(c => {
+        const b = c.offsetTop + c.offsetHeight;
+        if (b > contentH) contentH = b;
+      });
+      const naturalH = (contentH > 0 ? contentH : 1123) + 32;
+      const wrapW = wrap.getBoundingClientRect().width;
+      const scale = Math.min((wrapW > 0 ? wrapW : 400) / 794, 1.0);
+      page.style.transform = `scale(${scale})`;
+      page.style.transformOrigin = "top left";
+      wrap.style.height = Math.round(Math.min(naturalH, 1123) * scale) + "px";
+      wrap.style.overflow = "hidden";
+    }
+
     function updateMiniPreview() {
       const page = document.getElementById("cvMiniPage");
       if (!page) return;
-      const wrap = page.parentElement;
       try {
         const { profile, tailored } = _dummyData();
-        page.style.position = "absolute";
-        page.style.top = "0"; page.style.left = "0";
-        page.style.width = "794px";
-        page.style.transform = "none";
-        wrap.style.position = "relative";
-        wrap.style.height = "auto";
-        wrap.style.overflow = "visible";
         renderCV(profile, tailored, selectedTpl, page);
-        page.style.setProperty("--cv-accent", selectedTheme.accent);
+        _scaleMiniPage(page);
+      } catch(e) { console.warn("CV mini preview:", e); }
+    }
 
-        let contentH = 0;
-        page.querySelectorAll(":scope > *").forEach(c => {
-          const b = c.offsetTop + c.offsetHeight;
-          if (b > contentH) contentH = b;
-        });
-        const naturalH = (contentH > 0 ? contentH : 1123) + 32;
-        const wrapW = wrap.getBoundingClientRect().width;
-        const scale = Math.min((wrapW > 0 ? wrapW : 400) / 794, 1.0);
-        page.style.transform = `scale(${scale})`;
-        page.style.transformOrigin = "top left";
-        wrap.style.height = Math.round(Math.min(naturalH, 1123) * scale) + "px";
-        wrap.style.overflow = "hidden";
-      } catch(e) { console.warn("Mini preview:", e); }
+    function updateCoverMiniPreview() {
+      const page = document.getElementById("coverMiniPage");
+      if (!page) return;
+      try {
+        const { profile } = _dummyData();
+        const p = profile.personal || {};
+        const name = [p.firstName, p.lastName].filter(Boolean).join(" ");
+        const role = (profile.roles && profile.roles[0] && profile.roles[0].title) || "";
+        const contactLines = [p.location, p.phone, p.email].filter(Boolean);
+        const paras = [
+          "I am writing to express my strong interest in this role. With a proven track record of delivering measurable results, I am confident I would make a meaningful contribution to your team.",
+          "Throughout my career I have led initiatives that combine strategic thinking with hands-on execution, consistently exceeding targets and driving growth across the organisations I have worked with.",
+          "I would welcome the opportunity to discuss how my background aligns with your needs, and I thank you for considering my application.",
+        ];
+        page.className = "cv-page cover-page cv-tpl-cover-classic";
+        page.innerHTML = `
+          <div class="cl-card">
+            <div class="cl-id">
+              <div class="cl-name">${_esc(name)}</div>
+              ${role ? `<div class="cl-role">${_esc(role)}</div>` : ""}
+              <div class="cl-contact">${contactLines.map(_esc).join("<br>")}</div>
+            </div>
+          </div>
+          <div class="cl-salutation">Dear Hiring Manager,</div>
+          <div class="cl-body">${paras.map(t => `<p>${_esc(t)}</p>`).join("")}</div>
+          <div class="cl-sign">Sincerely,<br><span class="n">${_esc(p.firstName || name)}</span></div>
+        `;
+        _scaleMiniPage(page);
+        _coverRendered = true;
+      } catch(e) { console.warn("Cover mini preview:", e); }
+    }
+
+    function refreshActivePreview() {
+      if (selectedOutput === "cover") updateCoverMiniPreview();
+      else updateMiniPreview();
     }
 
     function _dummyData() {
@@ -263,12 +338,10 @@
     // ---------- Textarea ----------
     const jobTextEl  = document.getElementById("jobText");
     const genBtnEl   = document.getElementById("genBtn");
-    const genCoverEl = document.getElementById("genCoverBtn");
 
     jobTextEl.addEventListener("input", () => {
       const has = jobTextEl.value.trim().length > 0;
-      genBtnEl.disabled   = !has;
-      genCoverEl.disabled = !has;
+      genBtnEl.disabled = !has;
       document.getElementById("clearJob").style.display = has ? "" : "none";
     });
 
@@ -325,8 +398,7 @@
       }});
       location.href = "/app/result.html";
     }
-    genBtnEl.addEventListener("click",   () => goGenerate(false));
-    genCoverEl.addEventListener("click", () => goGenerate(true));
+    genBtnEl.addEventListener("click", () => goGenerate(selectedOutput === "cover"));
 
     // ---------- Init ----------
     (async () => {
