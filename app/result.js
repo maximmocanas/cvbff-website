@@ -319,20 +319,13 @@ function showCoverPrompt() {
   document.getElementById("coverGenHeader").style.display = "none";
   document.getElementById("coverMilestones").style.display = "none";
   const t = document.getElementById("coverStatusText");
-  t.textContent = "Pick a template and colour, then generate.";
+  t.textContent = "Generate a tailored cover letter for this role.";
   t.style.display = "";
-  const cvPanel = document.getElementById("cvPreGenPanel");
-  if (cvPanel) cvPanel.style.display = "none";
-  const coverPanel = document.getElementById("coverPreGenPanel");
-  if (coverPanel) coverPanel.style.display = "";
   const trigger = document.getElementById("coverGenTrigger");
   if (trigger) {
     trigger.style.display = "";
     trigger.onclick = () => { trigger.style.display = "none"; generateCover(); };
   }
-  updateTplSwatches("coverTplSwatchesInline", currentCoverTemplate);
-  renderThemeSwatchesInline("cover", _currentThemeId);
-  renderMiniPreview("cover");
 }
 
 // ---------- Flow ----------
@@ -1440,9 +1433,8 @@ async function generateCover() {
   cs.style.display = ""; cs.classList.remove("error");
   document.getElementById("coverGenHeader").style.display = "none";
   document.getElementById("coverStatusText").style.display = "none";
-  document.getElementById("coverGenTrigger").style.display = "none";
-  const coverPanelGen = document.getElementById("coverPreGenPanel");
-  if (coverPanelGen) coverPanelGen.style.display = "none";
+  const coverTrigger = document.getElementById("coverGenTrigger");
+  if (coverTrigger) coverTrigger.style.display = "none";
   startMilestones(COVER_MILESTONES, "coverMilestones");
 
   let profile, job;
