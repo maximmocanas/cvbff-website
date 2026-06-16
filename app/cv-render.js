@@ -273,7 +273,7 @@ function overflowsPages(n) {
 //   1. Set min-height so the page fills the target height.
 //   2. Reduce font size (10.2pt → 9pt) and tighten line-height if content overflows.
 //   3. For 1-page mode only: trim trailing bullets as a last resort.
-// Uses position:fixed off-screen on mobile to avoid iOS Safari scrollHeight bugs.
+// Uses position:fixed + visibility:hidden on mobile to avoid iOS Safari scrollHeight bugs.
 // Returns { cut, shrunk }.
 function fitCvToPages(tailored, profile, pages = 1) {
   const page = document.getElementById("page");
@@ -281,15 +281,22 @@ function fitCvToPages(tailored, profile, pages = 1) {
   page.style.lineHeight = "";
   page.style.minHeight  = pages > 1 ? (pages * 297) + "mm" : "";
 
+  // iOS Safari returns scrollHeight=0 for elements placed far off-screen
+  // (top:-9999px), so overflowsPages() never fires and a 2-page CV is left on
+  // screen. Pull #page out of its narrow container with position:fixed so it
+  // measures at its own CSS width, but keep it at top:0 and use
+  // visibility:hidden to hide it while measuring. Restore after fitting.
   const isMobile = typeof window !== "undefined" && window.innerWidth < 860;
-  let _prevPosition = "", _prevTop = "", _prevLeft = "";
+  let _prevPosition = "", _prevTop = "", _prevLeft = "", _prevVisibility = "";
   if (isMobile) {
-    _prevPosition        = page.style.position;
-    _prevTop             = page.style.top;
-    _prevLeft            = page.style.left;
-    page.style.position  = "fixed";
-    page.style.top       = "-9999px";
-    page.style.left      = "0";
+    _prevPosition    = page.style.position;
+    _prevTop         = page.style.top;
+    _prevLeft        = page.style.left;
+    _prevVisibility  = page.style.visibility;
+    page.style.position   = "fixed";
+    page.style.top        = "0";
+    page.style.left       = "0";
+    page.style.visibility = "hidden";
   }
 
   let shrunk = false;
@@ -336,9 +343,10 @@ function fitCvToPages(tailored, profile, pages = 1) {
   }
 
   if (isMobile) {
-    page.style.position = _prevPosition;
-    page.style.top      = _prevTop;
-    page.style.left     = _prevLeft;
+    page.style.position   = _prevPosition;
+    page.style.top        = _prevTop;
+    page.style.left       = _prevLeft;
+    page.style.visibility = _prevVisibility;
   }
   return { cut, shrunk };
 }
