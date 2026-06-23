@@ -519,7 +519,6 @@ async function handleCoverUnlock() {
     renderCover(profile, coverText, coverJobTitle, currentCoverTemplate);
     fitCoverToOnePage(); scaleCoverMobile();
     document.getElementById("coverEdit").disabled = false;
-    document.getElementById("coverCopy").disabled = false;
     document.getElementById("coverDownload").disabled = false;
     document.getElementById("saveAppCover").disabled = false;
     document.getElementById("tabCoverIcon").textContent = "✓";
@@ -533,7 +532,11 @@ async function handleCoverUnlock() {
 
     if (typeof credits === "number") updateCreditPill(credits);
 
-    if (savedAppId) {
+    // Auto-save to applications: create the record if this is the first unlock,
+    // or link the cover letter into the existing saved record.
+    if (!savedAppId) {
+      await handleSave(document.getElementById("saveAppCover"));
+    } else {
       await updateApplication(savedAppId, {
         cover_text:      coverText || null,
         cover_job_title: coverJobTitle || null,
@@ -598,7 +601,11 @@ async function handleUnlock() {
 
     if (typeof credits === "number") updateCreditPill(credits);
 
-    if (savedAppId && isCoverUnlocked) {
+    // Auto-save to applications: create the record on first unlock, or link the
+    // freshly-unlocked CV into the existing saved record.
+    if (!savedAppId) {
+      await handleSave(document.getElementById("saveApp"));
+    } else if (isCoverUnlocked) {
       await updateApplication(savedAppId, {
         cv_html: document.getElementById("page")?.innerHTML || null,
       }).catch(() => {});
@@ -955,7 +962,7 @@ async function handleCoverRegen() {
   } else {
     msg.innerHTML = "This uses <strong>1 credit</strong> and creates a new version of your cover letter.";
     actions.innerHTML = `
-      <button class="btn btn-accent" id="_mrConfirm">Rewrite · 1 credit</button>
+      <button class="btn btn-accent" id="_mrConfirm">Regenerate · 1 credit</button>
       <button class="btn"            id="_mrCancel">Cancel</button>`;
     document.getElementById("_mrConfirm").onclick = () => { closeRegenModal(); coverRegenWithCredit("new"); };
     document.getElementById("_mrCancel").onclick  = () => closeRegenModal();
@@ -967,7 +974,7 @@ async function coverRegenWithCredit(mode) {
   regenMode = mode;
   const savedIdToRestore = (mode === "replace") ? savedAppId : null;
 
-  ["coverEdit", "coverCopy", "coverRegen", "coverDownload", "saveAppCover"].forEach(id => {
+  ["coverEdit", "coverRegen", "coverDownload", "saveAppCover"].forEach(id => {
     const b = document.getElementById(id); if (b) b.disabled = true;
   });
   document.getElementById("coverStage").style.display = "none";
@@ -989,7 +996,7 @@ async function coverRegenWithCredit(mode) {
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));
       const errMsg = res.status === 402
-        ? "Not enough credits to rewrite. Buy more to continue."
+        ? "Not enough credits to regenerate. Buy more to continue."
         : friendlyError(e?.error?.message, res.status);
       stopMilestones();
       document.getElementById("coverStatusText").textContent = errMsg;
@@ -1019,7 +1026,6 @@ async function coverRegenWithCredit(mode) {
     renderCover(profile, coverText, coverJobTitle, currentCoverTemplate);
     fitCoverToOnePage(); scaleCoverMobile();
     document.getElementById("coverEdit").disabled = false;
-    document.getElementById("coverCopy").disabled = false;
     document.getElementById("coverDownload").disabled = false;
     document.getElementById("coverRegen").disabled = false;
     document.getElementById("saveAppCover").disabled = false;
@@ -1427,7 +1433,7 @@ async function generateCover() {
   coverText         = "";
   coverGenerationId = null;
 
-  ["coverEdit", "coverCopy", "coverRegen"].forEach(id => { const b = document.getElementById(id); if (b) b.disabled = true; });
+  ["coverEdit", "coverRegen"].forEach(id => { const b = document.getElementById(id); if (b) b.disabled = true; });
 
   const btn = document.getElementById("tabCover");
   document.getElementById("tabCv").disabled = true;
@@ -1506,14 +1512,6 @@ document.getElementById("tabCover").addEventListener("click", () => {
 });
 document.getElementById("coverRegen").addEventListener("click", handleCoverRegen);
 document.getElementById("coverDownload").addEventListener("click", () => printOnly("cover"));
-document.getElementById("coverCopy").addEventListener("click", async () => {
-  try {
-    await navigator.clipboard.writeText(coverText);
-    const b = document.getElementById("coverCopy");
-    const t = b.textContent; b.textContent = "Copied ✓";
-    setTimeout(() => (b.textContent = t), 1500);
-  } catch { showToast("Couldn't copy — select the text and copy manually.", true); }
-});
 
 // ---------- Template / theme switchers ----------
 
@@ -1624,11 +1622,6 @@ document.getElementById("resultBuyCredits")?.addEventListener("click", () => {
       savedAppId        = saved.id             || null;
       _coverCreatedAt   = saved.created_at     || "";
 
-      if (saved.job_url) {
-        const link = document.getElementById("jobLink");
-        if (link) { link.href = saved.job_url; link.style.display = ""; }
-      }
-
       fetchAndShowCreditPill();
       document.getElementById("status").style.display = "none";
       showView("cv");
@@ -1669,7 +1662,6 @@ document.getElementById("resultBuyCredits")?.addEventListener("click", () => {
         coverReady = true;
         isCoverUnlocked = true;
         document.getElementById("coverEdit").disabled = false;
-        document.getElementById("coverCopy").disabled = false;
         document.getElementById("coverRegen").disabled = false;
         document.getElementById("coverDownload").disabled = false;
         const saveAppCoverBtn = document.getElementById("saveAppCover");
@@ -1708,10 +1700,6 @@ document.getElementById("resultBuyCredits")?.addEventListener("click", () => {
         renderThemeSwatches(matchedTheme.id);
         renderThemeSwatchesInline("cv", matchedTheme.id);
       }
-    }
-    if (s.pendingJob?.url) {
-      const link = document.getElementById("jobLink");
-      if (link) { link.href = s.pendingJob.url; link.style.display = ""; }
     }
     if (s.pendingJob?.startWithCover) autoStartCover = true;
   } catch { /* defaults */ }
