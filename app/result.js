@@ -38,6 +38,18 @@ function showToast(msg, isError = false) {
   el._timer = setTimeout(() => el.classList.remove("toast-visible"), 3200);
 }
 
+// Turn a raw worker/Claude API failure into clear, retryable copy. Claude returns
+// HTTP 529 with the bare message "Overloaded" when the model is over capacity —
+// shown verbatim it reads like the app itself is broken.
+function friendlyError(msg, status) {
+  if (status === 429) return "Rate limited — wait a moment and try again.";
+  if (status === 529 || /overloaded/i.test(msg || "")) {
+    return "Our AI is busy right now. Please wait a few seconds and try again.";
+  }
+  if (status >= 500) return "Something went wrong on our end. Please try again in a moment.";
+  return msg || "Something went wrong. Please try again.";
+}
+
 function setStatus(text, isError) {
   stopMilestones();
   const s = document.getElementById("status");
@@ -373,8 +385,7 @@ async function generate() {
     });
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));
-      if (res.status === 429) throw new Error("Rate limited — wait a moment and try again.");
-      throw new Error(e?.error?.message || `API error ${res.status}`);
+      throw new Error(friendlyError(e?.error?.message, res.status));
     }
     const { generation_id, preview } = await res.json();
     generationId = generation_id;
@@ -872,7 +883,7 @@ async function regenWithCredit(mode) {
       const e = await res.json().catch(() => ({}));
       const errMsg = res.status === 402
         ? "Not enough credits to regenerate. Buy more to continue."
-        : (e?.error?.message || "Regeneration failed — try again.");
+        : friendlyError(e?.error?.message, res.status);
       stopMilestones();
       setStatus(errMsg, true);
       regenMode = null;
@@ -979,7 +990,7 @@ async function coverRegenWithCredit(mode) {
       const e = await res.json().catch(() => ({}));
       const errMsg = res.status === 402
         ? "Not enough credits to rewrite. Buy more to continue."
-        : (e?.error?.message || "Rewrite failed — try again.");
+        : friendlyError(e?.error?.message, res.status);
       stopMilestones();
       document.getElementById("coverStatusText").textContent = errMsg;
       document.getElementById("coverStatusText").style.display = "";
@@ -1453,8 +1464,7 @@ async function generateCover() {
 
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));
-      if (res.status === 429) throw new Error("Rate limited — wait a moment and try again.");
-      throw new Error(e?.error?.message || `API error ${res.status}`);
+      throw new Error(friendlyError(e?.error?.message, res.status));
     }
 
     const data = await res.json();
